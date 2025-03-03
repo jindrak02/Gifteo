@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Environmentální soubory
+.env
+
+# Logy
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build výstupy
+dist/
+build/
+
+# Soubory operačního systému
+.DS_Store
+Thumbs.db
+
+# Soubory editoru/IDE
+.vscode/
+.idea/
+*.swp
