@@ -2,10 +2,53 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  background: linear-gradient(to right, #EDEDED, #FFFFFF);
 }
 
 body {
   color: #333;
+  background: linear-gradient(to right, #EDEDED, #FFFFFF) !important;
+  height: 100vh;
+}
+
+.profile-container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.profile-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn {
+  border: solid 1px #333;
+}
+
+.btn {
+  font-size: 0.8em;
+  padding: 4px;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+.profile-header-first {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1em;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.tags .badge {
+  padding: 0.5em 1em;
 }

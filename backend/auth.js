@@ -13,7 +13,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.use(cookieParser());
 
-// Route pro přihlášení či registraci pomocí Google
+// Route pro přihlášení či registraci pomocí Google a případné založení usera v db
 router.post('/google', async (req, res) => {
   const { token } = req.body;
 
@@ -33,27 +33,50 @@ router.post('/google', async (req, res) => {
     const userQuery = 'SELECT * FROM "user" WHERE email = $1';
     const userQueryResult = await pool.query(userQuery, [email]);
 
-    // Tu probíhá vytvoření session tokenu (cookie)
-    res.cookie("session_token", googleId, {
-      httpOnly: true, // JavaScript nemůže cookie přečíst
-      secure: process.env.NODE_ENV === "production", // Secure v produkci
-      sameSite: "Lax", // Chrání před CSRF
-      maxAge: 60 * 60 * 1000, // 1 hodina
-      //maxAge: 20 * 1000, // 20 vteřin
-    });
-    console.log('cookie nastavena');
-
     if (userQueryResult.rows.length === 0) {
-      const insertQuery =
-        'INSERT INTO "user" (email, google_id) VALUES ($1, $2) RETURNING *';
-      const insertQueryResult = await pool.query(insertQuery, [
+      // Založení nového uživatel v db
+      const insertUserQuery = 'INSERT INTO "user" (email, google_id) VALUES ($1, $2) RETURNING *';
+
+      const insertUserQueryResult = await pool.query(insertUserQuery, [
         email,
         googleId,
       ]);
+
+      // Založení profilu uživatele s defaultními hodnotami z google
+      const insertProfileQuery = 'INSERT INTO "profile" ("user_id", "name", "photo_url") VALUES ($1, $2, $3) RETURNING *;';
+
+      const insertProfileQueryResult = await pool.query(insertProfileQuery, [
+        insertUserQueryResult.rows[0].id,
+        name,
+        picture,
+      ]);
+
       console.log("User created");
-      res.json({ success: true, user: insertQueryResult.rows[0] });
+
+      // Tu probíhá vytvoření session tokenu (cookie)
+      res.cookie("session_token", insertUserQueryResult.rows[0].id, {
+        httpOnly: true, // JavaScript nemůže cookie přečíst
+        secure: process.env.NODE_ENV === "production", // Secure v produkci
+        sameSite: "Lax", // Chrání před CSRF
+        maxAge: 60 * 60 * 1000, // 1 hodina
+        //maxAge: 20 * 1000, // 20 vteřin
+      });
+      console.log('Autentizační cookie nastavena');
+
+      res.json({ success: true, user: insertUserQueryResult.rows[0] });
     } else {
       console.log("User already exists");
+
+      // Tu probíhá vytvoření session tokenu (cookie)
+      res.cookie("session_token", userQueryResult.rows[0].id, {
+        httpOnly: true, // JavaScript nemůže cookie přečíst
+        secure: process.env.NODE_ENV === "production", // Secure v produkci
+        sameSite: "Lax", // Chrání před CSRF
+        maxAge: 60 * 60 * 1000, // 1 hodina
+        //maxAge: 20 * 1000, // 20 vteřin
+      });
+      console.log('Autentizační cookie nastavena');
+
       res.json({ success: true, user: userQueryResult.rows[0] });
     }
 
@@ -65,6 +88,7 @@ router.post('/google', async (req, res) => {
 router.post('/logout', async (req, res) => {
   res.clearCookie("session_token");
   res.send({ success: true, message: 'Odhlášení proběhlo úspěšně' });
+  console.log('Logout Successful.');
 });
 
 router.get('/checkCookie', authenticateUser, (req, res) => {

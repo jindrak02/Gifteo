@@ -12,7 +12,7 @@ export function authenticateUser(req, res, next) {
 
   // Ověřit, zda uživatel existuje v databázi
   pool
-    .query('SELECT * FROM "user" WHERE google_id = $1', [sessionToken])
+    .query('SELECT * FROM "user" WHERE id = $1', [sessionToken])
     .then((result) => {
         
       if (result.rows.length === 0) {
