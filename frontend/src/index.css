@@ -6,8 +6,40 @@
 
 body {
   color: #333;
-  background: linear-gradient(to right, #EDEDED, #FFFFFF) !important;
+  background: linear-gradient(to right, #e9e9e9, #FFFFFF) !important;
   height: 100vh;
+}
+
+#loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.842);
+  z-index: 9999;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+  height: 50px;
+  width: 50px;
+  color: #6F2BF6;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  } to {
+    transform: rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none !important;
 }
 
 .profile-container {
@@ -28,6 +60,12 @@ body {
 .btn {
   font-size: 0.8em;
   padding: 4px;
+}
+
+.btn-service {
+  background-color: #8F84F2;
+  color: white;
+  border: 1px solid #8F84F2;
 }
 
 .profile-header {

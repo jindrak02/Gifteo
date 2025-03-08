@@ -43,12 +43,13 @@ router.post('/google', async (req, res) => {
       ]);
 
       // Založení profilu uživatele s defaultními hodnotami z google
-      const insertProfileQuery = 'INSERT INTO "profile" ("user_id", "name", "photo_url") VALUES ($1, $2, $3) RETURNING *;';
+      const insertProfileQuery = 'INSERT INTO "profile" ("user_id", "name", "photo_url", "bio") VALUES ($1, $2, $3, $4) RETURNING *;';
 
       const insertProfileQueryResult = await pool.query(insertProfileQuery, [
         insertUserQueryResult.rows[0].id,
         name,
         picture,
+        'Happy to gift and to be gifted!',
       ]);
 
       console.log("User created");
