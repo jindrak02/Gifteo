@@ -92,4 +92,112 @@ router.put("/updateProfile", authenticateUser, async (req, res) => {
   
 });
 
+// POST /api/data/addWishlist, vytvoří nový wishlist
+router.post("/addWishlist", authenticateUser, async (req, res) => {
+  const userId = req.cookies.session_token;
+
+  if (!userId) {
+    return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+  }
+
+  const { name, profileId} = req.body;
+
+  try {
+    const insertWishlistQuery = `
+      INSERT INTO "wishlist" ("profile_id", "name", "created_by_user_id")
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+    const insertWishlistQueryResult = await pool.query(insertWishlistQuery,[profileId, name, userId]);
+
+    res.json({ success: true, wishlist: insertWishlistQueryResult.rows[0] });
+
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+});
+
+// GET /api/data/wishlistsData, vrátí všechny wishlits uživatele včetně položek
+router.get("/wishlistsData", authenticateUser, async (req, res) => {
+  const userId = req.cookies.session_token;
+
+  if (!userId) {
+    return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+  }
+
+  try {
+
+    const profileIdQuery = 'SELECT profile.id FROM "profile" profile WHERE profile.user_id = $1;';
+    const profileIdQueryResult = await pool.query(profileIdQuery,[userId]);
+    const profileId = profileIdQueryResult.rows[0].id;
+
+    const wishlistsQuery = `
+      SELECT
+        w."id" wishlistId,
+        w."name" wishlistName,
+        wi."id" itemId,
+        wi."name" itemName,
+        wi."price" itemPrice,
+        wi."photo_url" itemPhotoUrl,
+        wi."url" itemUrl
+        
+      FROM "wishlist" w
+      LEFT JOIN "wishlistItem" wi on w.id = wi.wishlist_id
+      WHERE w.profile_id = $1
+      ORDER BY w.created_at desc;
+    `;
+    const wishlistsQueryResult = await pool.query(wishlistsQuery, [profileId]);
+
+    const wishlistsMap = new Map();
+
+    wishlistsQueryResult.rows.forEach(row => {
+      if (!wishlistsMap.has(row.wishlistid)) {
+        wishlistsMap.set(row.wishlistid, {
+          id: row.wishlistid,
+          name: row.wishlistname,
+          items: []
+        });
+      }
+
+      if (row.itemid) {
+        wishlistsMap.get(row.wishlistid).items.push({
+          id: row.itemid,
+          name: row.itemname,
+          price: row.itemprice,
+          photo_url: row.itemphotourl,
+          url: row.itemurl
+        });
+      }
+    });
+
+    const wishlists = Array.from(wishlistsMap.values());
+
+    res.json(wishlists);
+
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+});
+
+// DELETE /api/data/deleteWishlist, smaže wishlist
+router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) => {
+  const userId = req.cookies.session_token;
+
+  if (!userId) {
+    return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+  }
+
+  const { wishlistId } = req.params;
+
+  try {
+    const deleteWishlistQuery = 'DELETE FROM "wishlist" WHERE id = $1;';
+    await pool.query(deleteWishlistQuery,[wishlistId]);
+
+    res.json({ success: true, message: "Wishlist deleted" });
+
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+});
+
 export default router;

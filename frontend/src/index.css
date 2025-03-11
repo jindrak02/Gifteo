@@ -87,6 +87,40 @@ body {
   object-fit: cover;
 }
 
+.profile-wishlists {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
 .tags .badge {
   padding: 0.5em 1em;
+}
+
+.add-wishlist-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.wishlist-card {
+  background-color: #D9D8ED;
+  margin-bottom: 1em;
+  padding: 1em;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#navbar-panel {
+  background-color: #FFFFFF;
+  z-index: 1000;
 }

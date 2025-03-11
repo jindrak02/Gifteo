@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
+import WishlistThumbnail from "./WishlistThumbnail";
+import Swal from "sweetalert2";
 
 type ProfileData = {
   id: string;
@@ -16,12 +18,22 @@ type Interest = {
 
 const Profile = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [profileInterests, setProfileInterests] = useState<Array<Interest> | null>(null);
-  const [availableInterests, setAvailableInterests] = useState<Array<Interest>>([]);
+  const [profileInterests, setProfileInterests] =
+    useState<Array<Interest> | null>(null);
+  const [availableInterests, setAvailableInterests] = useState<Array<Interest>>(
+    []
+  );
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState<Array<{ value: string; label: string; id: string }>>([]);
+  const [selectedInterests, setSelectedInterests] = useState<
+    Array<{ value: string; label: string; id: string }>
+  >([]);
+  const [isAddingWishlist, setIsAddingWishlist] = useState(false);
+  const [wishlists, setWishlists] = useState<Array<any>>([]);
+  const [isEditingWishlist, setIsEditingWishlist] = useState<string | null>(
+    null
+  );
 
-  // Načtení dat o profilu z API
+  // Načtení dat o profilu a wishlistech z API
   useEffect(() => {
     // Zde načteme data o profilu z API
     const fetchProfileData = async () => {
@@ -74,21 +86,56 @@ const Profile = () => {
       }
     };
 
+    // Zde načteme data o wishlistech z API
+    const fetchProfileWishlists = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/data/wishlistsData`,
+          {
+            method: "GET",
+            credentials: "include", // Posílání cookies
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await res.json();
+        setWishlists(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching profile wishlists data:", error);
+      }
+    };
+
     fetchProfileData();
     fetchProfileInterests();
-  }, [isEditing]);
+    fetchProfileWishlists();
+  }, [isEditing, isAddingWishlist]);
 
   // Odhlášení uživatele
   const handleLogOut = async function () {
-    const res = await fetch("http://localhost:3000/api/auth/logout", {
-      method: "POST",
-      credentials: "include", // Posílání cookies
+    const result = await Swal.fire({
+      title: "Do you really want to Log Out?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#8F84F2",
+      confirmButtonText: "Yes, Log Out",
     });
 
-    const data = await res.json();
-    if (data.success) {
-      console.log("Logout Successful.");
-      window.location.reload(); // Obnovit aplikaci pro načtení session
+    if (result.isConfirmed) {
+      const res = await fetch("http://localhost:3000/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // Posílání cookies
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        console.log("Logout Successful.");
+        window.location.reload(); // Obnovit aplikaci pro načtení session
+      }
     }
   };
 
@@ -109,11 +156,66 @@ const Profile = () => {
     });
 
     const data = await res.json();
-    
+
     if (data.success) {
       console.log("Profile updated successfully.");
       setIsEditing(false);
       //window.location.reload(); // Obnovit aplikaci pro načtení změn
+    }
+  };
+
+  const handleAddWishlist = async (wishlistName: string) => {
+    const res = await fetch("http://localhost:3000/api/data/addWishlist", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: wishlistName,
+        profileId: profileData?.id,
+      }),
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      console.log("Wishlist added successfully.");
+      setIsAddingWishlist(false);
+
+      // TODO: reload or update the wishlists
+    }
+  };
+
+  const handleDeleteWishlist = async (wishlistId: string) => {
+    const result = await Swal.fire({
+      title: "Do you really want to delete this wishlist?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#8F84F2",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      const res = await fetch(
+        `http://localhost:3000/api/data/deleteWishlist/${wishlistId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        console.log("Wishlist deleted successfully.");
+        setWishlists(
+          wishlists.filter((wishlist) => wishlist.id !== wishlistId)
+        );
+      } else {
+        console.log("Wishlist deletion failed.");
+      }
     }
   };
 
@@ -252,8 +354,80 @@ const Profile = () => {
           </button>
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-secondary mx-2"
             onClick={() => setIsEditing(false)}
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Zobrazení formuláře pro přidání wishlistu
+  if (isAddingWishlist) {
+    return (
+      <div className="container p-4 rounded add-wishlist-container">
+        <h2>Add Wishlist</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const wishlistName = formData.get("wishlistName") as string;
+            handleAddWishlist(wishlistName);
+          }}
+        >
+          <div className="mb-3">
+            <label htmlFor="wishlistName" className="form-label">
+              Wishlist Name
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="wishlistName"
+              name="wishlistName"
+              required
+              minLength={2}
+              maxLength={35}
+            />
+          </div>
+          <button type="submit" className="btn btn-service btn-primary">
+            Save
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary mx-2"
+            onClick={() => setIsAddingWishlist(false)}
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Zobrazení formuláře pro editaci wishlistu
+  if (isEditingWishlist) {
+    const wishlist = wishlists.find((w) => w.id === isEditingWishlist);
+    return (
+      <div className="container p-4 rounded edit-wishlist-container">
+        <h2>Edit Wishlist</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const updatedWishlistName = formData.get("wishlistName") as string;
+            // TODO: update wishlist
+          }}
+        >
+
+          <button type="submit" className="btn btn-service btn-primary">
+            Save
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary mx-2"
+            onClick={() => setIsEditingWishlist(null)}
           >
             Cancel
           </button>
@@ -314,13 +488,17 @@ const Profile = () => {
         </div>
 
         <div className="tags my-4">
-          {profileInterests && profileInterests.length > 0
-            ? profileInterests.map((interest: any, index: number) => (
-                <span key={index} className="badge bg-secondary me-2">
-                  {interest.name}
-                </span>
-              ))
-            : "There are no interests yet 😢"}
+          {profileInterests && profileInterests.length > 0 ? (
+            profileInterests.map((interest: any, index: number) => (
+              <span key={index} className="badge bg-secondary me-2">
+                {interest.name}
+              </span>
+            ))
+          ) : (
+            <span className="badge bg-secondary me-2">
+              There are no interests yet 😢
+            </span>
+          )}
 
           {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
         </div>
@@ -335,9 +513,25 @@ const Profile = () => {
 
         <div className="profile-wishlists my-4">
           <h4 className="mt-4">My wishlists</h4>
-          <button className="btn btn-service btn-primary shadow ">
+          <button
+            className="btn btn-service btn-primary shadow"
+            onClick={() => setIsAddingWishlist(true)}
+          >
             Add wishlist
           </button>
+        </div>
+
+        <div className="wishlists-container">
+          {wishlists.map((wishlist) => (
+            <WishlistThumbnail
+              showButtons={true}
+              key={wishlist.id}
+              title={wishlist.name}
+              imageUrls={wishlist.items.map((item: any) => item.photo_url)}
+              onDelete={() => handleDeleteWishlist(wishlist.id)}
+              onEdit={() => setIsEditingWishlist(wishlist.id)}
+            />
+          ))}
         </div>
       </div>
 
