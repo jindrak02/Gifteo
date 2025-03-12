@@ -3,6 +3,7 @@ import Select from "react-select";
 import WishlistThumbnail from "./WishlistThumbnail";
 import Swal from "sweetalert2";
 import WishlistEditForm from "./WishlistEditForm";
+import LoadingSpinner from "./LoadingSpinner";
 
 type ProfileData = {
   id: string;
@@ -19,6 +20,7 @@ type Interest = {
 
 const Profile = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [showSpinner, setShowSpinner] = useState(false);
   const [profileInterests, setProfileInterests] = useState<Array<Interest> | null>(null);
   const [availableInterests, setAvailableInterests] = useState<Array<Interest>>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -29,83 +31,84 @@ const Profile = () => {
 
   // Načtení dat o profilu a wishlistech z API
   useEffect(() => {
-    // Zde načteme data o profilu z API
-    const fetchProfileData = async () => {
+    const fetchData = async () => {
+      setShowSpinner(true);
       try {
-        const res = await fetch("http://localhost:3000/api/data/profile", {
-          method: "GET",
-          credentials: "include", // Posílání cookies
-        });
-
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await res.json();
-        data.birthdate = new Date(data.birthdate); // Převést birthdate na instanci Date
-        setProfileData(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      }
-    };
-
-    // Zde načteme data o zájemch profilu z API
-    const fetchProfileInterests = async () => {
-      try {
-        const res = await fetch(
-          "http://localhost:3000/api/data/profileInterest",
-          {
+        // Zde načteme data o profilu z API
+        const fetchProfileData = async () => {
+          const res = await fetch("http://localhost:3000/api/data/profile", {
             method: "GET",
             credentials: "include", // Posílání cookies
+          });
+
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
           }
-        );
 
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
+          const data = await res.json();
+          data.birthdate = new Date(data.birthdate); // Převést birthdate na instanci Date
+          setProfileData(data);
+          //console.log(data);
+        };
 
-        const data = await res.json();
-        setProfileInterests(data);
-        setSelectedInterests(
-          data.map((i: Interest) => ({
-            value: i.name,
-            label: i.name,
-            id: i.id,
-          }))
-        );
-        console.log(data);
+        // Zde načteme data o zájemch profilu z API
+        const fetchProfileInterests = async () => {
+          const res = await fetch(
+            "http://localhost:3000/api/data/profileInterest",
+            {
+              method: "GET",
+              credentials: "include", // Posílání cookies
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const data = await res.json();
+          setProfileInterests(data);
+          setSelectedInterests(
+            data.map((i: Interest) => ({
+              value: i.name,
+              label: i.name,
+              id: i.id,
+            }))
+          );
+          //console.log(data);
+        };
+
+        // Zde načteme data o wishlistech z API
+        const fetchProfileWishlists = async () => {
+          const res = await fetch(
+            `http://localhost:3000/api/data/wishlistsData`,
+            {
+              method: "GET",
+              credentials: "include", // Posílání cookies
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const data = await res.json();
+          setWishlists(data);
+          //console.log(data);
+        };
+
+        await Promise.all([
+          fetchProfileData(),
+          fetchProfileInterests(),
+          fetchProfileWishlists(),
+        ]);
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setShowSpinner(false);
       }
     };
 
-    // Zde načteme data o wishlistech z API
-    const fetchProfileWishlists = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:3000/api/data/wishlistsData`,
-          {
-            method: "GET",
-            credentials: "include", // Posílání cookies
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await res.json();
-        setWishlists(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching profile wishlists data:", error);
-      }
-    };
-
-    fetchProfileData();
-    fetchProfileInterests();
-    fetchProfileWishlists();
+    fetchData();
   }, [isEditing, isAddingWishlist, isEditingWishlist]);
 
   // Odhlášení uživatele
@@ -135,28 +138,70 @@ const Profile = () => {
 
   const handleSaveProfile = async function (
     updatedProfileData: ProfileData,
-    updatedInterests: Array<{ value: string; label: string; id: string }>
+    updatedInterests: Array<{ value: string; label: string; id: string }>,
+    file: File | null
   ) {
-    const res = await fetch("http://localhost:3000/api/data/updateProfile", {
-      method: "PUT",
-      credentials: "include", // Posílání cookies
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        profileData: updatedProfileData,
-        interests: updatedInterests.map((i) => i.id),
-      }),
-    });
+    setShowSpinner(true);
+    console.log('Typ souboru: ' + file?.type);
+    
 
-    const data = await res.json();
-
-    if (data.success) {
-      console.log("Profile updated successfully.");
-      setIsEditing(false);
-      //window.location.reload(); // Obnovit aplikaci pro načtení změn
+    // Validace formátu souboru
+    if (file && !['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+      // alert('Only JPEG, JPG, and PNG files are allowed!');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Only JPEG, JPG, and PNG files are allowed!',
+      });
+      setShowSpinner(false);
+      return;
     }
+    
+    // Validace velikosti souboru
+    if (file && file.size > 2097152) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'File size should be less than 2MB!',
+      });
+      setShowSpinner(false);
+      return;
+    }
+
+    const formData = new FormData();
+  
+    // Přidání JSON dat
+    formData.append("profile", JSON.stringify(updatedProfileData));
+    formData.append("interests", JSON.stringify(updatedInterests.map((interest) => interest.id)));
+  
+    // Přidání souboru, pokud existuje
+    if (file) {
+      formData.append("file", file);
+    }
+  
+    try {
+      const res = await fetch("http://localhost:3000/api/data/updateProfile", {
+        method: "PUT",
+        credentials: "include", // Posílání cookies
+        body: formData,
+      });
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        console.log("Profile updated successfully.");
+      } else {
+        console.error("Error updating profile:", data);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    } finally {
+      setShowSpinner(false); // Hide spinner
+    }
+  
+    setIsEditing(false);
   };
+  
 
   const handleAddWishlist = async (wishlistName: string) => {
     const res = await fetch("http://localhost:3000/api/data/addWishlist", {
@@ -179,7 +224,7 @@ const Profile = () => {
       // TODO: reload or update the wishlists
     }
   };
-
+  
   const handleDeleteWishlist = async (wishlistId: string) => {
     const result = await Swal.fire({
       title: "Do you really want to delete this wishlist?",
@@ -242,7 +287,7 @@ const Profile = () => {
       console.error("Error updating wishlist:", data.message);
     }
   };
-
+  
   // Načtení předefinovaných interest z db při editaci profilu
   useEffect(() => {
     if (isEditing) {
@@ -259,7 +304,7 @@ const Profile = () => {
 
           const data = await res.json();
           setAvailableInterests(data);
-          console.log(data);
+          //console.log(data);
         } catch (error) {
           console.error("Error fetching available interests:", error);
         }
@@ -281,13 +326,14 @@ const Profile = () => {
             const updatedProfileData: ProfileData = {
               id: profileData!.id,
               name: formData.get("name") as string,
-              photo_url: formData.get("photo_url") as string,
+              photo_url: profileData!.photo_url, // Keep the existing photo_url
               bio: formData.get("bio") as string,
               birthdate: new Date(formData.get("birthdate") as string),
             };
-            handleSaveProfile(updatedProfileData, selectedInterests);
-            console.log(updatedProfileData);
-            console.log(selectedInterests.map((interest) => interest.id));
+            const file = formData.get("photo") as File;
+            handleSaveProfile(updatedProfileData, selectedInterests, file);
+            //console.log(updatedProfileData);
+            //console.log(selectedInterests.map((interest) => interest.id));
           }}
         >
           <div className="mb-3">
@@ -306,16 +352,15 @@ const Profile = () => {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="photo_url" className="form-label">
-              Photo URL
+            <label htmlFor="photo" className="form-label">
+              Photo
             </label>
             <input
-              type="url"
+              type="file"
               className="form-control"
-              id="photo_url"
-              name="photo_url"
-              defaultValue={profileData?.photo_url}
-              required
+              id="photo"
+              name="photo"
+              accept="image/*"
             />
           </div>
           <div className="mb-3">
@@ -384,10 +429,11 @@ const Profile = () => {
             Cancel
           </button>
         </form>
+        <LoadingSpinner className={showSpinner ? "" : "hidden"} />
       </div>
     );
   }
-
+  
   // Zobrazení formuláře pro přidání wishlistu
   if (isAddingWishlist) {
     return (
@@ -429,7 +475,7 @@ const Profile = () => {
       </div>
     );
   }
-
+  
   // Zobrazení formuláře pro editaci wishlistu
   if (isEditingWishlist) {
     const wishlist = wishlists.find((w) => w.id === isEditingWishlist);
@@ -520,7 +566,7 @@ const Profile = () => {
           </p>
         </div>
 
-        <div className="my-4">
+        <div className="my-4 my-wishlists-wrapper">
           <div className="profile-wishlists my-4">
             <h4 className="mt-4">My wishlists</h4>
             <button
@@ -546,28 +592,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <div id="loading-spinner" className={!profileData ? "" : "hidden"}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="animate-spin"
-          viewBox="0 0 24 24"
-          fill="none"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8H4z"
-          ></path>
-        </svg>
-      </div>
+      <LoadingSpinner className={showSpinner ? "" : "hidden"} />
     </>
   );
 };

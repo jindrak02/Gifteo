@@ -2,10 +2,25 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import pool from "./db.js";
 import { authenticateUser } from "./authMiddleware.js";
-import e from "express";
+import { JSDOM } from 'jsdom';
+import DOMPurify from 'dompurify';
+import multer from "multer";
+import cloudinary from "./cloudinaryConfig.js";
+import { fileTypeFromBuffer } from "file-type";
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
+
+function sanitize(input){
+  return purify.sanitize(input);
+}
 
 const router = express.Router();
 router.use(cookieParser());
+
+// Multer - ukládání do paměti (před odesláním do Cloudinary)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // GET /api/data/profile, vrátí profil uživatele
 router.get("/profile", authenticateUser, async (req, res) => {
@@ -63,34 +78,63 @@ router.get("/interests", authenticateUser, async (req, res) => {
 });
 
 // PUT /api/data/updateProfile, aktualizuje profil uživatele
-router.put("/updateProfile", authenticateUser, async (req, res) => {
+router.put("/updateProfile", authenticateUser, upload.single("file"), async (req, res) => {
   const userId = req.cookies.session_token;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
   }
 
-  const { id, name, photo_url, bio, birthdate } = req.body.profileData;
-  const interests = req.body.interests;
-
   try {
+    // Zpracování JSON dat
+    const { profile, interests } = req.body;
+    const parsedProfile = JSON.parse(profile);
+    const parsedInterests = JSON.parse(interests);
+    const { id, name, photo_url, bio, birthdate } = parsedProfile;
+
+    let imageUrl = parsedProfile.photo_url; // Pokud není nový soubor, použiju starý
+
+    // console.log(parsedProfile);
+    // console.log(parsedInterests);
+    
+    if (req.file) {
+      const fileType = await fileTypeFromBuffer(req.file.buffer);
+      if (!fileType || !["image/jpeg", "image/png", "image/gif", "image/webp"].includes(fileType.mime)) {
+        return res.status(400).json({ error: "Neplatný typ souboru" });
+        console.log('Neplatný typ souboru');
+      }
+
+      // Převod bufferu na data URI (nutné pro Cloudinary API)
+      const base64String = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+      console.log('Nahrávám obrázek');
+      
+      // Nahrání na Cloudinary
+      const result = await cloudinary.uploader.upload(base64String, {
+        folder: "profile_pictures", // Volitelná složka na Cloudinary
+        resource_type: "auto", // Podpora pro obrázky, videa, soubory
+      });
+
+      imageUrl = result.secure_url;
+      //console.log(result);
+    }
+
     const updateProfileQuery = 'UPDATE "profile" SET name = $1, photo_url = $2, bio = $3, birthdate = $4 WHERE user_id = $5;';
-    await pool.query(updateProfileQuery,[name, photo_url, bio, birthdate, userId]);
+    await pool.query(updateProfileQuery,[name, imageUrl, bio, birthdate, userId]);
 
     const deleteProfileInterestQuery = 'DELETE FROM "profileInterest" WHERE profile_id = $1;';
     await pool.query(deleteProfileInterestQuery,[id]);
 
-    for (const interest of interests) {
+    for (const interest of parsedInterests) {
       const insertProfileInterestQuery = 'INSERT INTO "profileInterest" (profile_id, interest_id) VALUES ($1, $2);';
       await pool.query(insertProfileInterestQuery,[id, interest]);
     }
 
-    res.json({ success: true, message: "Profile updated" });
+    res.json({ success: true });
     
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    res.status(500).send({ error: error });
+    console.log(error);
   }
-  
 });
 
 // POST /api/data/addWishlist, vytvoří nový wishlist
@@ -109,7 +153,11 @@ router.post("/addWishlist", authenticateUser, async (req, res) => {
       VALUES ($1, $2, $3)
       RETURNING *;
     `;
-    const insertWishlistQueryResult = await pool.query(insertWishlistQuery,[profileId, name, userId]);
+    const insertWishlistQueryResult = await pool.query(insertWishlistQuery,[
+      sanitize(profileId), 
+      sanitize(name), 
+      userId
+    ]);
 
     res.json({ success: true, wishlist: insertWishlistQueryResult.rows[0] });
 
@@ -239,7 +287,13 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
           SET name = $1, price = $2, photo_url = $3, url = $4
           WHERE id = $5;
         `;
-        await pool.query(updateItemQuery,[item.name, item.price, item.photo_url, item.url, item.id]);
+        await pool.query(updateItemQuery,[
+          sanitize(item.name), 
+          sanitize(item.price), 
+          sanitize(item.photo_url), 
+          sanitize(item.url), 
+          sanitize(item.id)
+        ]);
       }
     }
 
@@ -250,7 +304,13 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
           INSERT INTO "wishlistItem" (wishlist_id, name, price, photo_url, url)
           VALUES ($1, $2, $3, $4, $5);
         `;
-        await pool.query(insertItemQuery,[wishlistId, item.name, item.price, item.photo_url, item.url]);
+        await pool.query(insertItemQuery,[
+          sanitize(wishlistId), 
+          sanitize(item.name), 
+          sanitize(item.price), 
+          sanitize(item.photo_url), 
+          sanitize(item.url)
+        ]);
       }
     };
 
