@@ -110,6 +110,7 @@ body {
   padding: 1em;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .wishlist-thumbnail {
@@ -120,7 +121,22 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+button.text-red-500 {
+  border: 2px solid #FF0000;
+  border-radius: 5px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
 #navbar-panel {
   background-color: #FFFFFF;
   z-index: 1000;
+}
+
+.wishlist-item-wrapper {
+  display: flex;
 }

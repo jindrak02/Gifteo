@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import pool from "./db.js";
 import { authenticateUser } from "./authMiddleware.js";
+import e from "express";
 
 const router = express.Router();
 router.use(cookieParser());
@@ -196,6 +197,67 @@ router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) 
     res.json({ success: true, message: "Wishlist deleted" });
 
   } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+});
+
+// PUT /api/data/updateWishlist, aktualizuje wishlist
+router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => {
+  const userId = req.cookies.session_token;
+
+  if (!userId) {
+    return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+  }
+
+  const { items } = req.body;
+  const wishlistId = req.params.wishlistId;
+
+  try {
+
+    const existingIds = items.filter(item => item.id).map(item => `'${item.id}'`).join(",");
+
+    // 1. Smazání všech položek, které nejsou v novém seznamu
+    if (existingIds) {
+      const deleteItemsQuery = `
+        DELETE FROM "wishlistItem"
+        WHERE id NOT IN (${existingIds}) AND wishlist_id = $1;
+      `;
+      await pool.query(deleteItemsQuery,[wishlistId]);
+    } else {
+      const deleteItemsQuery = `
+        DELETE FROM "wishlistItem"
+        WHERE wishlist_id = $1;
+      `;
+      await pool.query(deleteItemsQuery,[wishlistId]);
+    }
+
+    // 2. Aktualizace existujícíh položek
+    for (const item of items) {
+      if (item.id) {
+        const updateItemQuery = `
+          UPDATE "wishlistItem"
+          SET name = $1, price = $2, photo_url = $3, url = $4
+          WHERE id = $5;
+        `;
+        await pool.query(updateItemQuery,[item.name, item.price, item.photo_url, item.url, item.id]);
+      }
+    }
+
+    // 3. Vytvoření nových položek
+    for (const item of items) {
+      if (!item.id) {
+        const insertItemQuery = `
+          INSERT INTO "wishlistItem" (wishlist_id, name, price, photo_url, url)
+          VALUES ($1, $2, $3, $4, $5);
+        `;
+        await pool.query(insertItemQuery,[wishlistId, item.name, item.price, item.photo_url, item.url]);
+      }
+    };
+
+    res.json({ success: true, message: "Wishlist updated" });
+    
+  } catch (error) {
+    console.log(error);
     res.status(500).send({ success: false, message: error.message });
   }
 });

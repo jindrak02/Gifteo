@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import WishlistThumbnail from "./WishlistThumbnail";
 import Swal from "sweetalert2";
+import WishlistEditForm from "./WishlistEditForm";
 
 type ProfileData = {
   id: string;
@@ -18,20 +19,13 @@ type Interest = {
 
 const Profile = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [profileInterests, setProfileInterests] =
-    useState<Array<Interest> | null>(null);
-  const [availableInterests, setAvailableInterests] = useState<Array<Interest>>(
-    []
-  );
+  const [profileInterests, setProfileInterests] = useState<Array<Interest> | null>(null);
+  const [availableInterests, setAvailableInterests] = useState<Array<Interest>>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState<
-    Array<{ value: string; label: string; id: string }>
-  >([]);
+  const [selectedInterests, setSelectedInterests] = useState<Array<{ value: string; label: string; id: string }>>([]);
   const [isAddingWishlist, setIsAddingWishlist] = useState(false);
   const [wishlists, setWishlists] = useState<Array<any>>([]);
-  const [isEditingWishlist, setIsEditingWishlist] = useState<string | null>(
-    null
-  );
+  const [isEditingWishlist, setIsEditingWishlist] = useState<string | null>(null);
 
   // Načtení dat o profilu a wishlistech z API
   useEffect(() => {
@@ -112,7 +106,7 @@ const Profile = () => {
     fetchProfileData();
     fetchProfileInterests();
     fetchProfileWishlists();
-  }, [isEditing, isAddingWishlist]);
+  }, [isEditing, isAddingWishlist, isEditingWishlist]);
 
   // Odhlášení uživatele
   const handleLogOut = async function () {
@@ -216,6 +210,36 @@ const Profile = () => {
       } else {
         console.log("Wishlist deletion failed.");
       }
+    }
+  };
+
+  // Uložení změny itemů v wishlistu
+  const handleSaveWishlist = async (wishlistId: string, items: any) => {
+    console.log("wishlist id:", wishlistId);    
+    console.log("Saving wishlist with items:", items);
+    
+    const res = await fetch(
+      `http://localhost:3000/api/data/updateWishlist/${wishlistId}`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: items,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      console.log("Wishlist updated successfully.");
+      setIsEditingWishlist(null);
+    } else {
+      // Vypíšeme chybu
+      console.error("Error updating wishlist:", data.message);
     }
   };
 
@@ -409,29 +433,14 @@ const Profile = () => {
   // Zobrazení formuláře pro editaci wishlistu
   if (isEditingWishlist) {
     const wishlist = wishlists.find((w) => w.id === isEditingWishlist);
+    
     return (
-      <div className="container p-4 rounded edit-wishlist-container">
+      <div className="container p-4 rounded add-wishlist-container">
         <h2>Edit Wishlist</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target as HTMLFormElement);
-            const updatedWishlistName = formData.get("wishlistName") as string;
-            // TODO: update wishlist
-          }}
-        >
-
-          <button type="submit" className="btn btn-service btn-primary">
-            Save
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary mx-2"
-            onClick={() => setIsEditingWishlist(null)}
-          >
-            Cancel
-          </button>
-        </form>
+        <WishlistEditForm
+          items={wishlist.items}
+          onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
+        />
       </div>
     );
   }
@@ -511,27 +520,29 @@ const Profile = () => {
           </p>
         </div>
 
-        <div className="profile-wishlists my-4">
-          <h4 className="mt-4">My wishlists</h4>
-          <button
-            className="btn btn-service btn-primary shadow"
-            onClick={() => setIsAddingWishlist(true)}
-          >
-            Add wishlist
-          </button>
-        </div>
+        <div className="my-4">
+          <div className="profile-wishlists my-4">
+            <h4 className="mt-4">My wishlists</h4>
+            <button
+              className="btn btn-service btn-primary shadow"
+              onClick={() => setIsAddingWishlist(true)}
+            >
+              Add wishlist
+            </button>
+          </div>
 
-        <div className="wishlists-container">
-          {wishlists.map((wishlist) => (
-            <WishlistThumbnail
-              showButtons={true}
-              key={wishlist.id}
-              title={wishlist.name}
-              imageUrls={wishlist.items.map((item: any) => item.photo_url)}
-              onDelete={() => handleDeleteWishlist(wishlist.id)}
-              onEdit={() => setIsEditingWishlist(wishlist.id)}
-            />
-          ))}
+          <div className="wishlists-container my-4">
+            {wishlists.map((wishlist) => (
+              <WishlistThumbnail
+                showButtons={true}
+                key={wishlist.id}
+                title={wishlist.name}
+                imageUrls={wishlist.items.map((item: any) => item.photo_url)}
+                onDelete={() => handleDeleteWishlist(wishlist.id)}
+                onEdit={() => setIsEditingWishlist(wishlist.id)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
