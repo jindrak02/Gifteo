@@ -113,7 +113,7 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
         folder: "profile_pictures", // Volitelná složka na Cloudinary
         resource_type: "auto", // Podpora pro obrázky, videa, soubory
       });
-
+      
       imageUrl = result.secure_url;
       //console.log(result);
     }

@@ -2,7 +2,7 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-}
+  }
 
 body {
   color: #333;
@@ -66,6 +66,7 @@ body {
   background-color: #8F84F2;
   color: white;
   border: 1px solid #8F84F2;
+  box-shadow: -3px 7px 11px rgba(0, 0, 0, 0.3);
 }
 
 .profile-header {
@@ -121,7 +122,7 @@ body {
   height: 80px;
   object-fit: cover;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: -3px 10px 14px 5px rgba(0, 0, 0, 0.3);
 }
 
 button.text-red-500 {
@@ -142,4 +143,70 @@ button.text-red-500 {
 
 .wishlist-item-wrapper {
   display: flex;
+}
+
+/* Login Page Styles */
+.login{
+  background-image: url('../public/images/login-bg.png');
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+  width: 80vw;
+  padding: 10px;
+  background-color: #D9D8ED;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-container {
+  animation: slide-up 2s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.login-title {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+.divider {
+  width: 80%;
+  border: 1px solid #8F84F2;
+  margin-bottom: 1em;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.name-day-info {
+  font-size: 1em;
+  color: #333;
+}
+
+@media (min-width: 768px) {
+  .login-container {
+    width: 50vw;
+  }
 }

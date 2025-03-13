@@ -143,39 +143,41 @@ const Profile = () => {
   ) {
     setShowSpinner(true);
     console.log('Typ souboru: ' + file?.type);
-    
-
-    // Validace formátu souboru
-    if (file && !['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-      // alert('Only JPEG, JPG, and PNG files are allowed!');
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Only JPEG, JPG, and PNG files are allowed!',
-      });
-      setShowSpinner(false);
-      return;
-    }
-    
-    // Validace velikosti souboru
-    if (file && file.size > 2097152) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'File size should be less than 2MB!',
-      });
-      setShowSpinner(false);
-      return;
-    }
-
-    const formData = new FormData();
+    console.log('File size: ' + file?.size);
   
+    // Checknu jestli byl opravdu zvolen soubor s reálnou velikostí a jménem
+    if (file && file.size > 0 && file.name) {
+      // Validace formátu souboru
+      if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Only JPEG, JPG, and PNG files are allowed!',
+        });
+        setShowSpinner(false);
+        return;
+      }
+      
+      // Validace velikosti souboru
+      if (file.size > 2097152) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'File size should be less than 2MB!',
+        });
+        setShowSpinner(false);
+        return;
+      }
+    }
+  
+    const formData = new FormData();
+    
     // Přidání JSON dat
     formData.append("profile", JSON.stringify(updatedProfileData));
     formData.append("interests", JSON.stringify(updatedInterests.map((interest) => interest.id)));
-  
-    // Přidání souboru, pokud existuje
-    if (file) {
+    
+    // Přidání souboru, pouze pokud existuje a má velikost
+    if (file && file.size > 0 && file.name) {
       formData.append("file", file);
     }
   
@@ -202,7 +204,6 @@ const Profile = () => {
     setIsEditing(false);
   };
   
-
   const handleAddWishlist = async (wishlistName: string) => {
     const res = await fetch("http://localhost:3000/api/data/addWishlist", {
       method: "POST",
@@ -257,7 +258,7 @@ const Profile = () => {
       }
     }
   };
-
+  
   // Uložení změny itemů v wishlistu
   const handleSaveWishlist = async (wishlistId: string, items: any) => {
     console.log("wishlist id:", wishlistId);    
@@ -316,6 +317,17 @@ const Profile = () => {
 
   // Zobrazení formuláře pro editaci profilu
   if (isEditing) {
+
+    let formattedBirthDate = "";
+
+    if (profileData?.birthdate) {
+      const year = profileData!.birthdate.getFullYear();
+      const month = String(profileData!.birthdate.getMonth() + 1).padStart(2,"0");
+      const day = String(profileData!.birthdate.getDate()).padStart(2, "0");
+
+      formattedBirthDate = `${year}-${month}-${day}`;
+    }
+    
     return (
       <div className="profile-container container p-4 rounded">
         <h2>Edit Profile</h2>
@@ -386,8 +398,7 @@ const Profile = () => {
               className="form-control"
               id="birthdate"
               name="birthdate"
-              defaultValue={profileData?.birthdate?.toLocaleDateString()}
-              required
+              defaultValue={formattedBirthDate}
             />
           </div>
           <div className="mb-3">
@@ -497,7 +508,7 @@ const Profile = () => {
         <div className="profile-welcome">
           <h2 className="">Hi, {profileData?.name}</h2>
           <button
-            className="btn btn-service logout-btn shadow-sm"
+            className="btn btn-service logout-btn"
             onClick={handleLogOut}
           >
             <svg
@@ -530,7 +541,7 @@ const Profile = () => {
               className="profile-picture rounded-circle me-3 shadow "
             />
             <button
-              className="btn btn-service btn-primary shadow"
+              className="btn btn-service btn-primary"
               onClick={() => setIsEditing(true)}
             >
               Edit profile
@@ -570,7 +581,7 @@ const Profile = () => {
           <div className="profile-wishlists my-4">
             <h4 className="mt-4">My wishlists</h4>
             <button
-              className="btn btn-service btn-primary shadow"
+              className="btn btn-service btn-primary"
               onClick={() => setIsAddingWishlist(true)}
             >
               Add wishlist
