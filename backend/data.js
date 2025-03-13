@@ -239,6 +239,9 @@ router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) 
   const { wishlistId } = req.params;
 
   try {
+    const deleteWishlistItemsQuery = 'DELETE FROM "wishlistItem" WHERE wishlist_id = $1;';
+    await pool.query(deleteWishlistItemsQuery,[wishlistId]);
+
     const deleteWishlistQuery = 'DELETE FROM "wishlist" WHERE id = $1;';
     await pool.query(deleteWishlistQuery,[wishlistId]);
 
@@ -246,6 +249,7 @@ router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) 
 
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
+    console.log(error);
   }
 });
 

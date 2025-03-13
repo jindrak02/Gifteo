@@ -4,6 +4,7 @@ import WishlistThumbnail from "./WishlistThumbnail";
 import Swal from "sweetalert2";
 import WishlistEditForm from "./WishlistEditForm";
 import LoadingSpinner from "./LoadingSpinner";
+import { fetchWithAuth } from "../../../utils/fetchWithAuth"; // Import the fetch wrapper
 
 type ProfileData = {
   id: string;
@@ -36,7 +37,7 @@ const Profile = () => {
       try {
         // Zde načteme data o profilu z API
         const fetchProfileData = async () => {
-          const res = await fetch("http://localhost:3000/api/data/profile", {
+          const res = await fetchWithAuth("http://localhost:3000/api/data/profile", {
             method: "GET",
             credentials: "include", // Posílání cookies
           });
@@ -53,7 +54,7 @@ const Profile = () => {
 
         // Zde načteme data o zájemch profilu z API
         const fetchProfileInterests = async () => {
-          const res = await fetch(
+          const res = await fetchWithAuth(
             "http://localhost:3000/api/data/profileInterest",
             {
               method: "GET",
@@ -79,7 +80,7 @@ const Profile = () => {
 
         // Zde načteme data o wishlistech z API
         const fetchProfileWishlists = async () => {
-          const res = await fetch(
+          const res = await fetchWithAuth(
             `http://localhost:3000/api/data/wishlistsData`,
             {
               method: "GET",
@@ -123,7 +124,7 @@ const Profile = () => {
     });
 
     if (result.isConfirmed) {
-      const res = await fetch("http://localhost:3000/api/auth/logout", {
+      const res = await fetchWithAuth("http://localhost:3000/api/auth/logout", {
         method: "POST",
         credentials: "include", // Posílání cookies
       });
@@ -182,7 +183,7 @@ const Profile = () => {
     }
   
     try {
-      const res = await fetch("http://localhost:3000/api/data/updateProfile", {
+      const res = await fetchWithAuth("http://localhost:3000/api/data/updateProfile", {
         method: "PUT",
         credentials: "include", // Posílání cookies
         body: formData,
@@ -205,7 +206,7 @@ const Profile = () => {
   };
   
   const handleAddWishlist = async (wishlistName: string) => {
-    const res = await fetch("http://localhost:3000/api/data/addWishlist", {
+    const res = await fetchWithAuth("http://localhost:3000/api/data/addWishlist", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -238,7 +239,7 @@ const Profile = () => {
     });
 
     if (result.isConfirmed) {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `http://localhost:3000/api/data/deleteWishlist/${wishlistId}`,
         {
           method: "DELETE",
@@ -254,7 +255,7 @@ const Profile = () => {
           wishlists.filter((wishlist) => wishlist.id !== wishlistId)
         );
       } else {
-        console.log("Wishlist deletion failed.");
+        console.log("Wishlist deletion failed:", data.message);
       }
     }
   };
@@ -264,7 +265,7 @@ const Profile = () => {
     console.log("wishlist id:", wishlistId);    
     console.log("Saving wishlist with items:", items);
     
-    const res = await fetch(
+    const res = await fetchWithAuth(
       `http://localhost:3000/api/data/updateWishlist/${wishlistId}`,
       {
         method: "PUT",
@@ -294,7 +295,7 @@ const Profile = () => {
     if (isEditing) {
       const fetchAvailableInterests = async () => {
         try {
-          const res = await fetch("http://localhost:3000/api/data/interests", {
+          const res = await fetchWithAuth("http://localhost:3000/api/data/interests", {
             method: "GET",
             credentials: "include", // Posílání cookies
           });
