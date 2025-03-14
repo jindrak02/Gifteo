@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 interface WishlistItem {
   id: string;
   name: string;
-  price: string;
+  price: number | string;
   url: string;
   photo_url: string;
 }

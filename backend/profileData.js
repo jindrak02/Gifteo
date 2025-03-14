@@ -22,7 +22,7 @@ router.use(cookieParser());
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// GET /api/data/profile, vrátí profil uživatele
+// GET /api/profileData/profile, vrátí profil uživatele
 router.get("/profile", authenticateUser, async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -41,7 +41,7 @@ router.get("/profile", authenticateUser, async (req, res) => {
   }
 });
 
-// GET /api/data/profileInterest, vrátí zájmy profilu uživatele
+// GET /api/profileData/profileInterest, vrátí zájmy profilu uživatele
 router.get("/profileInterest", authenticateUser, async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -63,7 +63,7 @@ router.get("/profileInterest", authenticateUser, async (req, res) => {
   }
 });
 
-// GET /api/data/interests, vrátí předdefinované zájmy k výběru
+// GET /api/profileData/interests, vrátí předdefinované zájmy k výběru
 router.get("/interests", authenticateUser, async (req, res) => {
 
   try {
@@ -77,7 +77,7 @@ router.get("/interests", authenticateUser, async (req, res) => {
   }
 });
 
-// PUT /api/data/updateProfile, aktualizuje profil uživatele
+// PUT /api/profileData/updateProfile, aktualizuje profil uživatele
 router.put("/updateProfile", authenticateUser, upload.single("file"), async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -137,7 +137,7 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
   }
 });
 
-// POST /api/data/addWishlist, vytvoří nový wishlist
+// POST /api/profileData/addWishlist, vytvoří nový wishlist
 router.post("/addWishlist", authenticateUser, async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -166,7 +166,7 @@ router.post("/addWishlist", authenticateUser, async (req, res) => {
   }
 });
 
-// GET /api/data/wishlistsData, vrátí všechny wishlits uživatele včetně položek
+// GET /api/profileData/wishlistsData, vrátí všechny wishlits uživatele včetně položek
 router.get("/wishlistsData", authenticateUser, async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -228,7 +228,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
   }
 });
 
-// DELETE /api/data/deleteWishlist, smaže wishlist
+// DELETE /api/profileData/deleteWishlist, smaže wishlist
 router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -253,7 +253,7 @@ router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) 
   }
 });
 
-// PUT /api/data/updateWishlist, aktualizuje wishlist
+// PUT /api/profileData/updateWishlist, aktualizuje wishlist
 router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => {
   const userId = req.cookies.session_token;
 
@@ -263,6 +263,15 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
 
   const { items } = req.body;
   const wishlistId = req.params.wishlistId;
+
+  // Pokud je items.price prázdné, undefined, null nebo "" nastavím ho na null
+  // items.forEach(item => {
+  //   if (item.price == undefined || item.price === "") {
+  //     item.price = null;
+  //   }
+  // });
+
+  console.log(items);
 
   try {
 
@@ -293,7 +302,7 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
         `;
         await pool.query(updateItemQuery,[
           sanitize(item.name), 
-          sanitize(item.price), 
+          sanitize(item.price),
           sanitize(item.photo_url), 
           sanitize(item.url), 
           sanitize(item.id)
@@ -306,7 +315,7 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
       if (!item.id) {
         const insertItemQuery = `
           INSERT INTO "wishlistItem" (wishlist_id, name, price, photo_url, url)
-          VALUES ($1, $2, $3, $4, $5);
+          VALUES ($1, $2, NULLIF($3, '')::NUMERIC, $4, $5);
         `;
         await pool.query(insertItemQuery,[
           sanitize(wishlistId), 

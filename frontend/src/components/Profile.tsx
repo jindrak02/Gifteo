@@ -37,7 +37,7 @@ const Profile = () => {
       try {
         // Zde načteme data o profilu z API
         const fetchProfileData = async () => {
-          const res = await fetchWithAuth("http://localhost:3000/api/data/profile", {
+          const res = await fetchWithAuth("http://localhost:3000/api/profileData/profile", {
             method: "GET",
             credentials: "include", // Posílání cookies
           });
@@ -55,7 +55,7 @@ const Profile = () => {
         // Zde načteme data o zájemch profilu z API
         const fetchProfileInterests = async () => {
           const res = await fetchWithAuth(
-            "http://localhost:3000/api/data/profileInterest",
+            "http://localhost:3000/api/profileData/profileInterest",
             {
               method: "GET",
               credentials: "include", // Posílání cookies
@@ -81,7 +81,7 @@ const Profile = () => {
         // Zde načteme data o wishlistech z API
         const fetchProfileWishlists = async () => {
           const res = await fetchWithAuth(
-            `http://localhost:3000/api/data/wishlistsData`,
+            `http://localhost:3000/api/profileData/wishlistsData`,
             {
               method: "GET",
               credentials: "include", // Posílání cookies
@@ -183,7 +183,7 @@ const Profile = () => {
     }
   
     try {
-      const res = await fetchWithAuth("http://localhost:3000/api/data/updateProfile", {
+      const res = await fetchWithAuth("http://localhost:3000/api/profileData/updateProfile", {
         method: "PUT",
         credentials: "include", // Posílání cookies
         body: formData,
@@ -206,7 +206,7 @@ const Profile = () => {
   };
   
   const handleAddWishlist = async (wishlistName: string) => {
-    const res = await fetchWithAuth("http://localhost:3000/api/data/addWishlist", {
+    const res = await fetchWithAuth("http://localhost:3000/api/profileData/addWishlist", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -240,7 +240,7 @@ const Profile = () => {
 
     if (result.isConfirmed) {
       const res = await fetchWithAuth(
-        `http://localhost:3000/api/data/deleteWishlist/${wishlistId}`,
+        `http://localhost:3000/api/profileData/deleteWishlist/${wishlistId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -266,7 +266,7 @@ const Profile = () => {
     console.log("Saving wishlist with items:", items);
     
     const res = await fetchWithAuth(
-      `http://localhost:3000/api/data/updateWishlist/${wishlistId}`,
+      `http://localhost:3000/api/profileData/updateWishlist/${wishlistId}`,
       {
         method: "PUT",
         credentials: "include",
@@ -295,7 +295,7 @@ const Profile = () => {
     if (isEditing) {
       const fetchAvailableInterests = async () => {
         try {
-          const res = await fetchWithAuth("http://localhost:3000/api/data/interests", {
+          const res = await fetchWithAuth("http://localhost:3000/api/profileData/interests", {
             method: "GET",
             credentials: "include", // Posílání cookies
           });

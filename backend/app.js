@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import pool from "./db.js";
 import cors from 'cors';
 import authRouter from './auth.js';
-import dataRouter from './data.js';
+import profileDataRouter from './profileData.js';
+import personsDataRouter from './personsData.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -25,8 +26,11 @@ app.use(cookieParser());
 // Použití autentizačního routeru
 app.use('/api/auth', authRouter);
 
-// Použití datového routeru
-app.use('/api/data', dataRouter);
+// Použití routeru s daty o profilech a wishlistech
+app.use('/api/profileData', profileDataRouter);
+
+// Použití routeru s daty o osobách a propojeních
+app.use('/api/personsData', personsDataRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
