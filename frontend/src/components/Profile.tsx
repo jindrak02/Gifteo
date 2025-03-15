@@ -502,7 +502,7 @@ const Profile = () => {
       </div>
     );
   }
-
+  
   return (
     <>
       <div className="profile-container container p-4 rounded">

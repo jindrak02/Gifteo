@@ -1,7 +1,8 @@
 import PersonThumbnail from "./PersonThumbnail";
+import PersonDetail from "./PersonDetail";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth"; // Custom fetch wrapper
+import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 
 // Define an interface for the person object
 interface Person {
@@ -10,12 +11,14 @@ interface Person {
   profile_id: string;
   name: string;
   photo_url: string;
+  wishlists: { name: string }[];
 }
 
 const MyPeople = () => {
     const [persons, setPersons] = useState<Person[]>([]);
+    const [showPersonDetail, setShowPersonDetail] = useState<string | null>(null);
     
-    // Načtení osob uživatele
+    // Načtení osob (a jejich dat) uživatele
     useEffect(() => {
         const fetchPersonsData = async () => {
             try {
@@ -43,13 +46,14 @@ const MyPeople = () => {
 
         fetchPersonsData();
     }, []);
-
-    const handleDetail = () => {
-        console.log("Detail clicked");
+    
+    const handleDetail = (personId: string) => {
+        console.log(personId + "Detail clicked");
+        setShowPersonDetail(personId);
     };
-
-    const handleDelete = (personId: string) => {
-        Swal.fire({
+    
+    const handleDelete = async (personId: string) => {
+      Swal.fire({
         title: "Are you sure?",
         text: "Do you realy want to remove this person from your persons?",
         icon: "warning",
@@ -57,41 +61,84 @@ const MyPeople = () => {
         confirmButtonColor: "#d33",
         cancelButtonColor: "#8F84F2",
         confirmButtonText: "Yes, remove",
-        }).then((result) => {
+      }).then(async (result) => {
+
         if (result.isConfirmed) {
-            console.log(personId + " Delete confirmed");
-            Swal.fire("Deleted!", "Your person has been deleted.", "success");
+          // Remove the user person from database
+          const res = await fetchWithAuth(
+            `http://localhost:3000/api/personsData/DeletePerson/${personId}`,
+            {
+              method: "DELETE",
+              credentials: "include",
+            }
+          );
+
+          const data = await res.json();
+
+          if (data.success) {
+            console.log(personId + " Deleted");
+            setPersons(
+              persons.filter((person) => person.person_id !== personId)
+            );
+          } else {
+            console.error("Error deleting person");
+          }
+
+          Swal.fire("Deleted!", "Your person has been deleted.", "success");
         } else {
-            console.log(personId + " Delete canceled");
-            return;
+          console.log(personId + " Delete canceled");
+          return;
         }
-        });
+      });
     };
 
-  return (
-    <div className="profile-container p-4">
-      <div className="profile-welcome">
-        <h2 className="">My people</h2>
-      </div>
+    // Pokud je kliknuto na detail osoby, zobrazí se detail osoby
+    if (showPersonDetail !== null) {
+        return (
+            <>
+                <div className="profile-container p-4">
 
-      <hr className="my-4" />
+                    <div className="profile-welcome">
+                        <h2 className="">My people</h2>
+                        <button className="btn-service" onClick={() => setShowPersonDetail(null)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                            </svg>
+                        </button>
+                    </div>
 
-      {persons.map((person) => (
-        <PersonThumbnail
-          key={person.person_id}
-          imageUrl={person.photo_url}
-          name={person.name}
-          wishlists={[]} // Placeholder for wishlists as they're not in the API response
-          onDetail={() => handleDetail()}
-          onDelete={() => handleDelete(person.person_id)}
-        />
-      ))}
+                    <hr className="my-4" />
 
-      <div>
-        <button className="add-person-btn btn-service">Add person</button>
-      </div>
-    </div>
-  );
+                    <PersonDetail personId={showPersonDetail} />
+                </div>
+            </>
+        );
+    }
+    
+    return (
+        <div className="profile-container p-4">
+            <div className="profile-welcome">
+                <h2 className="">My people</h2>
+            </div>
+
+            <hr className="my-4" />
+
+            {persons.map((person) => (
+                <PersonThumbnail
+                key={person.person_id}
+                imageUrl={person.photo_url}
+                name={person.name}
+                wishlists={person.wishlists.map((wishlist) => wishlist.name)}
+                onDetail={() => handleDetail(person.person_id)}
+                onDelete={() => handleDelete(person.person_id)}
+                />
+            ))}
+
+            <div>
+                <button className="add-person-btn btn-service">Add person</button>
+            </div>
+        </div>
+    );
 };
 
 export default MyPeople;
