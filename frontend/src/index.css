@@ -115,6 +115,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .wishlist-thumbnail {
@@ -139,6 +140,8 @@ button.text-red-500 {
 #navbar-panel {
   background-color: #FFFFFF;
   z-index: 1000;
+  max-width: 600px; /* Match the max-width of profile-container */
+  margin: auto; /* Center the navbar-panel */
 }
 
 .wishlist-item-wrapper {
@@ -220,6 +223,7 @@ button.text-red-500 {
   border-radius: 10px;
   max-height: 180px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .person-thumbnail-name {
@@ -256,4 +260,40 @@ button.text-red-500 {
   margin-top: 20px;
   margin-bottom: 80px;
   float: right;
+}
+
+.wishlist-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 110px;
+  overflow: hidden;
+}
+
+.wishlist-item-details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15px;
+}
+
+.wishlist-item-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.wishlist-item-price {
+  color: #888;
+}
+
+.wishlist-item-url {
+  color: #1a0dab;
+  text-decoration: none;
+}
+
+.wishlist-item-url:hover {
+  text-decoration: underline;
 }

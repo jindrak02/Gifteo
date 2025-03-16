@@ -498,6 +498,7 @@ const Profile = () => {
         <WishlistEditForm
           items={wishlist.items}
           onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
+          onCancel={() => setIsEditingWishlist(null)}
         />
       </div>
     );

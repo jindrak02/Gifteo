@@ -11,9 +11,10 @@ interface WishlistItem {
 interface WishlistFormProps {
   items: WishlistItem[];
   onSubmit: (items: WishlistItem[]) => void;
+  onCancel: () => void;
 }
 
-const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, onSubmit }) => {
+const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, onSubmit, onCancel }) => {
   const [items, setItems] = useState<WishlistItem[]>(initialItems);
 
   useEffect(() => {
@@ -88,8 +89,9 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
         </div>
       ))}
       <div className="my-4">
-        <button type="button" onClick={addItem} className="btn-service p-2 rounded shadow my-4">Add item</button>
-        <button type="submit" className="btn-service p-2 rounded mx-2 shadow my-4">Uložit wishlist</button>
+        <button type="button" onClick={addItem} className="btn-service rounded shadow my-4">Add item</button>
+        <button type="submit" className="btn-service rounded mx-2 shadow my-4">Save wishlist</button>
+        <button type="button" className="btn rounded btn-secondary shadow" onClick={() => onCancel()}>Close wishlist</button>
       </div>
     </form>
   );

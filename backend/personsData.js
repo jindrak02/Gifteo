@@ -162,4 +162,35 @@ router.get("/PersonDetails/:personId", authenticateUser, async (req, res) => {
     }
 });
 
+// GET /api/personsData/WishlistItems, vrátí všechny položky wishlistu dle id wishlistu
+router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistId = sanitize(req.params.wishlistId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+  
+    try {
+        const wishlistItemsQuery = `
+            SELECT
+                w."name" as "wishlist_name",
+                wi."name",
+                wi.price,
+                wi.url,
+                wi.photo_url
+
+            FROM "wishlistItem" wi
+            LEFT JOIN "wishlist" w on wi.wishlist_id = w.id
+            WHERE wi.wishlist_id = $1;
+        `;
+
+        const wishlistItemsQueryResult = await pool.query(wishlistItemsQuery, [wishlistId]);
+        res.json(wishlistItemsQueryResult.rows);
+
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
 export default router;

@@ -60,8 +60,17 @@ const PersonDetail = function (props: PersonDetailProps) {
     }, [props.personId]);
 
     if (showWishlistDetail !== null) {
-        return <WishlistDetail wishlistId={showWishlistDetail} />;
-        console.log("Show wishlist detail: ", showWishlistDetail);
+        // console.log("Show wishlist detail", showWishlistDetail);
+        return (
+            <>
+                <div className="d-flex justify-content-end">
+                    <button className="btn btn-secondary" onClick={() => setShowWishlistDetail(null)}>
+                        Close wishlist
+                    </button>
+                </div>
+                <WishlistDetail wishlistId={showWishlistDetail} />
+            </>
+        );
     }
 
     return (
