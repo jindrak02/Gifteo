@@ -193,4 +193,33 @@ router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
     }
 });
 
+// GET /api/personsData/UserProfile, vrátí profil uživatele s emailem pro přidání, dle jména uživatele
+router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const userName = sanitize(req.params.userName);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+  
+    try {
+        const userProfileQuery = `
+            SELECT
+                u.id,
+                u.email,
+                p.name,
+                p.photo_url
+            FROM "user" u
+            LEFT JOIN "profile" p ON u.id = p.user_id
+            WHERE p.name ILIKE $1;
+        `;
+
+        const userProfileQueryResult = await pool.query(userProfileQuery, [`%${userName}%`]);
+        res.json(userProfileQueryResult.rows);
+
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
 export default router;

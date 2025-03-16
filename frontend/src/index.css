@@ -144,6 +144,21 @@ button.text-red-500 {
   margin: auto; /* Center the navbar-panel */
 }
 
+.nav-btn-custom {
+  border: none;
+}
+
+.active-link {
+  background-color: #6c757d;
+  color: white;
+  border-radius: 10px;
+}
+
+.active-link button {
+  background-color: transparent;
+  color: white;
+}
+
 .wishlist-item-wrapper {
   display: flex;
 }
@@ -296,4 +311,34 @@ button.text-red-500 {
 
 .wishlist-item-url:hover {
   text-decoration: underline;
+}
+
+.add-person-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  height: 100%;
+}
+
+.add-person-title {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.person-option {
+  width: 80%;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.existing-user {
+  background-color: #D9D8ED;
+}
+
+.new-user {
+  border: 3px solid #DBDBDB;
 }

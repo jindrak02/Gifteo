@@ -11,7 +11,7 @@ const NavPanel = function () {
           >
             <button
               type="button"
-              className="btn btn-outline-secondary custom-btn btn-tooltip"
+              className="btn btn-outline-secondary nav-btn-custom btn-tooltip"
               id="calendarButton"
               data-tooltip="My Calendar"
             >
@@ -35,7 +35,7 @@ const NavPanel = function () {
           >
             <button
               type="button"
-              className="btn btn-outline-secondary custom-btn btn-tooltip"
+              className="btn btn-outline-secondary nav-btn-custom btn-tooltip"
               id="hubButton"
               data-tooltip="Wishlist Hub"
             >
@@ -59,7 +59,7 @@ const NavPanel = function () {
           >
             <button
               type="button"
-              className="btn btn-outline-secondary custom-btn btn-tooltip"
+              className="btn btn-outline-secondary nav-btn-custom btn-tooltip"
               id="peopleButton"
               data-tooltip="My People"
             >
@@ -82,7 +82,7 @@ const NavPanel = function () {
           >
             <button
               type="button"
-              className="btn btn-outline-secondary custom-btn btn-tooltip"
+              className="btn btn-outline-secondary nav-btn-custom btn-tooltip"
               id="profileButton"
               data-tooltip="My Profile"
             >
