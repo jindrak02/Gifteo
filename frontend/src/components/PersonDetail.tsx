@@ -79,7 +79,7 @@ const PersonDetail = function (props: PersonDetailProps) {
           <div className="profile-header my-4">
             <div className="profile-header-first d-flex">
               <img
-                src="https://d50-a.sdn.cz/d_50/c_img_QN_4/brds/chuck-norris.jpeg?fl=cro,0,93,1800,1012%7Cres,1200,,1%7Cjpg,80,,1"
+                src={personData?.photo_url}
                 alt="Profile"
                 className="profile-picture rounded-circle me-3 shadow "
               />

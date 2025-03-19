@@ -4,6 +4,7 @@ import pool from "./db.js";
 import { authenticateUser } from "./authMiddleware.js";
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
+import e from "express";
 
 const window = new JSDOM('').window;
 const purify = DOMPurify(window);
@@ -193,7 +194,7 @@ router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
     }
 });
 
-// GET /api/personsData/UserProfile, vrátí profil uživatele s emailem pro přidání, dle jména uživatele
+// GET /api/personsData/UserProfile, vrátí profily uživatelů s emailem pro přidání, dle jména uživatele při vyhledávání
 router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     const userName = sanitize(req.params.userName);
@@ -205,12 +206,13 @@ router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
     try {
         const userProfileQuery = `
             SELECT
-                u.id,
+                pers.id as person_id,
                 u.email,
                 p.name,
                 p.photo_url
             FROM "user" u
             LEFT JOIN "profile" p ON u.id = p.user_id
+            LEFT JOIN "person" pers on p.id = pers.profile_id
             WHERE p.name ILIKE $1;
         `;
 
@@ -219,6 +221,137 @@ router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
 
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// POST /api/personsData/AddPerson, přidá osobu uživatele
+router.post("/AddPerson", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const { personId } = req.body;
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    if (!personId) {
+        return res.status(500).send({ success: false, message: "Person ID not found in request body" });
+    }
+  
+    try {
+        const checkPersonQuery = `
+            SELECT * FROM "userPerson"
+            WHERE user_id = $1
+            AND person_id = $2;
+        `;
+        const checkPersonResult = await pool.query(checkPersonQuery, [userId, personId]);
+
+        if(checkPersonResult.rows.length != 0){
+            return res.send({success: false, message: "Person already added"});
+        }
+
+        const addPersonQuery = `
+            INSERT INTO "userPerson" ("user_id", "person_id")
+            VALUES ($1, $2)
+            RETURNING *;
+        `;
+
+        const addPersonResult = await pool.query(addPersonQuery, [userId, personId]);
+        
+        if(addPersonResult.rows.length != 0){
+            return res.send({success: true, message: "Person added successfully"});
+        } else {
+            return res.send({success: false, message: "Person was not added"});
+        }
+
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// GET /api/personsData/invitations, vrátí všechny pozvánky uživatele
+router.get("/invitations", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+  
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+  
+    try {
+      const invitationsQuery = `
+        SELECT 
+            up.id,
+            p."name" as "senderName",
+            
+            (SELECT prof.user_id
+            FROM "person" pers
+            LEFT JOIN "profile" prof on pers.profile_id = prof.id
+            WHERE pers.id = up.person_id) as "receiverUserId",
+            
+            p.photo_url "senderProfilePicture",
+            up.created_at as "createdAt"
+            
+        FROM "userPerson" up
+        LEFT JOIN "profile" p ON up.user_id = p.user_id
+        WHERE up.status = 'pending'
+        AND (SELECT prof.user_id
+            FROM "person" pers
+            LEFT JOIN "profile" prof on pers.profile_id = prof.id
+            WHERE pers.id = up.person_id) = $1;
+        `;
+        const invitationsQueryResult = await pool.query(invitationsQuery, [userId]);
+        res.json(invitationsQueryResult.rows);
+
+    } catch (error) {
+        res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// PATCH /api/personsData/acceptInvitation, přijme pozvánku
+router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const invitationId = sanitize(req.params.invitationId);
+
+    console.log(invitationId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+  
+    try {
+        const acceptInvitationQuery = `
+            UPDATE "userPerson"
+            SET status = 'accepted'
+            WHERE id = $1
+            RETURNING *;
+        `;
+        const acceptInvitationResult = await pool.query(acceptInvitationQuery, [invitationId]);
+        res.send({success: true, message: "Invitation accepted successfully"});
+
+    } catch (error) {
+        res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// DELETE /api/personsData/rejectInvitation, odmítne pozvánku
+router.delete("/rejectInvitation/:invitationId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const invitationId = sanitize(req.params.invitationId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+  
+    try {
+        const rejectInvitationQuery = `
+            DELETE FROM "userPerson"
+            WHERE id = $1
+            RETURNING *;
+        `;
+        const rejectInvitationResult = await pool.query(rejectInvitationQuery, [invitationId]);
+        res.send({success: true, message: "Invitation rejected successfully"});
+
+    } catch (error) {
+        res.status(500).send({ success: false, message: error.message });
     }
 });
 

@@ -333,6 +333,7 @@ button.text-red-500 {
   border-radius: 10px;
   margin-bottom: 20px;
   text-align: center;
+  cursor: pointer;
 }
 
 .existing-user {
@@ -341,4 +342,90 @@ button.text-red-500 {
 
 .new-user {
   border: 3px solid #DBDBDB;
+}
+
+.user-search-input{
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.user-thumbnail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #E6E6FA;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 10px auto;
+}
+
+.user-thumbnail-content {
+  display: flex;
+  align-items: center;
+}
+
+.user-thumbnail-image {
+  width: 50px;
+  height: 50px;
+  background-color: #ccc; /* Placeholder background color */
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.user-thumbnail-name {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.user-search-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.invitation-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.new-invitation-icon {
+  width: 5px;
+  height: 5px;
+  background-color: #FF0000;
+  border-radius: 50%;
+  float: right;
+}
+
+.invitations-container {
+  margin-bottom: 80px;
+}
+
+.invitation-item {
+  transition: all 0.3s ease;
+}
+
+.invitation-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.invitation-actions button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.invitation-actions button:hover {
+  transform: scale(1.1);
 }

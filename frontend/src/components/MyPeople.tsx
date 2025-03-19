@@ -2,11 +2,11 @@ import PersonThumbnail from "./PersonThumbnail";
 import PersonDetail from "./PersonDetail";
 import AddPerson from "./AddPerson";
 import LoadingSpinner from "./LoadingSpinner";
+import Invitations from "./Invitations";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 
-// Define an interface for the person object
 interface Person {
   user_id: string;
   person_id: string;
@@ -16,12 +16,21 @@ interface Person {
   wishlists: { name: string }[];
 }
 
+interface Invitation {
+    id: string;
+    senderName: string;
+    senderProfilePicture?: string;
+    createdAt: string;
+  }
+
 const MyPeople = () => {
     const [persons, setPersons] = useState<Person[]>([]);
     const [showPersonDetail, setShowPersonDetail] = useState<string | null>(null);
     const [personDetailName, setPersonDetailName] = useState<string | null>(null);
     const [isAddingPerson, setIsAddingPerson] = useState<boolean>(false);
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
+    const [invitations, setInvitations] = useState<Invitation[]>([]);
+    const [isViewingInvitations, setIsViewingInvitations] = useState<boolean>(false);
     
     // Načtení osob (a jejich dat) uživatele
     useEffect(() => {
@@ -51,8 +60,35 @@ const MyPeople = () => {
             }
         };
 
+        const fetchInvitationsData = async () => {
+            setShowSpinner(true);
+            try {
+                const res = await fetchWithAuth(
+                    "http://localhost:3000/api/personsData/invitations",
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                const data = await res.json();
+
+                if (data) {
+                    console.log("Fetched invitations data:", data);
+                    setInvitations(data);
+                } else {
+                    console.error("Error fetching user invitations");
+                }
+                setShowSpinner(false);
+                
+            } catch (error) {
+                console.error("Error fetching invitations data:", error);
+            }
+        }
+
         fetchPersonsData();
-    }, []);
+        fetchInvitationsData();
+    }, [isViewingInvitations]);
     
     const handleDetail = (personId: string) => {
         console.log(personId + "Detail clicked");
@@ -149,12 +185,39 @@ const MyPeople = () => {
             </div>
         );
     }
+
+    // Pokud je kliknuto na zobrazení pozvánek, zobrazí se seznam pozvánek
+    if (isViewingInvitations) {
+
+        return (
+            <div className="profile-container p-4">
+                <div className="profile-welcome">
+                    <h2 className="">Your invitations</h2>
+                    <button className="btn-service" onClick={() => setIsViewingInvitations(false)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <hr className="my-4" />
+
+                <Invitations invitationProps = {invitations} />
+            </div>
+        );
+    }
     
     return (
         <>
             <div className="profile-container p-4">
                 <div className="profile-welcome">
                     <h2 className="">My people</h2>
+                    <button className="btn-service btn btn-primary rounded" onClick={() => setIsViewingInvitations(true)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+                        </svg>
+                        {invitations.length != 0 ? <div className="new-invitation-icon"></div> : ''}
+                    </button>
                 </div>
 
                 <hr className="my-4" />
@@ -171,7 +234,7 @@ const MyPeople = () => {
                 ))}
 
                 <div>
-                    <button className="add-person-btn btn-service" onClick={() => setIsAddingPerson(true)}>Add person</button>
+                    <button className="add-person-btn btn-primary btn btn-service" onClick={() => setIsAddingPerson(true)}>Add person</button>
                 </div>
             </div>
             <LoadingSpinner className={showSpinner ? "" : "hidden"}/>

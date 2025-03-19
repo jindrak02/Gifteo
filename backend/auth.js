@@ -52,6 +52,10 @@ router.post('/google', async (req, res) => {
         'Happy to gift and to be gifted!',
       ]);
 
+      // Založení osoby uživatele v tabulce person
+      const insertPersonQuery = 'INSERT INTO "person" ("profile_id", "is_gifteo_user") VALUES ($1, $2) RETURNING *;';
+      const insertPersonQueryResult = await pool.query(insertPersonQuery, [insertProfileQueryResult.rows[0].id, true]);
+
       console.log("User created");
 
       // Tu probíhá vytvoření session tokenu (cookie)
