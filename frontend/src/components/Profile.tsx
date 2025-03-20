@@ -502,7 +502,6 @@ const Profile = () => {
         </div>
         <WishlistEditForm
           items={wishlist.items}
-          //onSubmit={(items) => console.log(items)}
           onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
           onCancel={() => setIsEditingWishlist(null)}
         />
