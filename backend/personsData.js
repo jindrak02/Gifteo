@@ -306,7 +306,7 @@ router.get("/invitations", authenticateUser, async (req, res) => {
     }
 });
 
-// PATCH /api/personsData/acceptInvitation, přijme pozvánku
+// PATCH /api/personsData/acceptInvitation, přijme pozvánku a propojí uživatele
 router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     const invitationId = sanitize(req.params.invitationId);
@@ -318,6 +318,7 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
     }
   
     try {
+        // Přijme pozvánku
         const acceptInvitationQuery = `
             UPDATE "userPerson"
             SET status = 'accepted'
@@ -325,6 +326,26 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
             RETURNING *;
         `;
         const acceptInvitationResult = await pool.query(acceptInvitationQuery, [invitationId]);
+
+        // Propojí osoby navzájem (sendera přidá receiverovi)
+            // 1. Zjistíme id osoby, která poslala pozvánku
+            const senderIdQuery = `
+                SELECT pers.id
+                FROM "userPerson" up
+                LEFT JOIN "profile" prof ON up.user_id = prof.user_id
+                LEFT JOIN "person" pers ON prof.id = pers.profile_id
+                WHERE up.id = $1;
+            `;
+            const senderIdResult = await pool.query(senderIdQuery, [invitationId]);
+
+            // 2. Propojíme osoby
+            const addPersonQuery = `
+                INSERT INTO "userPerson" ("user_id", "person_id", "status")
+                VALUES ($1, $2, $3)
+                RETURNING *;
+            `;
+            const addPersonResult = await pool.query(addPersonQuery, [userId, senderIdResult.rows[0].id, 'accepted']);
+
         res.send({success: true, message: "Invitation accepted successfully"});
 
     } catch (error) {
