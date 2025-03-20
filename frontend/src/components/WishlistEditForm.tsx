@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 interface WishlistItem {
   id: string;
   name: string;
   price: number | string;
+  currency: string;
   url: string;
   photo_url: string;
 }
@@ -21,7 +23,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
     setItems(initialItems);
   }, [initialItems]);
 
-  const handleChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [name]: value };
@@ -29,11 +31,22 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
   };
 
   const addItem = () => {
-    setItems([...items, { id: "", name: "", price: "", url: "", photo_url: "" }]);
+    setItems([...items, { id: "", name: "", price: "", currency:"", url: "", photo_url: "" }]);
   };
 
   const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+    Swal.fire({
+      title: "Remove item?",
+      text: "This cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setItems(items.filter((_, i) => i !== index));
+      }
+    });
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -48,7 +61,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
           <div>
             <img className="wishlist-thumbnail" src={item.photo_url} alt="wishlist item photo" />
           </div>
-          <div>
+          <div className="flex-col gap-2">
             <input
                 type="text"
                 name="name"
@@ -60,14 +73,34 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
                 minLength={3}
                 maxLength={30}
             />
+            
             <input
-                type="number"
-                name="price"
-                value={item.price}
-                onChange={(e) => handleChange(index, e)}
-                placeholder="Price"
-                className="border p-2"
-            />
+                  type="number"
+                  name="price"
+                  value={item.price}
+                  onChange={(e) => handleChange(index, e)}
+                  placeholder="Price"
+                  className="border p-2"
+                  min={0}
+                  step={0.01}
+              />
+              <select
+                  name="currency"
+                  value={item.currency}
+                  onChange={(e) => handleChange(index, e)}
+                  className="border p-2"
+              >
+                  <option value="">Select currency</option>
+                  <option value="CZK">CZK - Czech Koruna</option>
+                  <option value="EUR">EUR - Euro</option>
+                  <option value="USD">USD - US Dollar</option>
+                  <option value="GBP">GBP - British Pound</option>
+                  <option value="PLN">PLN - Polish Zloty</option>
+                  <option value="CHF">CHF - Swiss Franc</option>
+                  <option value="JPY">JPY - Japanese Yen</option>
+                  <option value="AUD">AUD - Australian Dollar</option>
+              </select>
+
             <input
                 type="text"
                 name="url"

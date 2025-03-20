@@ -187,6 +187,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
         wi."id" itemId,
         wi."name" itemName,
         wi."price" itemPrice,
+        wi."price_currency" AS currency,
         wi."photo_url" itemPhotoUrl,
         wi."url" itemUrl
         
@@ -213,6 +214,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
           id: row.itemid,
           name: row.itemname,
           price: row.itemprice,
+          currency: row.currency,
           photo_url: row.itemphotourl,
           url: row.itemurl
         });
@@ -297,12 +299,13 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
       if (item.id) {
         const updateItemQuery = `
           UPDATE "wishlistItem"
-          SET name = $1, price = $2, photo_url = $3, url = $4
-          WHERE id = $5;
+          SET name = $1, price = $2, price_currency = $3, photo_url = $4, url = $5
+          WHERE id = $6;
         `;
         await pool.query(updateItemQuery,[
           sanitize(item.name), 
           sanitize(item.price),
+          sanitize(item.currency),
           sanitize(item.photo_url), 
           sanitize(item.url), 
           sanitize(item.id)
@@ -314,13 +317,14 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
     for (const item of items) {
       if (!item.id) {
         const insertItemQuery = `
-          INSERT INTO "wishlistItem" (wishlist_id, name, price, photo_url, url)
-          VALUES ($1, $2, NULLIF($3, '')::NUMERIC, $4, $5);
+          INSERT INTO "wishlistItem" (wishlist_id, name, price, price_currency, photo_url, url)
+          VALUES ($1, $2, NULLIF($3, '')::NUMERIC, $4, $5, $6);
         `;
         await pool.query(insertItemQuery,[
           sanitize(wishlistId), 
           sanitize(item.name), 
-          sanitize(item.price), 
+          sanitize(item.price),
+          sanitize(item.currency),
           sanitize(item.photo_url), 
           sanitize(item.url)
         ]);

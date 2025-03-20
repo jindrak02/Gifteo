@@ -94,7 +94,9 @@ const Profile = () => {
 
           const data = await res.json();
           setWishlists(data);
+          //console.log('Fetched wishlists: ');
           //console.log(data);
+          
         };
 
         await Promise.all([
@@ -494,9 +496,13 @@ const Profile = () => {
     
     return (
       <div className="container p-4 rounded add-wishlist-container">
-        <h2>Edit Wishlist</h2>
+        <div className="profile-welcome">
+          <h2>Edit Wishlist</h2>
+          <hr className="my-4" />
+        </div>
         <WishlistEditForm
           items={wishlist.items}
+          //onSubmit={(items) => console.log(items)}
           onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
           onCancel={() => setIsEditingWishlist(null)}
         />
@@ -508,7 +514,7 @@ const Profile = () => {
     <>
       <div className="profile-container container p-4 rounded">
         <div className="profile-welcome">
-          <h2 className="">Hi, {profileData?.name}</h2>
+          <h2>Hi, {profileData?.name?.split(" ")[0]}</h2>
           <button
             className="btn btn-service logout-btn"
             onClick={handleLogOut}
