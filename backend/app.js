@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRouter from './auth.js';
 import profileDataRouter from './profileData.js';
 import personsDataRouter from './personsData.js';
+import scraperRouter from './scraper.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -31,6 +32,9 @@ app.use('/api/profileData', profileDataRouter);
 
 // Použití routeru s daty o osobách a propojeních
 app.use('/api/personsData', personsDataRouter);
+
+// Použití routeru s scraperem
+app.use('/api/scraper', scraperRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

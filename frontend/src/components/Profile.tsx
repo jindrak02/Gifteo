@@ -495,15 +495,31 @@ const Profile = () => {
     const wishlist = wishlists.find((w) => w.id === isEditingWishlist);
     
     return (
-      <div className="container p-4 rounded add-wishlist-container">
+      <div className="container p-4 rounded profile-container">
         <div className="profile-welcome">
           <h2>Edit Wishlist</h2>
-          <hr className="my-4" />
+          <button className="btn-service" onClick={() => setIsEditingWishlist(null)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-arrow-left"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+                fill-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
         </div>
+        
+        <hr className="my-4" />
+
         <WishlistEditForm
           items={wishlist.items}
           onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
-          onCancel={() => setIsEditingWishlist(null)}
         />
       </div>
     );

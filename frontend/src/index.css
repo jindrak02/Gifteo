@@ -135,6 +135,14 @@ body {
   box-shadow: -3px 10px 14px 5px rgba(0, 0, 0, 0.3);
 }
 
+.edit-wishlist-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
 button.text-red-500 {
   border: 2px solid #FF0000;
   border-radius: 5px;

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { fetchWithAuth } from "../../../utils/fetchWithAuth";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface WishlistItem {
   id: string;
@@ -13,17 +15,21 @@ interface WishlistItem {
 interface WishlistFormProps {
   items: WishlistItem[];
   onSubmit: (items: WishlistItem[]) => void;
-  onCancel: () => void;
 }
 
-const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, onSubmit, onCancel }) => {
+const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, onSubmit,}) => {
   const [items, setItems] = useState<WishlistItem[]>(initialItems);
+  const [showButtons, setShowButtons] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   useEffect(() => {
     setItems(initialItems);
   }, [initialItems]);
 
-  const handleChange = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = event.target;
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [name]: value };
@@ -31,7 +37,10 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
   };
 
   const addItem = () => {
-    setItems([...items, { id: "", name: "", price: "", currency:"", url: "", photo_url: "" }]);
+    setItems([
+      ...items,
+      { id: "", name: "", price: "", currency: "", url: "", photo_url: "" },
+    ]);
   };
 
   const removeItem = (index: number) => {
@@ -54,78 +63,169 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
     onSubmit(items); // Zavolání callbacku s daty
   };
 
+  const toggleShowButtons = () => {
+    setShowButtons(!showButtons);
+  }
+
+  const handleFetchItemData = async (index: number, url: string) => {
+    setShowSpinner(true);
+    try {
+      const response = await fetchWithAuth(`http://localhost:3000/api/scraper/wishlistItemData`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: url,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch item data");
+      }
+
+      const data = await response.json();
+      const newItems = [...items];
+
+      newItems[index] = {
+        ...newItems[index],
+        name: data.title,
+        price: data.price,
+        currency: data.currency,
+        photo_url: data.image,
+      };
+
+      setItems(newItems);
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: "Failed to fetch item data",
+        icon: "error",
+      });
+    }
+    setShowSpinner(false);
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {items.map((item, index) => (
-        <div key={index} className="wishlist-item-wrapper gap-2 my-4">
+    <form onSubmit={handleSubmit} className="edit-wishlist-form">
+      <div className="my-1">
+        <button
+          type="button"
+          onClick={addItem}
+          className="btn-service rounded shadow my-4">
+          Add item
+        </button>
+        <button type="submit" className="btn-service rounded mx-2 shadow my-4">
+          Save wishlist
+        </button>
+        <button type="button" onClick={() => toggleShowButtons()} className="btn-service rounded shadow my-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+          </svg>
+        </button>
+      </div>
+
+      {[...items].reverse().map((item, reversedIndex) => {
+        const index = items.length - 1 - reversedIndex;
+
+        return (
+          <div key={index} className="wishlist-item-wrapper gap-2 my-4">
           <div>
-            <img className="wishlist-thumbnail" src={item.photo_url} alt="wishlist item photo" />
+            <img
+              className="wishlist-thumbnail"
+              src={item.photo_url}
+              alt="item photo"
+            />
           </div>
           <div className="flex-col gap-2">
             <input
-                type="text"
-                name="name"
-                value={item.name}
-                onChange={(e) => handleChange(index, e)}
-                placeholder="Name"
-                className="border p-2"
-                required
-                minLength={3}
-                maxLength={30}
+              type="text"
+              name="url"
+              value={item.url}
+              onChange={(e) => handleChange(index, e)}
+              placeholder="Paste link, press button to magicaly fill the form"
+              className="border p-2"
             />
             
-            <input
-                  type="number"
-                  name="price"
-                  value={item.price}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Price"
-                  className="border p-2"
-                  min={0}
-                  step={0.01}
-              />
-              <select
-                  name="currency"
-                  value={item.currency}
-                  onChange={(e) => handleChange(index, e)}
-                  className="border p-2"
-              >
-                  <option value="">Select currency</option>
-                  <option value="CZK">CZK - Czech Koruna</option>
-                  <option value="EUR">EUR - Euro</option>
-                  <option value="USD">USD - US Dollar</option>
-                  <option value="GBP">GBP - British Pound</option>
-                  <option value="PLN">PLN - Polish Zloty</option>
-                  <option value="CHF">CHF - Swiss Franc</option>
-                  <option value="JPY">JPY - Japanese Yen</option>
-                  <option value="AUD">AUD - Australian Dollar</option>
-              </select>
+            <button
+              type="button"
+              onClick={() => handleFetchItemData(index, item.url)}
+              className="btn-service rounded shadow">
+              Fetch item data
+            </button>
 
             <input
-                type="text"
-                name="url"
-                value={item.url}
-                onChange={(e) => handleChange(index, e)}
-                placeholder="Link"
-                className="border p-2"
+              type="text"
+              name="name"
+              value={item.name}
+              onChange={(e) => handleChange(index, e)}
+              placeholder="Name"
+              className="border p-2"
+              required
+              minLength={3}
+              maxLength={30}
             />
+
             <input
-                type="text"
-                name="photo_url"
-                value={item.photo_url}
-                onChange={(e) => handleChange(index, e)}
-                placeholder="Link to image"
-                className="border p-2"
+              type="number"
+              name="price"
+              value={item.price}
+              onChange={(e) => handleChange(index, e)}
+              placeholder="Price"
+              className="border p-2"
+              min={0}
+              step={0.01}
             />
+
+            <select
+              name="currency"
+              value={item.currency}
+              onChange={(e) => handleChange(index, e)}
+              className="border p-2">
+
+              <option value="">Select currency</option>
+              <option value="CZK">CZK - Czech Koruna</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="USD">USD - US Dollar</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="PLN">PLN - Polish Zloty</option>
+              <option value="CHF">CHF - Swiss Franc</option>
+              <option value="JPY">JPY - Japanese Yen</option>
+              <option value="AUD">AUD - Australian Dollar</option>
+            </select>
+
+            <input
+              type="text"
+              name="photo_url"
+              value={item.photo_url}
+              onChange={(e) => handleChange(index, e)}
+              placeholder="Link to image"
+              className="border p-2"
+            />
+
           </div>
-          <button type="button" onClick={() => removeItem(index)} className="text-red-500">❌</button>
+          <div className={showButtons ? "" : "hidden"}>
+            <button
+              type="button"
+              onClick={() => removeItem(index)}
+              className="text-red-500"
+            >
+              ❌
+            </button>
+          </div>
+          
         </div>
-      ))}
-      <div className="my-4">
-        <button type="button" onClick={addItem} className="btn-service rounded shadow my-4">Add item</button>
-        <button type="submit" className="btn-service rounded mx-2 shadow my-4">Save wishlist</button>
-        <button type="button" className="btn rounded btn-secondary shadow" onClick={() => onCancel()}>Close wishlist</button>
-      </div>
+        );
+
+      }
+        
+      )}
+      
+      <LoadingSpinner className={showSpinner ? "" : "hidden"} />
     </form>
   );
 };
