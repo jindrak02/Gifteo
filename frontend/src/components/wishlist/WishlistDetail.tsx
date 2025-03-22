@@ -10,6 +10,7 @@ type WishlistItem = {
     wishlist_name: string;
     name: string;
     price: number;
+    currency: string;
     url: string;
     photo_url: string;
 };
@@ -60,7 +61,7 @@ const WishlistDetail = (props: WishlistDetailProps) => {
                         <img src={item.photo_url} alt={item.name} className="wishlist-thumbnail" />
                         <div className="wishlist-item-details">
                             <div className="wishlist-item-name">{item.name}</div>
-                            <div className="wishlist-item-price">{item.price}$</div>
+                            <div className="wishlist-item-price">{item.price} {item.currency}</div>
                             <a href={item.url} className="wishlist-item-url" target="_blank" rel="noopener noreferrer">{item.url}</a>
                         </div>
                     </div>

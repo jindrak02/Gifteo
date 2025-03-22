@@ -6,6 +6,7 @@ import authRouter from './controllers/routes/auth.js';
 import profileDataRouter from './controllers/routes/profileData.js';
 import personsDataRouter from './controllers/routes/personsData.js';
 import scraperRouter from './controllers/routes/scraper.js';
+import hubRouter from './controllers/routes/wishlistHubData.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -35,6 +36,9 @@ app.use('/api/personsData', personsDataRouter);
 
 // Použití routeru s scraperem
 app.use('/api/scraper', scraperRouter);
+
+// Použití wishlistHub routeru
+app.use('/api/wishlistHub', hubRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

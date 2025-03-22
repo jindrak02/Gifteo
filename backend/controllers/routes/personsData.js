@@ -178,6 +178,7 @@ router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
                 w."name" as "wishlist_name",
                 wi."name",
                 wi.price,
+                wi.price_currency AS currency,
                 wi.url,
                 wi.photo_url
 
