@@ -1,11 +1,11 @@
-import express from "express";
 import dotenv from "dotenv";
-import pool from "./db.js";
+import express from "express";
+import pool from "./config/db.js";
 import cors from 'cors';
-import authRouter from './auth.js';
-import profileDataRouter from './profileData.js';
-import personsDataRouter from './personsData.js';
-import scraperRouter from './scraper.js';
+import authRouter from './controllers/routes/auth.js';
+import profileDataRouter from './controllers/routes/profileData.js';
+import personsDataRouter from './controllers/routes/personsData.js';
+import scraperRouter from './controllers/routes/scraper.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();

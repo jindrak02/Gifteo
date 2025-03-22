@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import pool from "./db.js";
-import { authenticateUser } from "./authMiddleware.js";
+import pool from "../../config/db.js";
+import { authenticateUser } from "../../middlewares/authMiddleware.js";
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import e from "express";

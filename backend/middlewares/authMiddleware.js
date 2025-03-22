@@ -1,4 +1,4 @@
-import pool from "./db.js";
+import pool from "../config/db.js";
 
 // Autentizační middleware pro ověření uživatelské session a existenci uživatele v db.
 export function authenticateUser(req, res, next) {

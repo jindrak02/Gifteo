@@ -1,10 +1,10 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import dotenv from 'dotenv';
-import pool from "./db.js";
+import pool from "../../config/db.js";
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { authenticateUser } from './authMiddleware.js';
+import { authenticateUser } from '../../middlewares/authMiddleware.js';
 
 dotenv.config();
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
-import { authenticateUser } from "./authMiddleware.js";
+import { authenticateUser } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 router.use(express.json());
