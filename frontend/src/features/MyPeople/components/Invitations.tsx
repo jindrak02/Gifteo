@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import Swal from 'sweetalert2';
 import { fetchWithAuth } from '../../../utils/fetchWithAuth';
 

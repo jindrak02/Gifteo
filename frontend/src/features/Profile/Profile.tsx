@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
-import WishlistThumbnail from "./WishlistThumbnail";
+import WishlistThumbnail from "../../components/wishlist/WishlistThumbnail";
 import Swal from "sweetalert2";
-import WishlistEditForm from "./WishlistEditForm";
-import LoadingSpinner from "./LoadingSpinner";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth"; // Import the fetch wrapper
+import WishlistEditForm from "../../components/wishlist/WishlistEditForm";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import { fetchWithAuth } from "../../utils/fetchWithAuth"; // Import the fetch wrapper
 
 type ProfileData = {
   id: string;

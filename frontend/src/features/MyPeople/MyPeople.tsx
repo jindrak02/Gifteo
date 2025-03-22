@@ -1,11 +1,11 @@
-import PersonThumbnail from "./PersonThumbnail";
-import PersonDetail from "./PersonDetail";
-import AddPerson from "./AddPerson";
-import LoadingSpinner from "./LoadingSpinner";
-import Invitations from "./Invitations";
+import PersonThumbnail from "../../components/person/PersonThumbnail";
+import PersonDetail from "../../components/person/PersonDetail";
+import AddPerson from "./components/AddPerson";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import Invitations from "./components/Invitations";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth";
+import { fetchWithAuth } from "../../utils/fetchWithAuth";
 
 interface Person {
   user_id: string;

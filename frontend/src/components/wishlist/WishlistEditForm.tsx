@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth";
-import LoadingSpinner from "./LoadingSpinner";
+import { fetchWithAuth } from "../../utils/fetchWithAuth";
+import LoadingSpinner from "../ui/LoadingSpinner";
 
 interface WishlistItem {
   id: string;

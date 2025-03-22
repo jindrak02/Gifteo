@@ -1,10 +1,10 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import Login from './Login';
-import NavPanel from './NavPanel';
+import Login from './features/Login/Login.tsx';
+import NavPanel from './components/ui/NavPanel.tsx';
 import { Navigate, Route, Routes } from "react-router-dom";
-import { useAuth } from '../contexts/AuthContext';
-import Profile from './Profile';
-import MyPeople from './MyPeople';
+import { useAuth } from './store/AuthContext';
+import Profile from './features/Profile/Profile.tsx';
+import MyPeople from './features/MyPeople/MyPeople.tsx';
 
 const CLIENT_ID = '1015554226649-g1s15ss5ovk1p583m24mp6upqb7f1q9b.apps.googleusercontent.com';
 

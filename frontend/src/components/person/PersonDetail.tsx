@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import WishlistThumbnail from "./WishlistThumbnail";
-import LoadingSpinner from "./LoadingSpinner";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth";
-import WishlistDetail from "./WishlistDetail";
+import WishlistThumbnail from "../wishlist/WishlistThumbnail";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import { fetchWithAuth } from "../../utils/fetchWithAuth";
+import WishlistDetail from "../wishlist/WishlistDetail";
 
 type PersonDetailProps = {
     personId: string;

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
-import LoadingSpinner from "./LoadingSpinner";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import { fetchWithAuth } from "../../utils/fetchWithAuth";
 
 type WishlistDetailProps = {
     wishlistId: string;

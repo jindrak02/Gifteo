@@ -1,5 +1,5 @@
 import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../store/AuthContext';
 import { useEffect, useState } from 'react';
 
 const Login = () => {

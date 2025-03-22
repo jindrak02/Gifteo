@@ -1,5 +1,4 @@
 import express from 'express';
-import axios from 'axios';
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
 import { authenticateUser } from "./authMiddleware.js";
@@ -54,6 +53,7 @@ function trimTitleToThirdSpace(title) {
 }
   
 function extractNumericPrice(price) {
+    if (typeof price !== 'string') price = price.toString();
     const match = price.match(/[0-9]+([.,][0-9]+)?/);
     return match ? match[0].replace(',', '.') : '';
 }

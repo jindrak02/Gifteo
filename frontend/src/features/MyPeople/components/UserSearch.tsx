@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
-import LoadingSpinner from "./LoadingSpinner";
-import UserSearchThumbnail from "./UserSearchThumbnail";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import UserSearchThumbnail from "../../../components/user/UserSearchThumbnail";
 import Swal from "sweetalert2";
 
 const UserSearch = () => {
