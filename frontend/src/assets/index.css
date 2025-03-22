@@ -42,6 +42,10 @@ body {
   display: none !important;
 }
 
+.spinner-message {
+  background-color: #ebebeb;
+}
+
 .profile-container {
   max-width: 600px;
   margin: auto;
@@ -49,6 +53,11 @@ body {
 
 .add-wishlist-container {
   max-width: 600px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
 }
 
 .flex-col {
@@ -94,6 +103,12 @@ body {
 .profile-picture {
   width: 100px;
   height: 100px;
+  object-fit: cover;
+}
+
+.profile-picture-thumbnail {
+  width: 50px;
+  height: 50px;
   object-fit: cover;
 }
 
@@ -273,6 +288,7 @@ button.text-red-500 {
   display: flex;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
 }
 
 .person-thumbnail-content {

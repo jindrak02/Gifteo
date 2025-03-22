@@ -14,7 +14,14 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
       <div className="person-thumbnail my-4">
 
         <div className="person-thumbnail-buttons">
-          <h2 className="person-thumbnail-name">{name}</h2>
+          <div className='flex' onClick={onDetail}>
+            <img
+              src={imageUrl}
+              alt={name}
+              className="profile-picture-thumbnail rounded-circle me-3 shadow"
+            />
+            <h3 className="person-thumbnail-name">{name}</h3>
+          </div>
           {onDelete && (
             <button className='btn btn-light btn-sm' onClick={onDelete}>
               <svg
@@ -32,11 +39,7 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
         </div>
 
         <div className="person-thumbnail-content" onClick={onDetail}>
-          <img
-            src={imageUrl}
-            alt={name}
-            className="profile-picture rounded-circle me-3 shadow"
-          />
+          
           <ul className="person-thumbnail-wishlists">
             {wishlists.map((wishlist, index) => (
               <li key={index}>{wishlist}</li>

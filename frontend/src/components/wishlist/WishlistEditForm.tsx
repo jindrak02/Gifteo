@@ -225,7 +225,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
         
       )}
       
-      <LoadingSpinner className={showSpinner ? "" : "hidden"} />
+      <LoadingSpinner message="This may take a few seconds, we are fetching the item data from eshop..." className={showSpinner ? "" : "hidden"} />
     </form>
   );
 };
