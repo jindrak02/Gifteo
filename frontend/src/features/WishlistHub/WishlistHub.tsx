@@ -4,23 +4,6 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import PersonThumbnail from "./components/PersonThumbnail";
 import PersonDetail from "./components/PersonDetail";
 
-// type WishlistCopyItem = {
-//     id: string;
-//     name: string;
-//     price: number;
-//     price_currency: string;
-//     url: string;
-//     photo_url: string;
-// };
-
-// type WishlistCopy = {
-//     id: string;
-//     name: string;
-//     originalWishlistId: string;
-//     user_photo_url: string;
-//     items: WishlistCopyItem[];
-// };
-
 interface Person {
     user_id: string;
     person_id: string;

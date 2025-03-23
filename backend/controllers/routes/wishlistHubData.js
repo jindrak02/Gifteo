@@ -15,46 +15,50 @@ function sanitize(input){
 const router = express.Router();
 router.use(cookieParser());
 
-// GET /api/wishlistHub/ownedWishlistCopies, vrátí všechny kopie wishlistů, které uživatel vlastní
-router.get("/ownedWishlistCopies", authenticateUser, async (req, res) => {
+// GET /api/wishlistHub/participatedWishlistCopiesForUser, vrátí všechny kopie wishlistů pro specifického
+// uživatele, kde je aktuální uživatel účastníkem
+router.get("/participatedWishlistCopiesForUser/:forUserId", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
+    const forUserId = req.params.forUserId;
   
     if (!userId) {
       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
     }
+
+    if (!forUserId) {
+        return res.status(401).send({ success: false, message: "For User id parameter not found" });
+      }
   
     try {
-      const ownedWishlistCopiesQuery = `
+      const wishlistCopiesQuery = `
         SELECT
             wcur.wishlist_copy_id,
+            wcur."role",
             wc.original_wishlist_id,
             wc."name",
             wci."name" AS "itemName",
-            wci.id,
+            wci.id AS "itemId",
             wci.url,
             wci.photo_url,
             wci.price,
-            wci.price_currency,
-
-            (SELECT pr."photo_url"
-            FROM "profile" pr
-            LEFT JOIN "wishlist" w ON w.profile_id = pr.id
-            WHERE w.id = wc.original_wishlist_id) AS user_photo_url
+            wci.price_currency
 
         FROM "wishlistCopyUserRole" wcur
         LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
         LEFT JOIN "wishlistCopyItem" wci ON wc.id = wci.wishlist_copy_id
 
         WHERE wcur.user_id = $1
-        AND wcur."role" = 'owner'
+        AND wcur."role" IN ('owner', 'cooperator')
+        AND wc.for_user_id = $2
+        ORDER BY wc.created_at DESC;
         `;
         
-        const ownedWishlistCopiesResult = await pool.query(ownedWishlistCopiesQuery, [userId]);
+        const wishlistCopiesQueryResult = await pool.query(wishlistCopiesQuery, [userId, forUserId]);
         
         // Process the data to create a nested structure
         const wishlistCopiesMap = {};
         
-        ownedWishlistCopiesResult.rows.forEach(row => {
+        wishlistCopiesQueryResult.rows.forEach(row => {
           const wishlistCopyId = row.wishlist_copy_id;
           
           // Initialize wishlist copy object if it doesn't exist
@@ -63,15 +67,14 @@ router.get("/ownedWishlistCopies", authenticateUser, async (req, res) => {
               id: wishlistCopyId,
               original_wishlist_id: row.original_wishlist_id,
               name: row.name,
-              user_photo_url: row.user_photo_url,
               items: []
             };
           }
           
           // Add item to wishlist copy if item exists
-          if (row.id) {
+          if (row.itemId) {
             wishlistCopiesMap[wishlistCopyId].items.push({
-              id: row.id,
+              id: row.itemId,
               name: row.itemName,
               url: row.url,
               photo_url: row.photo_url,

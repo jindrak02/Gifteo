@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from "react";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import WishlistCopyThumbnail from "./WishlistCopyThumbnail";
 
 interface PersonDetailProps {
     user_id?: string;
@@ -10,8 +11,57 @@ interface PersonDetailProps {
     onReturn: () => void;
 }
 
+type WishlistCopyItem = {
+    itemId: string;
+    name: string;
+    price: number;
+    price_currency: string;
+    url: string;
+    photo_url: string;
+};
+
+type WishlistCopy = {
+    id: string;
+    name: string;
+    originalWishlistId: string;
+    items: WishlistCopyItem[];
+};
+
 const PersonDetail = ( {user_id, name, photo_url, onReturn } : PersonDetailProps ) => {
     const [showSpinner, setShowSpinner] = useState(false);
+    const [wishlistCopies, setWishlistCopies] = useState<WishlistCopy[]>([]);
+
+    // Načtení dat kopií wishlistů u daného uživatele
+    useEffect(() => {
+        const fetchWishlistCopies = async () => {
+            setShowSpinner(true);
+
+            try {
+                const res = await fetchWithAuth(
+                    `http://localhost:3000/api/wishlistHub/participatedWishlistCopiesForUser/${user_id}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                const data = await res.json();
+
+                if (data.success) {
+                    console.log("Fetched wishlist copies:", data.wishlistCopies);
+                    setWishlistCopies(data.wishlistCopies);
+                } else {
+                    console.error("Error fetching wishlist copies");
+                }
+            } catch (error) {
+                console.error("Error fetching wishlist copies:", error);
+            }
+
+            setShowSpinner(false);
+        };
+
+        fetchWishlistCopies();
+    }, []);
 
     return (
         <>
@@ -27,13 +77,39 @@ const PersonDetail = ( {user_id, name, photo_url, onReturn } : PersonDetailProps
                 
                 <hr className="my-4" />
                 
-                <div>
-                    Person detail
-                    <img src={photo_url} alt="profile" />
+                <div className="my-4 my-wishlists-wrapper">
+                    <div className="profile-wishlists my-4">
+                        <img className="profile-picture-thumbnail rounded-circle shadow" src={photo_url} alt={name + "profile"} />
+                        <h4>{name.split(' ')[0]}'s Wishlists</h4>
+                        <button
+                        className="btn btn-service btn-primary"
+                        onClick={() => console.log('Add wishlist copy')}
+                        >
+                            Add wishlist
+                        </button>
+                    </div>
+
+                    <div className="wishlists-container my-4">
+                        {wishlistCopies.length === 0 ? (
+                            <div className="text-center p-4 bg-gray-100 rounded-lg">
+                                You don't have any wishlists for {name.split(' ')[0]} yet.
+                            </div>
+                        ) : (
+                            wishlistCopies.map(wishlistCopy => (
+                                <WishlistCopyThumbnail
+                                key={wishlistCopy.id}
+                                title={wishlistCopy.name}
+                                imageUrls={wishlistCopy.items.map(item => item.photo_url)}
+                                user_photo_url={photo_url}
+                                onDelete={() => console.log('Delete wishlist copy')}
+                                onEdit={() => console.log('Edit wishlist copy')}
+                                />
+                            ))
+                        )}
+                    </div>
                 </div>
+
             </div>
-            
-            {/* <PersonDetail personId={personId} /> */}
 
             <LoadingSpinner className={showSpinner ? "" : "hidden"} />
         </>
