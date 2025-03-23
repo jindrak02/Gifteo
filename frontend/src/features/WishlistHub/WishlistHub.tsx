@@ -2,6 +2,7 @@ import React, { useState, useEffect} from "react";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import PersonThumbnail from "./components/PersonThumbnail";
+import PersonDetail from "./components/PersonDetail";
 
 // type WishlistCopyItem = {
 //     id: string;
@@ -32,6 +33,7 @@ interface Person {
 const WishlistHub = () => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [persons, setPersons] = useState<Person[]>([]);
+    const [isViewingPerson, setIsViewingPerson] = useState<Person | null>(null);
 
     // Načtení osob (a jejich dat) uživatele
     useEffect(() => {
@@ -64,6 +66,18 @@ const WishlistHub = () => {
         fetchPersonsData();
     }, []);
 
+    if (isViewingPerson !== null) {
+        return (
+          <PersonDetail
+            user_id = {isViewingPerson.user_id}
+            name = {isViewingPerson.name}
+            photo_url = {isViewingPerson.photo_url}
+            profile_id = {isViewingPerson.profile_id}
+            onReturn = {() => setIsViewingPerson(null)}
+          />
+        );
+    }
+
     return (
         <>
             <div className="profile-container p-4">
@@ -89,6 +103,7 @@ const WishlistHub = () => {
                                 name={person.name}
                                 user_id={person.user_id}
                                 profile_id={person.profile_id}
+                                onClick={() => setIsViewingPerson(person)}
                             />
                         ))}
                     </div>

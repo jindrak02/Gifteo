@@ -1,22 +1,20 @@
-import React, { useState, useEffect} from "react";
-import { fetchWithAuth } from "../../../utils/fetchWithAuth";
-import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import React from "react";
 
 interface PersonThumbnailProps {
     user_id?: string;
     name: string;
     photo_url: string;
     profile_id: string;
+    onClick: () => void;
 }
 
-const PersonThumbnail = ( {user_id, name, photo_url} : PersonThumbnailProps ) => {
-    const [showSpinner, setShowSpinner] = useState(false);
+const PersonThumbnail = ( {user_id, name, photo_url, onClick} : PersonThumbnailProps ) => {
 
     return (
         <>
             <div className="person-thumbnail my-4" id={user_id}>
                 <div className="person-thumbnail-buttons">
-                    <div className='flex' onClick={() => console.log('clicked')} >
+                    <div className='flex' onClick={() => onClick()} >
                         <img
                         src={photo_url}
                         alt={name}
@@ -26,8 +24,6 @@ const PersonThumbnail = ( {user_id, name, photo_url} : PersonThumbnailProps ) =>
                     </div>
                 </div>
             </div>
-
-            <LoadingSpinner className={showSpinner ? "" : "hidden"} />
         </>
     );
 };
