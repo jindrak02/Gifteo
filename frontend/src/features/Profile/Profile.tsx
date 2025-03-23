@@ -559,7 +559,11 @@ const Profile = () => {
         <div className="profile-header my-4">
           <div className="profile-header-first d-flex">
             <img
-              src={profileData?.photo_url}
+              src={profileData?.photo_url || "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg"}
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
+              }}
               alt="Profile"
               className="profile-picture rounded-circle me-3 shadow "
             />

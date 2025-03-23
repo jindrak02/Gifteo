@@ -26,7 +26,7 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
   
     try {
       const peopleQuery = `
-        SELECT up.user_id, up.person_id, p.profile_id, pr."name", pr.photo_url
+        SELECT pr.user_id, up.person_id, p.profile_id, pr."name", pr.photo_url
             FROM "userPerson" up
             LEFT JOIN "person" p ON up.person_id = p.id
             LEFT JOIN "profile" pr ON p.profile_id = pr.id
@@ -56,23 +56,48 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
     }
 });
 
-// DELETE /api/personsData/DeletePerson, smaže osobu uživatele
+// DELETE /api/personsData/DeletePerson, smaže osobu uživatele a poté obráceně (zruší propojení)
 router.delete("/DeletePerson/:personId", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     const personId = sanitize(req.params.personId);
+    const { secondUserId } = req.body;
 
     if (!userId) {
       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
     }
   
     try {
-      const deletePersonQuery = `
-        DELETE FROM "userPerson"
-            WHERE user_id = $1
-            AND person_id = $2
-            RETURNING *;
-        `;
-        const deletePersonResult = await pool.query(deletePersonQuery, [userId, personId]);
+        const usersPersonIdQuery = `SELECT pers.id FROM "profile" p LEFT JOIN "person" pers ON p.id = pers.profile_id WHERE p.user_id = $1;`
+        const usersPersonIdResult = await pool.query(usersPersonIdQuery, [userId]);
+        const secondPersonId = usersPersonIdResult.rows[0].id;
+
+        // console.log('První dvojice ke smazání:');
+        // console.log(userId);
+        // console.log(personId);
+
+        // console.log('Druhá dvojice ke smazání:');
+        // console.log(secondUserId);
+        // console.log(secondPersonId);
+
+        // Smažu první dvojici
+        const deletePersonQuery1 = `
+            DELETE FROM "userPerson"
+                WHERE user_id = $1
+                AND person_id = $2
+                RETURNING *;
+            `;
+        const deletePersonResult1 = await pool.query(deletePersonQuery1, [userId, personId]);
+
+        // Smažu druhou dvojici
+        const deletePersonQuery2 = `
+            DELETE FROM "userPerson"
+                WHERE user_id = $1
+                AND person_id = $2
+                RETURNING *;
+            `;
+        const deletePersonResult2 = await pool.query(deletePersonQuery2, [secondUserId, secondPersonId]);
+        
+        
         res.send({success: true, message: "Person '"+ personId +"' deleted successfully"});
 
     } catch (error) {
