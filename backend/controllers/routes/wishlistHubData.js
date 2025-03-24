@@ -20,7 +20,7 @@ router.use(cookieParser());
 router.get("/participatedWishlistCopiesForUser/:forUserId", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     const forUserId = req.params.forUserId;
-  
+    
     if (!userId) {
       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
     }

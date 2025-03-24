@@ -53,6 +53,7 @@ const WishlistHub = () => {
         return (
           <PersonDetail
             user_id = {isViewingPerson.user_id}
+            person_id={isViewingPerson.person_id}
             name = {isViewingPerson.name}
             photo_url = {isViewingPerson.photo_url}
             profile_id = {isViewingPerson.profile_id}

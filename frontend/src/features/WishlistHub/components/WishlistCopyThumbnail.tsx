@@ -6,7 +6,7 @@ interface WishlistThumbnailProps {
   onEdit?: () => void;
 }
 
-const WishlistCopyThumbnail = ({ title, imageUrls, user_photo_url, onDelete, onEdit, }: WishlistThumbnailProps) => {
+const WishlistCopyThumbnail = ({ title, imageUrls, onDelete, onEdit, }: WishlistThumbnailProps) => {
 
   return (
     <div className="wishlist-card p-3 rounded shadow-sm my-4">
