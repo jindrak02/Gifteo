@@ -112,6 +112,12 @@ body {
   object-fit: cover;
 }
 
+.profile-picture-thumbnail-lg {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
 .profile-wishlists {
   display: flex;
   justify-content: space-between;
@@ -268,7 +274,7 @@ button.text-red-500 {
   padding: 10px;
   background-color: #E6E6FA;
   border-radius: 10px;
-  max-height: 180px;
+  max-height: 150px;
   overflow: hidden;
   cursor: pointer;
 }

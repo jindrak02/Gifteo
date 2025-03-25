@@ -15,11 +15,7 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
 
         <div className="person-thumbnail-buttons">
           <div className='flex' onClick={onDetail}>
-            <img
-              src={imageUrl}
-              alt={name}
-              className="profile-picture-thumbnail rounded-circle me-3 shadow"
-            />
+            
             <h3 className="person-thumbnail-name">{name}</h3>
           </div>
           {onDelete && (
@@ -39,7 +35,11 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
         </div>
 
         <div className="person-thumbnail-content" onClick={onDetail}>
-          
+          <img
+           src={imageUrl}
+           alt={name}
+           className="profile-picture-thumbnail-lg rounded-circle me-3 shadow"
+          />
           <ul className="person-thumbnail-wishlists">
             {wishlists.map((wishlist, index) => (
               <li key={index}>{wishlist}</li>
