@@ -41,7 +41,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
 
             try {
                 const res = await fetchWithAuth(
-                    `http://localhost:3000/api/wishlistHub/participatedWishlistCopiesForUser/${user_id}`,
+                    `http://localhost:3000/api/wishlistHub/copiedWishlistsFor/${user_id}`,
                     {
                         method: "GET",
                         credentials: "include",

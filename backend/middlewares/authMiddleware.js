@@ -22,7 +22,7 @@ export function authenticateUser(req, res, next) {
       }
 
       req.user = result.rows[0]; // Přidání uživatelských dat do requestu
-      next(); // Pokračovat k chráněné routě
+      next(); // Continue to the protected route or next middleware
     })
     .catch((error) => {
       console.error("Chyba při ověřování session:", error);

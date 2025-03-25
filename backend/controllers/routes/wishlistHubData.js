@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import pool from "../../config/db.js";
 import { authenticateUser } from "../../middlewares/authMiddleware.js";
+import { authorizeWishlistCopyAccess } from "../../middlewares/roleMiddleware.js";
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 
@@ -15,9 +16,9 @@ function sanitize(input){
 const router = express.Router();
 router.use(cookieParser());
 
-// GET /api/wishlistHub/participatedWishlistCopiesForUser, vrátí všechny kopie wishlistů pro specifického
+// GET /api/wishlistHub/copiedWishlistsFor, vrátí všechny kopie wishlistů pro specifického
 // uživatele, kde je aktuální uživatel účastníkem
-router.get("/participatedWishlistCopiesForUser/:forUserId", authenticateUser, async (req, res) => {
+router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     const forUserId = req.params.forUserId;
     
