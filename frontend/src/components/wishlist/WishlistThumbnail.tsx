@@ -1,14 +1,15 @@
 interface WishlistThumbnailProps {
   title: string;
   imageUrls: string[];
-  showButtons: boolean; // Added new prop
+  showButtons: boolean; 
   onDelete?: () => void;
   onEdit?: () => void;
+  onClick?: () => void;
 }
 
-const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit }: WishlistThumbnailProps) => {
+const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, onClick }: WishlistThumbnailProps) => {
   return (
-    <div className="wishlist-card p-3 rounded shadow-sm my-4">
+    <div className="wishlist-card p-3 rounded shadow-sm my-4" onClick={onClick}>
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="mb-0">{title}</h5>
         {showButtons && ( // Conditionally render buttons

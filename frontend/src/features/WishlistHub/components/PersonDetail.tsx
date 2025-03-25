@@ -5,7 +5,7 @@ import WishlistCopyThumbnail from "./WishlistCopyThumbnail";
 import AddWishlistCopy from "./AddWishlistCopy.tsx";
 
 interface PersonDetailProps {
-    user_id?: string;
+    user_id: string;
     person_id: string;
     name: string;
     photo_url: string;
@@ -64,7 +64,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
         };
 
         fetchWishlistCopies();
-    }, []);
+    }, [isAddingWishlistCopy]);
 
     const handleAddWishlistCopy = () => {
         console.log('Add wishlist copy for person id: ' + person_id);
@@ -73,22 +73,40 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
 
     if (isAddingWishlistCopy) {
         return (
-            <div className="profile-container p-4">
-                <div className="profile-welcome">
-                    <h2 className="">Add Wishlist Copy</h2>
-                    <button className="btn-service" onClick={() => setIsAddingWishlistCopy(false)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
-                            <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <hr className="my-4" />
-
-                <div className="my-4">
-                    <AddWishlistCopy person_id={person_id ? person_id : ""}  profile_id={profile_id}/>
-                </div>
+          <div className="profile-container p-4">
+            <div className="profile-welcome">
+              <h2 className="">Add Wishlist Copy</h2>
+              <button
+                className="btn-service"
+                onClick={() => setIsAddingWishlistCopy(false)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-arrow-left"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+                  />
+                </svg>
+              </button>
             </div>
+
+            <hr className="my-4" />
+
+            <div className="my-4">
+              <AddWishlistCopy
+                user_id={user_id}
+                person_id={person_id ? person_id : ""}
+                profile_id={profile_id}
+                onCopy={() => setIsAddingWishlistCopy(false)}
+              />
+            </div>
+          </div>
         );
     }
 

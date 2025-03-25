@@ -95,4 +95,76 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
     }
 });
 
+// GET /api/wishlistHub/createWishlistCopy, vytvoření kopie wishlistu a přidání uživatele jako owner role
+router.post("/createWishlistCopy/:wishlistId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const originalWishlistId = req.params.wishlistId;
+    const { forUserId } = req.body;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    if (!originalWishlistId) {
+      return res.status(400).send({ success: false, message: "Missing originalWishlistId parameter" });
+    }
+    
+    if (!forUserId) {
+      return res.status(400).send({ success: false, message: "Missing forUserId parameter" });
+    }
+    
+    try {
+      // 1. Kontrola, jestli wishlist již nebyl zkopírován uživatelem
+      const existingCopyResult = await pool.query(`
+        SELECT 1 FROM "wishlistCopy"
+        WHERE original_wishlist_id = $1
+        AND for_user_id = $2
+        AND EXISTS (
+            SELECT 1 FROM "wishlistCopyUserRole"
+            WHERE wishlist_copy_id = "wishlistCopy".id
+            AND user_id = $3
+          );
+      `, [originalWishlistId, forUserId, userId]);
+      
+      if (existingCopyResult.rowCount > 0) {
+        return res.status(400).json({ success: false, message: "Wishlist already copied" });
+      }
+
+      // 2. Vytvoření kopie wishlistu
+      const createWishlistCopyQuery = `
+        INSERT INTO "wishlistCopy" (original_wishlist_id, for_user_id, "name", owner_id)
+        SELECT id, $1, "name", $2
+        FROM "wishlist"
+        WHERE id = $3
+        RETURNING id;
+      `;
+      
+      const createWishlistCopyResult = await pool.query(createWishlistCopyQuery, [forUserId, userId, originalWishlistId]);
+      const wishlistCopyId = createWishlistCopyResult.rows[0].id;
+      
+      // 3. Přidání uživatele jako owner role
+      const addOwnerRoleQuery = `
+        INSERT INTO "wishlistCopyUserRole" (wishlist_copy_id, user_id, "role", invitation_status)
+        VALUES ($1, $2, 'owner', 'accepted');
+      `;
+      
+      await pool.query(addOwnerRoleQuery, [wishlistCopyId, userId]);
+
+      // 4. Zkopírovat položky z originálu
+      const copyItemsQuery = `
+        INSERT INTO "wishlistCopyItem" (wishlist_copy_id, name, url, price, price_currency, photo_url)
+        SELECT $1, name, url, price, price_currency, photo_url
+        FROM "wishlistItem"
+        WHERE wishlist_id = $2
+      `;
+
+      await pool.query(copyItemsQuery, [wishlistCopyId, originalWishlistId]);
+      
+      res.json({ success: true, message: 'Wishlist úspěšně zkopírován, id kopie je: ' + wishlistCopyId });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
 export default router;
