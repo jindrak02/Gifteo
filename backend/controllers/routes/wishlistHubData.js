@@ -68,6 +68,7 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
               id: wishlistCopyId,
               original_wishlist_id: row.original_wishlist_id,
               name: row.name,
+              role: row.role,
               items: []
             };
           }
@@ -161,6 +162,43 @@ router.post("/createWishlistCopy/:wishlistId", authenticateUser, async (req, res
       await pool.query(copyItemsQuery, [wishlistCopyId, originalWishlistId]);
       
       res.json({ success: true, message: 'Wishlist úspěšně zkopírován, id kopie je: ' + wishlistCopyId });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// DELETE /api/wishlistHub/deleteWishlistCopy/:wishlistCopyId, smazání kopie wishlistu
+router.delete("/deleteWishlistCopy/:wishlistCopyId", authenticateUser, authorizeWishlistCopyAccess(['owner', 'cooperator']), async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistCopyId = req.params.wishlistCopyId;
+    const userRole = req.userRoleForWishlistCopy;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+      // Smazání kopie wishlistu, pokud je uživatel owner (cascade smazání všech rolí a položek)
+      if (userRole === 'owner') {
+        const deleteWishlistCopyQuery = `
+          DELETE FROM "wishlistCopy"
+          WHERE id = $1;
+        `;
+        
+        await pool.query(deleteWishlistCopyQuery, [wishlistCopyId]);
+        return res.json({ success: true, message: 'Wishlist úspěšně smazán' });
+      } else {
+        // Smazání role uživatele, pokud je uživatel cooperator
+        const deleteRoleQuery = `
+          DELETE FROM "wishlistCopyUserRole"
+          WHERE user_id = $1
+          AND wishlist_copy_id = $2;
+        `;
+        
+        await pool.query(deleteRoleQuery, [userId, wishlistCopyId]);
+        return res.json({ success: true, message: 'Role uživatele úspěšně smazána' });
+      }
       
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });

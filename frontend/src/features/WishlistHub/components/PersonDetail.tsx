@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from "react";
+import Swal from "sweetalert2";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import WishlistCopyThumbnail from "./WishlistCopyThumbnail";
@@ -26,6 +27,7 @@ type WishlistCopy = {
     id: string;
     name: string;
     originalWishlistId: string;
+    role: string;
     items: WishlistCopyItem[];
 };
 
@@ -69,6 +71,65 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
     const handleAddWishlistCopy = () => {
         console.log('Add wishlist copy for person id: ' + person_id);
         setIsAddingWishlistCopy(true);
+    }
+
+    const handleDeleteWishlistCopy = async (wishlistCopyId: string, role: string) => {
+
+        const deleteWishlistCopy = async () => {
+            setShowSpinner(true);
+            try {
+                const res = await fetchWithAuth(
+                    `http://localhost:3000/api/wishlistHub/deleteWishlistCopy/${wishlistCopyId}`,
+                    {
+                        method: "DELETE",
+                        credentials: "include",
+                    }
+                );
+
+                const data = await res.json();
+
+                if (data.success) {
+                    console.log("Deleted wishlist copy:", data);
+                    setWishlistCopies(wishlistCopies.filter(wishlistCopy => wishlistCopy.id !== wishlistCopyId));
+                } else {    
+                    console.error("Error deleting wishlist copy." + data.message);
+                }
+
+
+            } catch (error) {
+                console.error("Error deleting wishlist copy:", error);
+            }
+            setShowSpinner(false);
+        }
+
+        if (role === "owner") {
+            Swal.fire({
+                title: "Delete Wishlist Copy",
+                text: "You are the owner of this copy. Deleting it will remove it from your and other participants profile.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteWishlistCopy();
+                }
+            });
+        } else {
+            Swal.fire({
+                title: "Delete Wishlist Copy",
+                text: "The wishlist copy will be removed from your profile.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteWishlistCopy();
+                }
+            });
+        }
+
     }
 
     if (isAddingWishlistCopy) {
@@ -148,7 +209,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                                 title={wishlistCopy.name}
                                 imageUrls={wishlistCopy.items.map(item => item.photo_url)}
                                 user_photo_url={photo_url}
-                                onDelete={() => console.log('Delete wishlist copy')}
+                                onDelete={() => handleDeleteWishlistCopy(wishlistCopy.id, wishlistCopy.role)}
                                 onEdit={() => console.log('Edit wishlist copy')}
                                 />
                             ))
