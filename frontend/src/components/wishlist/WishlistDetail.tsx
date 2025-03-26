@@ -54,7 +54,7 @@ const WishlistDetail = (props: WishlistDetailProps) => {
     return (
         <>
             <div>
-                <h1 className="my-4">{wishlistItems != null ? wishlistItems[0].wishlist_name : ""}</h1>
+                <h3 className="my-4">{wishlistItems != null ? wishlistItems[0].wishlist_name : ""}</h3>
 
                 {wishlistItems?.map((item, index) => (
                     <div key={index} className="wishlist-item">
@@ -62,7 +62,7 @@ const WishlistDetail = (props: WishlistDetailProps) => {
                         <div className="wishlist-item-details">
                             <div className="wishlist-item-name">{item.name}</div>
                             <div className="wishlist-item-price">{item.price} {item.currency}</div>
-                            <a href={item.url} className="wishlist-item-url" target="_blank" rel="noopener noreferrer">{item.url}</a>
+                            <a href={item.url} className="wishlist-item-url" target="_blank" rel="noopener noreferrer">Link to buy</a>
                         </div>
                     </div>
                 ))}

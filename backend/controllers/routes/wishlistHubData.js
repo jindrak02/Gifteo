@@ -42,7 +42,8 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
             wci.url,
             wci.photo_url,
             wci.price,
-            wci.price_currency
+            wci.price_currency,
+            wci.checked_off_by_user_id
 
         FROM "wishlistCopyUserRole" wcur
         LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
@@ -81,7 +82,8 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
               url: row.url,
               photo_url: row.photo_url,
               price: row.price,
-              price_currency: row.price_currency
+              price_currency: row.price_currency,
+              checkedOffBy: row.checked_off_by_user_id
             });
           }
         });
@@ -199,6 +201,32 @@ router.delete("/deleteWishlistCopy/:wishlistCopyId", authenticateUser, authorize
         await pool.query(deleteRoleQuery, [userId, wishlistCopyId]);
         return res.json({ success: true, message: 'Role uživatele úspěšně smazána' });
       }
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// PATCH /api/wishlistHub/checkOffItem/:wishlistCopyId/:itemId, označení položky jako zakoupené
+router.patch("/checkOffItem/:wishlistCopyId/:itemId", authenticateUser, authorizeWishlistCopyAccess(['owner', 'cooperator']), async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistCopyId = req.params.wishlistCopyId;
+    const itemId = req.params.itemId;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+      const checkOffItemQuery = `
+        UPDATE "wishlistCopyItem"
+        SET checked_off_by_user_id = $1
+        WHERE wishlist_copy_id = $2
+        AND id = $3;
+      `;
+      
+      await pool.query(checkOffItemQuery, [userId, wishlistCopyId, itemId]);
+      return res.json({ success: true, message: 'Item succesfully checked off.', checkedBy: userId });
       
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });
