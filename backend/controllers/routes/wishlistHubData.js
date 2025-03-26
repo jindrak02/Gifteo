@@ -225,8 +225,56 @@ router.patch("/checkOffItem/:wishlistCopyId/:itemId", authenticateUser, authoriz
         AND id = $3;
       `;
       
+      const checkedByUserPhotoQuery = `
+        SELECT photo_url
+        FROM "profile"
+        WHERE user_id = $1;
+      `;
+
+      const userPhoto = await pool.query(checkedByUserPhotoQuery, [userId]);
       await pool.query(checkOffItemQuery, [userId, wishlistCopyId, itemId]);
-      return res.json({ success: true, message: 'Item succesfully checked off.', checkedBy: userId });
+      return res.json({ success: true, message: 'Item succesfully checked off.', checkedBy: userId, userPhoto: userPhoto.rows[0].photo_url });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// PATCH /api/wishlistHub/uncheckItem/:wishlistCopyId/:itemId, zrušení označení položky jako zakoupené
+router.patch("/uncheckItem/:wishlistCopyId/:itemId", authenticateUser, authorizeWishlistCopyAccess(['owner', 'cooperator']), async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistCopyId = req.params.wishlistCopyId;
+    const itemId = req.params.itemId;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+      // Ověření, že položka byla označena uživatelem
+      const itemCheckedByUserQuery = `
+        SELECT checked_off_by_user_id
+        FROM "wishlistCopyItem"
+        WHERE wishlist_copy_id = $1
+        AND id = $2
+      `;
+
+      const itemCheckedByUserResult = await pool.query(itemCheckedByUserQuery, [wishlistCopyId, itemId]);
+      const checkedByUserId = itemCheckedByUserResult.rows[0].checked_off_by_user_id;
+
+      if (checkedByUserId !== userId) {
+        return res.status(403).json({ success: false, message: 'Item was not checked off by current user' });
+      }
+
+      const uncheckItemQuery = `
+        UPDATE "wishlistCopyItem"
+        SET checked_off_by_user_id = NULL
+        WHERE wishlist_copy_id = $1
+        AND id = $2;
+      `;
+      
+      await pool.query(uncheckItemQuery, [wishlistCopyId, itemId]);
+      return res.json({ success: true, message: 'Item succesfully unchecked.' });
       
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });

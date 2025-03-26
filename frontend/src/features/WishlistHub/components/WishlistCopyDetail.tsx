@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
+import Swal from "sweetalert2";
 
 type WishlistCopyItem = {
     id: string;
@@ -9,7 +10,7 @@ type WishlistCopyItem = {
     price_currency: string;
     url: string;
     photo_url: string;
-    checkedOffBy: string;
+    checkedOffBy: string | null;
 };
 
 type WishlistCopyProps = {
@@ -26,15 +27,57 @@ const WishlistCopyDetail = ( {id, name, items } : WishlistCopyProps) => {
 
     const handleCheckboxChange = async (item: WishlistCopyItem) => {
 
-        // Don't do anything if the item is already checked off
+        // Uncheck logic implementation (only the user who checked off the item can uncheck it)
         if (item.checkedOffBy) {
             console.log('Already chekced off by:', item.checkedOffBy);
+            setShowSpinner(true);
+
+            try {
+                const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/uncheckItem/${id}/${item.id}`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    console.log('Item unchecked:', data);
+
+                    setWishlistItems((prevItems) => {
+                        if (!prevItems) return null;
+                        return prevItems.map((prevItem) => {
+                            if (prevItem.id === item.id) {
+                                return {
+                                    ...prevItem,
+                                    checkedOffBy: null,
+                                };
+                            }
+                            return prevItem;
+                        });
+                    });
+
+                } else {
+                    console.error('Failed to uncheck item:', data.message);
+                    if (data.message === 'Item was not checked off by current user') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'You can only uncheck items that you have checked off!',
+                        });    
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error unchecking item:', error);
+            } finally {
+                setShowSpinner(false);
+            }
+
             return;
         };
-        // TODO: uncheck logic implementation (only the user who checked off the item can uncheck it)
         
+        // Check off logic implementation
         setShowSpinner(true);
-        
         try {
             const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/checkOffItem/${id}/${item.id}`, {
                 method: 'PATCH',
@@ -89,6 +132,7 @@ const WishlistCopyDetail = ( {id, name, items } : WishlistCopyProps) => {
                                 onChange={() => handleCheckboxChange(item)} 
                                 id={`checkbox-${item.id}`} 
                             />
+                            {item.checkedOffBy != null ? <img className="check-off-img" src="https://res.cloudinary.com/db82w52p8/image/upload/v1742640290/profile_pictures/czqyt4ydg3ygzwzzpkw7.gif" alt="img" /> : null}
                         </div>
                     </div>
                 ))}

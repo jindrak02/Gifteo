@@ -571,6 +571,12 @@ button.text-red-500 {
   color: black;
 }
 
+.form-check {
+  display: flex;
+  flex-direction: column;
+  float: right;
+}
+
 .form-check-input {
   border: 1px solid black;
 }
@@ -578,4 +584,9 @@ button.text-red-500 {
 .form-check-input:checked {
   background-color: #8F84F2;
   border-color: #8F84F2;
+}
+
+.check-off-img {
+  width: 20px;
+  height: 20px;
 }
