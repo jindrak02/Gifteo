@@ -43,7 +43,11 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
             wci.photo_url,
             wci.price,
             wci.price_currency,
-            wci.checked_off_by_user_id
+            wci.checked_off_by_user_id,
+	
+            (SELECT photo_url
+              FROM "profile"
+              WHERE user_id = wci.checked_off_by_user_id) AS "checked_off_by_photo"
 
         FROM "wishlistCopyUserRole" wcur
         LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
@@ -51,6 +55,7 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
 
         WHERE wcur.user_id = $1
         AND wcur."role" IN ('owner', 'cooperator')
+        AND invitation_status = 'accepted'
         AND wc.for_user_id = $2
         ORDER BY wc.created_at DESC;
         `;
@@ -83,7 +88,8 @@ router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) 
               photo_url: row.photo_url,
               price: row.price,
               price_currency: row.price_currency,
-              checkedOffBy: row.checked_off_by_user_id
+              checkedOffBy: row.checked_off_by_user_id,
+              checkedOffByPhoto: row.checked_off_by_photo
             });
           }
         });
@@ -275,6 +281,193 @@ router.patch("/uncheckItem/:wishlistCopyId/:itemId", authenticateUser, authorize
       
       await pool.query(uncheckItemQuery, [wishlistCopyId, itemId]);
       return res.json({ success: true, message: 'Item succesfully unchecked.' });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// POST /api/wishlistHub/addUserToWishlistCopy, pozvání uživatele do kopie wishlistu
+router.post("/addUserToWishlistCopy", authenticateUser, authorizeWishlistCopyAccess(['owner']), async (req, res) => {
+    const userId = req.cookies.session_token;
+    const { wishlistCopyId, addUserId } = req.body;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    if (!wishlistCopyId) {
+      return res.status(400).send({ success: false, message: "Missing wishlistCopyId parameter" });
+    }
+    
+    if (!addUserId) {
+      return res.status(400).send({ success: false, message: "Missing addUserId parameter" });
+    }
+    
+    try {
+      // 1. Ověření, že uživatel existuje
+      const userQuery = `
+        SELECT id
+        FROM "user"
+        WHERE id = $1;
+      `;
+      
+      const userResult = await pool.query(userQuery, [addUserId]);
+      
+      if (userResult.rowCount === 0) {
+        return res.status(400).json({ success: false, message: "User not found" });
+      }
+      
+      // 2. Ověření, že uživatel nebyl již pozván
+      const existingInvitationQuery = `
+        SELECT 1
+        FROM "wishlistCopyUserRole"
+        WHERE wishlist_copy_id = $1
+        AND user_id = $2
+      `;
+      
+      const existingInvitationResult = await pool.query(existingInvitationQuery, [wishlistCopyId, addUserId]);
+      
+      if (existingInvitationResult.rowCount > 0) {
+        return res.status(400).json({ success: false, message: "User already invited" });
+      }
+      
+      // 3. Vytvoření role uživatele
+      const inviteUserQuery = `
+        INSERT INTO "wishlistCopyUserRole" (wishlist_copy_id, user_id, "role", invitation_status)
+        VALUES ($1, $2, 'cooperator', 'pending');
+      `;
+      
+      await pool.query(inviteUserQuery, [wishlistCopyId, addUserId]);
+      
+      res.json({ success: true, message: 'User successfully invited' });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// GET /api/wishlistHub/invitations vrátí všechny pozvánky do kopie wishlistu
+router.get("/invitations", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+
+      const invitationsQuery = `
+        SELECT
+          wcur.id,
+          
+          (SELECT "name"
+          FROM "profile"
+          WHERE "user_id" = (SELECT user_id
+                            FROM "wishlistCopyUserRole"
+                            WHERE wishlist_copy_id = wcur.wishlist_copy_id
+                            AND "role" = 'owner')) AS "ownerName",
+          
+          (SELECT "photo_url"
+            FROM "profile"
+            WHERE "user_id" = (SELECT user_id
+                              FROM "wishlistCopyUserRole"
+                              WHERE wishlist_copy_id = wcur.wishlist_copy_id
+                              AND "role" = 'owner')) AS "ownerPhoto",
+                    
+          wc."name" AS "wishlistCopyName",
+          
+          (SELECT "name"
+            FROM "profile"
+            WHERE "user_id" = wc."for_user_id") AS "forPesonName",
+          
+          wcur.created_at AS "createdAt"
+
+        FROM "wishlistCopyUserRole" wcur
+        LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
+
+        WHERE wcur.invitation_status = 'pending'
+        AND wcur.user_id = $1;
+      `;
+      
+      const invitationsResult = await pool.query(invitationsQuery, [userId]);
+      
+      res.json({ success: true, invitations: invitationsResult.rows });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// DELETE /api/wishlistHub/declineInvitation/:invitationId, odmítnutí pozvánky do kopie wishlistu
+router.delete("/declineInvitation/:invitationId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const invitationId = req.params.invitationId;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+      const declineInvitationQuery = `
+        DELETE FROM "wishlistCopyUserRole"
+        WHERE id = $1
+        AND user_id = $2;
+      `;
+      
+      await pool.query(declineInvitationQuery, [invitationId, userId]);
+      return res.json({ success: true, message: 'Invitation succesfully declined' });
+      
+    } catch (error) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+});
+
+// PATCH /api/wishlistHub/acceptInvitation/:invitationId, přijetí pozvánky do kopie wishlistu
+router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const invitationId = req.params.invitationId;
+    
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+      // Ověření, zda uživatel má osobu pro kterou je wishlist přidanou ve svých osobách
+      const personId = await pool.query(`
+        SELECT pe.id
+
+        FROM "wishlistCopyUserRole" wcur
+        LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
+        LEFT JOIN "profile" pr ON wc.for_user_id = pr.user_id
+        LEFT JOIN "person" pe ON pr.id = pe.profile_id
+
+        WHERE wcur.id = $1;
+      `, [invitationId]);
+
+      const checkPersonQuery = `
+        SELECT 1
+        FROM "userPerson"
+        WHERE user_id = $1
+        AND person_id = $2
+        AND status = 'accepted';
+      `;
+
+      const checkPersonResult = await pool.query(checkPersonQuery, [userId, personId.rows[0].id]);
+
+      if (checkPersonResult.rowCount === 0) {
+        return res.status(403).json({ success: false, message: 'Person not found in user persons' });
+      }
+
+      const acceptInvitationQuery = `
+        UPDATE "wishlistCopyUserRole"
+        SET invitation_status = 'accepted'
+        WHERE id = $1
+        AND user_id = $2;
+      `;
+      
+      await pool.query(acceptInvitationQuery, [invitationId, userId]);
+      return res.json({ success: true, message: 'Invitation succesfully accepted' });
       
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });

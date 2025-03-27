@@ -21,7 +21,7 @@ interface Invitation {
     senderName: string;
     senderProfilePicture?: string;
     createdAt: string;
-  }
+}
 
 const MyPeople = () => {
     const [persons, setPersons] = useState<Person[]>([]);

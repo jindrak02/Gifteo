@@ -23,6 +23,7 @@ type WishlistCopyItem = {
     url: string;
     photo_url: string;
     checkedOffBy: string;
+    checkedOffByPhoto?: string | null;
 };
 
 type WishlistCopy = {
