@@ -282,7 +282,7 @@ button.text-red-500 {
 
 @media (min-width: 768px) {
   .login-container {
-    width: 50vw;
+    width: 30vw;
   }
 }
 
@@ -610,4 +610,11 @@ button.text-red-500 {
   width: 25px;
   height: 25px;
   object-fit: cover;
+}
+
+.participant-thumbnail {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 50%;
 }

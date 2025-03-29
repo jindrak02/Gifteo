@@ -231,8 +231,8 @@ const Profile = () => {
   
   const handleDeleteWishlist = async (wishlistId: string) => {
     const result = await Swal.fire({
-      title: "Do you really want to delete this wishlist?",
-      text: "You won't be able to revert this!",
+      title: "Delete wishlist",
+      text: "Are you sure?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",

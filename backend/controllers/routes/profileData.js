@@ -182,19 +182,21 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
 
     const wishlistsQuery = `
       SELECT
-        w."id" wishlistId,
-        w."name" wishlistName,
-        wi."id" itemId,
-        wi."name" itemName,
-        wi."price" itemPrice,
-        wi."price_currency" AS currency,
-        wi."photo_url" itemPhotoUrl,
-        wi."url" itemUrl
-        
+          w."id" wishlistId,
+          w."name" wishlistName,
+          wi."id" itemId,
+          wi."name" itemName,
+          wi."price" itemPrice,
+          wi."price_currency" AS currency,
+          wi."photo_url" itemPhotoUrl,
+          wi."url" itemUrl
+
       FROM "wishlist" w
-      LEFT JOIN "wishlistItem" wi on w.id = wi.wishlist_id
+      LEFT JOIN "wishlistItem" wi
+        ON w.id = wi.wishlist_id AND wi.deleted = false
       WHERE w.profile_id = $1
-      ORDER BY w.created_at desc;
+      AND w.deleted = false
+      ORDER BY w.created_at DESC;
     `;
     const wishlistsQueryResult = await pool.query(wishlistsQuery, [profileId]);
 
@@ -241,10 +243,18 @@ router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) 
   const { wishlistId } = req.params;
 
   try {
-    const deleteWishlistItemsQuery = 'DELETE FROM "wishlistItem" WHERE wishlist_id = $1;';
+    const deleteWishlistItemsQuery = `
+      UPDATE "wishlistItem"
+      SET deleted = true
+      WHERE wishlist_id = $1;
+    `;
     await pool.query(deleteWishlistItemsQuery,[wishlistId]);
 
-    const deleteWishlistQuery = 'DELETE FROM "wishlist" WHERE id = $1;';
+    const deleteWishlistQuery = `
+      UPDATE "wishlist"
+      SET deleted = true
+      WHERE id = $1;
+    `;
     await pool.query(deleteWishlistQuery,[wishlistId]);
 
     res.json({ success: true, message: "Wishlist deleted" });
@@ -266,32 +276,40 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
   const { items } = req.body;
   const wishlistId = req.params.wishlistId;
 
-  // Pokud je items.price prázdné, undefined, null nebo "" nastavím ho na null
-  // items.forEach(item => {
-  //   if (item.price == undefined || item.price === "") {
-  //     item.price = null;
-  //   }
-  // });
+  //Pokud je items.price prázdné, undefined, null nebo "" nastavím ho na null
+  items.forEach(item => {
+    if (item.price == undefined || item.price === "" || item.price === ' ') {
+      item.price = null;
+    }
+  });
 
   console.log(items);
 
   try {
 
-    const existingIds = items.filter(item => item.id).map(item => `'${item.id}'`).join(",");
+    const existingIds = items
+    .filter(item => item.id)
+    .map(item => item.id);
 
-    // 1. Smazání všech položek, které nejsou v novém seznamu
-    if (existingIds) {
-      const deleteItemsQuery = `
-        DELETE FROM "wishlistItem"
-        WHERE id NOT IN (${existingIds}) AND wishlist_id = $1;
+    if (existingIds.length > 0) {
+      // Vygenerujeme seznam parametrů: $2, $3, $4, ...
+      const idPlaceholders = existingIds.map((_, i) => `$${i + 2}`).join(", ");
+
+      const softDeleteQuery = `
+        UPDATE "wishlistItem"
+        SET deleted = true
+        WHERE wishlist_id = $1
+          AND id NOT IN (${idPlaceholders});
       `;
-      await pool.query(deleteItemsQuery,[wishlistId]);
+
+      await pool.query(softDeleteQuery, [wishlistId, ...existingIds]);
     } else {
-      const deleteItemsQuery = `
-        DELETE FROM "wishlistItem"
+      const softDeleteAllQuery = `
+        UPDATE "wishlistItem"
+        SET deleted = true
         WHERE wishlist_id = $1;
       `;
-      await pool.query(deleteItemsQuery,[wishlistId]);
+      await pool.query(softDeleteAllQuery, [wishlistId]);
     }
 
     // 2. Aktualizace existujícíh položek
@@ -299,7 +317,7 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
       if (item.id) {
         const updateItemQuery = `
           UPDATE "wishlistItem"
-          SET name = $1, price = $2, price_currency = $3, photo_url = $4, url = $5
+          SET name = $1, price = NULLIF($2, '')::NUMERIC, price_currency = $3, photo_url = $4, url = $5
           WHERE id = $6;
         `;
         await pool.query(updateItemQuery,[

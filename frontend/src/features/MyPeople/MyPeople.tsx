@@ -212,6 +212,13 @@ const MyPeople = () => {
 
                 <hr className="my-4" />
 
+                { persons.length === 0 && (
+                    <div className="text-center my-4">
+                        <h3 className="text-muted my-4">You have connected with no people yet.</h3>
+                        <p className="text-muted">Click the button below to add a new person.</p>
+                    </div>
+                )}
+
                 {persons.map((person) => (
                     <PersonThumbnail
                     key={person.person_id}
