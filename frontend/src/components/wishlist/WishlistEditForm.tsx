@@ -14,10 +14,11 @@ interface WishlistItem {
 
 interface WishlistFormProps {
   items: WishlistItem[];
+  name?: string;
   onSubmit: (items: WishlistItem[]) => void;
 }
 
-const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, onSubmit,}) => {
+const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, name:name, onSubmit,}) => {
   const [items, setItems] = useState<WishlistItem[]>(initialItems);
   const [showButtons, setShowButtons] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
@@ -110,6 +111,8 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
   }
 
   return (
+    <>
+    <h2 className="text-center">{name}</h2>
     <form onSubmit={handleSubmit} className="edit-wishlist-form">
       <div className="my-1">
         <button
@@ -227,6 +230,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, on
       
       <LoadingSpinner message="This may take a few seconds, we are fetching the item data from eshop..." className={showSpinner ? "" : "hidden"} />
     </form>
+    </>
   );
 };
 

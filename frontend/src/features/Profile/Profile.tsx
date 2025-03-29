@@ -497,7 +497,6 @@ const Profile = () => {
     return (
       <div className="container p-4 rounded profile-container">
         <div className="profile-welcome">
-          <h2>Edit Wishlist</h2>
           <button className="btn-service" onClick={() => setIsEditingWishlist(null)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -513,12 +512,14 @@ const Profile = () => {
               ></path>
             </svg>
           </button>
+          <h2 className="my-2">Edit Wishlist</h2>
         </div>
         
         <hr className="my-4" />
 
         <WishlistEditForm
           items={wishlist.items}
+          name={wishlist.name}
           onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
         />
       </div>
@@ -529,7 +530,6 @@ const Profile = () => {
     <>
       <div className="profile-container container p-4 rounded">
         <div className="profile-welcome">
-          <h2>Hi, {profileData?.name?.split(" ")[0]}</h2>
           <button
             className="btn btn-service logout-btn"
             onClick={handleLogOut}
@@ -552,6 +552,7 @@ const Profile = () => {
               />
             </svg>
           </button>
+          <h2 className="my-2">Hi, {profileData?.name?.split(" ")[0]}</h2>
         </div>
 
         <hr className="my-4" />

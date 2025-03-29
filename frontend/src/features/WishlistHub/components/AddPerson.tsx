@@ -15,9 +15,11 @@ interface Person {
 
 interface AddPersonProps {
     wishlistCopyId: string;
+    onClickBack: () => void;
+    wishlistCopyName?: string;
 }
 
-const AddPerson = ({ wishlistCopyId } : AddPersonProps) => {
+const AddPerson = ({ wishlistCopyId, wishlistCopyName, onClickBack } : AddPersonProps) => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [persons, setPersons] = useState <Person [] | null>(null);
         
@@ -109,21 +111,44 @@ const AddPerson = ({ wishlistCopyId } : AddPersonProps) => {
     }
 
     return (
-        <div>
-        <h3>Add Person</h3>
 
-        <div className="persons-list">
-            {persons?.map((person) => (
-            <UserSearchThumbnail
-                key={person.user_id}
-                name={person.name}
-                profilePicture={person.photo_url}
-                onInvite={() => handleAddUser(person.user_id, wishlistCopyId)}
-            />
-            ))}
-        </div>
+        <div className="profile-container p-4">
+                <div className="profile-welcome">
+                    <button className="btn-service" onClick={onClickBack}>
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-arrow-left"
+                        viewBox="0 0 16 16"
+                        >
+                        <path
+                            fillRule="evenodd"
+                            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+                        />
+                        </svg>
+                    </button>
+                    <h2 className="my-2 mx-2">Add Person to {wishlistCopyName}</h2>
+                </div>
 
-        <LoadingSpinner className= {showSpinner ? "" : "hidden"} />
+                <hr className="my-4" />
+
+                <div>
+                    <h3>Add Person</h3>
+
+                    <div className="persons-list">
+                        {persons?.map((person) => (
+                        <UserSearchThumbnail
+                            key={person.user_id}
+                            name={person.name}
+                            profilePicture={person.photo_url}
+                            onInvite={() => handleAddUser(person.user_id, wishlistCopyId)}
+                        />
+                        ))}
+                    </div>
+                </div>
+                <LoadingSpinner className={showSpinner ? "" : "hidden"} />
         </div>
     );
 };

@@ -144,7 +144,6 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
         return (
           <div className="profile-container p-4">
             <div className="profile-welcome">
-              <h2 className="">Add Wishlist Copy</h2>
               <button
                 className="btn-service"
                 onClick={() => setIsAddingWishlistCopy(false)}
@@ -163,6 +162,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                   />
                 </svg>
               </button>
+              <h2 className="my-2">Add Wishlist Copy</h2>
             </div>
 
             <hr className="my-4" />
@@ -181,31 +181,17 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
 
     if (isViewingWishlistCopy != null) {
         return (
-          <div className="profile-container p-4">
-            <div className="profile-welcome">
-              <h2 className="">Gift For {name.split(' ')[0]}</h2>
-              <button
-                className="btn-service"
-                onClick={() => setIsViewingWishlistCopy(null)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
-                    <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
-                </svg>
-              </button>
-            </div>
-
-            <hr className="my-4" />
-
-            <div className="wishlist-copy-detail">
-                <WishlistCopyDetail
+          <>
+            <WishlistCopyDetail
+                    personName={name}
                     id={isViewingWishlistCopy.id}
                     name={isViewingWishlistCopy.name}
                     items={isViewingWishlistCopy.items}
                     originalWishlistId={isViewingWishlistCopy.originalWishlistId}
                     role={isViewingWishlistCopy.role}
+                    onClickBack={() => setIsViewingWishlistCopy(null)}
                 />
-            </div>
-          </div>
+          </>
         );
     }
 
@@ -213,12 +199,12 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
         <>
             <div className="profile-container p-4">
                 <div className="profile-welcome">
-                    <h2 className="">Gift For {name.split(' ')[0]}</h2>
                     <button className="btn-service" onClick={() => onReturn()}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
                             <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                         </svg>
                     </button>
+                    <h2 className="my-2">Gift For {name.split(' ')[0]}</h2>
                 </div>
                 
                 <hr className="my-4" />
@@ -226,10 +212,13 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                 <div className="my-4 my-wishlists-wrapper">
                     <div className="profile-wishlists my-4">
                         <img className="profile-picture-thumbnail rounded-circle shadow" src={photo_url} alt={name + "profile"} />
-                        <h4>{name.split(' ')[0]}'s Wishlists</h4>
+                        <h4 className="mx-2">Your copies of {name.split(' ')[0]}'s Wishlists</h4>
+                    </div>
+
+                    <div className="flex justify-center">
                         <button
-                        className="btn btn-service btn-primary"
-                        onClick={() => handleAddWishlistCopy()}
+                            className="btn btn-service btn-primary"
+                            onClick={() => handleAddWishlistCopy()}
                         >
                             Add wishlist
                         </button>

@@ -52,10 +52,11 @@ const Login = () => {
     <>
       <div className='flex-container login'>
         <div className="login-container">
+          <img src='images/icon.png' alt="Gifteo icon" className='icon-main my-2'/>
           <h1 className="login-title">Welcome to Gifteo</h1>
-          <GoogleLogin onSuccess={onSuccess} onError={onFailure} />
           <hr className="divider" />
-          <p className="name-day-info text-center">Todays date is {today}. Nameday has {nameDay}.</p>
+          <GoogleLogin onSuccess={onSuccess} onError={onFailure} />
+          {/* <p className="name-day-info text-center">Todays date is {today}. Nameday has {nameDay}.</p> */}
         </div>
       </div>
     </>
