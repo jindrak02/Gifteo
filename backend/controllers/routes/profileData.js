@@ -188,6 +188,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
           wi."name" itemName,
           wi."price" itemPrice,
           wi."price_currency" AS currency,
+          wi."description" itemDescription,
           wi."photo_url" itemPhotoUrl,
           wi."url" itemUrl
 
@@ -217,6 +218,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
           name: row.itemname,
           price: row.itemprice,
           currency: row.currency,
+          description: row.itemdescription,
           photo_url: row.itemphotourl,
           url: row.itemurl
         });
@@ -317,11 +319,12 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
       if (item.id) {
         const updateItemQuery = `
           UPDATE "wishlistItem"
-          SET name = $1, price = NULLIF($2, '')::NUMERIC, price_currency = $3, photo_url = $4, url = $5
-          WHERE id = $6;
+          SET name = $1, description = $2, price = NULLIF($3, '')::NUMERIC, price_currency = $4, photo_url = $5, url = $6
+          WHERE id = $7;
         `;
         await pool.query(updateItemQuery,[
           sanitize(item.name), 
+          sanitize(item.description || ""),
           sanitize(item.price),
           sanitize(item.currency),
           sanitize(item.photo_url), 
@@ -335,12 +338,13 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
     for (const item of items) {
       if (!item.id) {
         const insertItemQuery = `
-          INSERT INTO "wishlistItem" (wishlist_id, name, price, price_currency, photo_url, url)
-          VALUES ($1, $2, NULLIF($3, '')::NUMERIC, $4, $5, $6);
+          INSERT INTO "wishlistItem" (wishlist_id, name, description, price, price_currency, photo_url, url)
+          VALUES ($1, $2, $3, NULLIF($4, '')::NUMERIC, $5, $6, $7);
         `;
         await pool.query(insertItemQuery,[
           sanitize(wishlistId), 
-          sanitize(item.name), 
+          sanitize(item.name),
+          sanitize(item.description || ""),
           sanitize(item.price),
           sanitize(item.currency),
           sanitize(item.photo_url), 

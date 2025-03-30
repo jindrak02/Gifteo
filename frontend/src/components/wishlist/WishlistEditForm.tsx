@@ -6,6 +6,7 @@ import LoadingSpinner from "../ui/LoadingSpinner";
 interface WishlistItem {
   id: string;
   name: string;
+  description?: string;
   price: number | string;
   currency: string;
   url: string;
@@ -26,24 +27,24 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
   useEffect(() => {
     setItems(initialItems);
   }, [initialItems]);
-
+  
   const handleChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [name]: value };
     setItems(newItems);
   };
-
+  
   const addItem = () => {
     setItems([
       ...items,
-      { id: "", name: "", price: "", currency: "", url: "", photo_url: "" },
+      { id: "", name: "", description: "", price: "", currency: "", url: "", photo_url: "" },
     ]);
   };
-
+  
   const removeItem = (index: number) => {
     Swal.fire({
       title: "Remove item?",
@@ -58,16 +59,16 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
       }
     });
   };
-
+  
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     onSubmit(items); // Zavolání callbacku s daty
   };
-
+  
   const toggleShowButtons = () => {
     setShowButtons(!showButtons);
   }
-
+  
   const handleFetchItemData = async (index: number, url: string) => {
     setShowSpinner(true);
     try {
@@ -161,54 +162,74 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
               Fetch item data
             </button>
 
-            <input
-              type="text"
-              name="name"
-              value={item.name}
-              onChange={(e) => handleChange(index, e)}
-              placeholder="Name"
-              className="border p-2"
-              required
-              minLength={3}
-              maxLength={30}
-            />
+            <div className="flex-col">
+              <label className="p-1" htmlFor="name">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={item.name}
+                onChange={(e) => handleChange(index, e)}
+                placeholder=""
+                className="border p-2"
+                required
+                minLength={3}
+                maxLength={30}
+              />
+            </div>
 
-            <input
-              type="number"
-              name="price"
-              value={item.price}
-              onChange={(e) => handleChange(index, e)}
-              placeholder="Price"
-              className="border p-2"
-              min={0}
-              step={0.01}
-            />
+            <div className="flex-col">
+              <label className="p-1" htmlFor="description">Description</label>
+              <textarea
+                name="description"
+                value={item.description || ""}
+                onChange={(e) => handleChange(index, e)}
+                placeholder=""
+                className="border p-2"
+                maxLength={200}
+              />
+            </div>
 
-            <select
+            <div className="flex-col">
+              <label className="p-1" htmlFor="description">Price</label>
+              <input
+                type="number"
+                name="price"
+                value={item.price}
+                onChange={(e) => handleChange(index, e)}
+                placeholder=""
+                className="border p-2"
+                min={0}
+                step={0.01}
+              />
+              <select
               name="currency"
               value={item.currency}
               onChange={(e) => handleChange(index, e)}
               className="border p-2">
 
-              <option value="">Select currency</option>
-              <option value="CZK">CZK - Czech Koruna</option>
-              <option value="EUR">EUR - Euro</option>
-              <option value="USD">USD - US Dollar</option>
-              <option value="GBP">GBP - British Pound</option>
-              <option value="PLN">PLN - Polish Zloty</option>
-              <option value="CHF">CHF - Swiss Franc</option>
-              <option value="JPY">JPY - Japanese Yen</option>
-              <option value="AUD">AUD - Australian Dollar</option>
-            </select>
+                <option value="">Select currency</option>
+                <option value="CZK">CZK - Czech Koruna</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="PLN">PLN - Polish Zloty</option>
+                <option value="CHF">CHF - Swiss Franc</option>
+                <option value="JPY">JPY - Japanese Yen</option>
+                <option value="AUD">AUD - Australian Dollar</option>
+              </select>
+            </div>
 
-            <input
+            <div className="flex-col">
+              <label className="p-1" htmlFor="description">Image URL</label>
+              <input
               type="text"
               name="photo_url"
               value={item.photo_url}
               onChange={(e) => handleChange(index, e)}
-              placeholder="Link to image"
+              placeholder=""
               className="border p-2"
-            />
+              />
+            </div>
 
           </div>
           <div className={showButtons ? "" : "hidden"}>

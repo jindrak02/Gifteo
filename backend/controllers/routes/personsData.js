@@ -33,7 +33,7 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
             WHERE up.user_id = $1
             AND up.status = 'accepted';
         `;
-        const personWishlistQuery = `SELECT w."name" FROM "wishlist" w WHERE w.profile_id = $1;`;
+        const personWishlistQuery = `SELECT w."name" FROM "wishlist" w WHERE w.profile_id = $1 AND w.deleted = false;`;
         
         const peopleQueryResult = await pool.query(peopleQuery, [userId]);
         
@@ -147,7 +147,9 @@ router.get("/PersonDetails/:personId", authenticateUser, async (req, res) => {
             FROM "profile" p
             LEFT JOIN "person" pers on p.id = pers.profile_id
             LEFT JOIN "wishlist" w on p.id = w.profile_id
-            WHERE pers.id = $1;
+            WHERE pers.id = $1
+            AND w.deleted = false
+            AND w.shared_with_all_my_people = true;
         `;
 
         const wishlistItems = `
@@ -155,7 +157,8 @@ router.get("/PersonDetails/:personId", authenticateUser, async (req, res) => {
                 wi.photo_url
 
             FROM "wishlistItem" wi
-            WHERE wi.wishlist_id = $1;
+            WHERE wi.wishlist_id = $1
+            AND wi.deleted = false;
         `;
 
         const personDetailsQueryResult = await pool.query(personDetailsQuery, [personId]);
@@ -205,11 +208,13 @@ router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
                 wi.price,
                 wi.price_currency AS currency,
                 wi.url,
+                wi.description,
                 wi.photo_url
 
             FROM "wishlistItem" wi
             LEFT JOIN "wishlist" w on wi.wishlist_id = w.id
-            WHERE wi.wishlist_id = $1;
+            WHERE wi.wishlist_id = $1
+            AND wi.deleted = false;
         `;
 
         const wishlistItemsQueryResult = await pool.query(wishlistItemsQuery, [wishlistId]);
