@@ -15,7 +15,7 @@ interface PersonDetailProps {
     onReturn: () => void;
 }
 
-type WishlistCopyItem = {
+type WishlistItem = {
     id: string;
     name: string;
     price: number;
@@ -26,28 +26,28 @@ type WishlistCopyItem = {
     checkedOffByPhoto?: string | null;
 };
 
-type WishlistCopy = {
+type Wishlist = {
     id: string;
     name: string;
     originalWishlistId: string;
     role: string;
-    items: WishlistCopyItem[];
+    items: WishlistItem[];
 };
 
 const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onReturn } : PersonDetailProps ) => {
     const [showSpinner, setShowSpinner] = useState(false);
-    const [wishlistCopies, setWishlistCopies] = useState<WishlistCopy[]>([]);
+    const [wishlists, setWishlists] = useState<Wishlist[]>([]);
     const [isAddingWishlistCopy, setIsAddingWishlistCopy] = useState(false);
-    const [isViewingWishlistCopy, setIsViewingWishlistCopy] = useState<WishlistCopy | null>(null);
+    const [isViewingWishlistCopy, setIsViewingWishlistCopy] = useState<Wishlist | null>(null);
 
-    // Načtení dat kopií wishlistů u daného uživatele
+    // Načtení wishlistů u daného uživatele
     useEffect(() => {
-        const fetchWishlistCopies = async () => {
+        const fetchWishlists = async () => {
             setShowSpinner(true);
 
             try {
                 const res = await fetchWithAuth(
-                    `http://localhost:3000/api/wishlistHub/copiedWishlistsFor/${user_id}`,
+                    `http://localhost:3000/api/wishlistHub/wishlistsFor/${person_id}`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -57,10 +57,11 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log("Fetched wishlist copies:", data.wishlistCopies);
-                    setWishlistCopies(data.wishlistCopies);
+                    console.log("Fetched wishlists:", data.wishlists);
+                    //setWishlists(data.wishlistCopies);
                 } else {
-                    console.error("Error fetching wishlist copies");
+                    console.error("Error fetching wishlist copies: " + data.message);
+
                 }
             } catch (error) {
                 console.error("Error fetching wishlist copies:", error);
@@ -69,75 +70,12 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
             setShowSpinner(false);
         };
 
-        fetchWishlistCopies();
+        fetchWishlists();
     }, [isAddingWishlistCopy]);
 
     const handleAddWishlistCopy = () => {
         console.log('Add wishlist copy for person id: ' + person_id);
         setIsAddingWishlistCopy(true);
-    }
-
-    const handleDeleteWishlistCopy = async (wishlistCopyId: string, role: string) => {
-
-        const deleteWishlistCopy = async () => {
-            setShowSpinner(true);
-            try {
-                const res = await fetchWithAuth(
-                    `http://localhost:3000/api/wishlistHub/deleteWishlistCopy/${wishlistCopyId}`,
-                    {
-                        method: "DELETE",
-                        credentials: "include",
-                    }
-                );
-
-                const data = await res.json();
-
-                if (data.success) {
-                    console.log("Deleted wishlist copy:", data);
-                    setWishlistCopies(wishlistCopies.filter(wishlistCopy => wishlistCopy.id !== wishlistCopyId));
-                } else {    
-                    console.error("Error deleting wishlist copy." + data.message);
-                }
-
-
-            } catch (error) {
-                console.error("Error deleting wishlist copy:", error);
-            }
-            setShowSpinner(false);
-        }
-
-        if (role === "owner") {
-            Swal.fire({
-                title: "Delete Wishlist Copy",
-                text: "You are the owner of this copy. Deleting it will remove it from your and other participants profile.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteWishlistCopy();
-                }
-            });
-        } else {
-            Swal.fire({
-                title: "Delete Wishlist Copy",
-                text: "The wishlist copy will be removed from your profile.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteWishlistCopy();
-                }
-            });
-        }
-
-    }
-
-    const handleViewingWishlistCopy = (wishlistCopy: WishlistCopy) => {
-        setIsViewingWishlistCopy(wishlistCopy);
     }
 
     if (isAddingWishlistCopy) {
@@ -212,7 +150,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                 <div className="my-4 my-wishlists-wrapper">
                     <div className="profile-wishlists my-4">
                         <img className="profile-picture-thumbnail rounded-circle shadow" src={photo_url} alt={name + "profile"} />
-                        <h4 className="mx-2">Your copies of {name.split(' ')[0]}'s Wishlists</h4>
+                        <h4 className="mx-2">{name.split(' ')[0]}'s Wishlists</h4>
                     </div>
 
                     <div className="flex justify-center">
@@ -225,19 +163,17 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                     </div>
 
                     <div className="wishlists-container my-4">
-                        {wishlistCopies.length === 0 ? (
+                        {wishlists.length === 0 ? (
                             <div className="text-center p-4 bg-gray-100 rounded-lg">
-                                You don't have any wishlists for {name.split(' ')[0]} yet.
+                                {name.split(' ')[0]} doesn't have any wishlists yet.
                             </div>
                         ) : (
-                            wishlistCopies.map(wishlistCopy => (
+                            wishlists.map(wishlist => (
                                 <WishlistCopyThumbnail
-                                key={wishlistCopy.id}
-                                title={wishlistCopy.name}
-                                imageUrls={wishlistCopy.items.map(item => item.photo_url)}
+                                key={wishlist.id}
+                                title={wishlist.name}
+                                imageUrls={wishlist.items.map(item => item.photo_url)}
                                 user_photo_url={photo_url}
-                                onDelete={() => handleDeleteWishlistCopy(wishlistCopy.id, wishlistCopy.role)}
-                                onEdit={() => handleViewingWishlistCopy(wishlistCopy)}
                                 />
                             ))
                         )}

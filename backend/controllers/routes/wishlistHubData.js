@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import pool from "../../config/db.js";
 import { authenticateUser } from "../../middlewares/authMiddleware.js";
-import { authorizeWishlistCopyAccess } from "../../middlewares/roleMiddleware.js";
+import { hasUserPerson } from "../../middlewares/personAccessMiddleware.js";
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 
@@ -15,463 +15,125 @@ function sanitize(input){
 
 const router = express.Router();
 router.use(cookieParser());
+router.use(express.json());
 
-// GET /api/wishlistHub/copiedWishlistsFor, vrátí všechny kopie wishlistů pro specifického
-// uživatele, kde je aktuální uživatel účastníkem
-router.get("/copiedWishlistsFor/:forUserId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
-    const forUserId = req.params.forUserId;
-    
+// GET /api/wishlistHub/wishlistsFor/:personId, vrátí všechny wishlisty pro danou osobu na které má uživatel přístup
+router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (req, res) => {
+    const userId = req.cookies.session_token;;
+    const personId = sanitize(req.params.personId);
+
     if (!userId) {
       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
     }
 
-    if (!forUserId) {
-        return res.status(401).send({ success: false, message: "For User id parameter not found" });
+    try {
+      const wishlistsQuery = `
+        SELECT 
+          w.id AS wishlist_id,
+          w.name AS wishlist_name,
+          w.deleted AS wishlist_deleted,
+          w.created_at AS wishlist_created_at,
+          w.visibility,
+          w.shared_with_all_my_people,
+          w.profile_id,
+          w.created_by_user_id,
+
+          wi.id AS item_id,
+          wi.name AS item_name,
+          wi.price,
+          wi.price_currency,
+          wi.photo_url,
+          wi.url,
+          wi.description,
+          wi.checked_off_by_user_id,
+          wi.deleted AS item_deleted,
+          wi.created_at AS item_created_at
+
+        FROM "wishlist" w
+        LEFT JOIN "wishlistItem" wi
+          ON wi.wishlist_id = w.id
+          AND (
+            wi.deleted = false
+            OR (
+              wi.deleted = true AND wi.checked_off_by_user_id IS NOT NULL
+            )
+          )
+
+        WHERE w.profile_id = (
+            SELECT profile_id FROM "person" WHERE id = $1
+        )
+        AND (
+            w.deleted = false
+            OR (
+              w.deleted = true
+              AND EXISTS (
+                SELECT 1
+                FROM "wishlistItem" wi2
+                WHERE wi2.wishlist_id = w.id
+                  AND wi2.checked_off_by_user_id = $2
+              )
+            )
+        )
+        AND (
+          w.shared_with_all_my_people = true
+          OR EXISTS (
+            SELECT 1 FROM "wishlistSharedWith"
+            WHERE wishlist_id = w.id
+              AND shared_with_user_id = $2
+          )
+        )
+        ORDER BY w.created_at DESC, wi.created_at ASC;
+      `;
+
+      const wishlistsQueryResult = await pool.query(wishlistsQuery, [personId, userId]);
+      const rows = wishlistsQueryResult.rows;
+
+      if (rows.length === 0) {
+        return res.status(404).send({ success: false, message: "No wishlists found" });
       }
+
+      const wishlistMap = new Map();
+
+      rows.forEach(row => {
+        if (!wishlistMap.has(row.wishlist_id)) {
+          wishlistMap.set(row.wishlist_id, {
+            id: row.wishlist_id,
+            name: row.wishlist_name,
+            deleted: row.wishlist_deleted,
+            visibility: row.visibility,
+            shared_with_all_my_people: row.shared_with_all_my_people,
+            created_at: row.wishlist_created_at,
+            profile_id: row.profile_id,
+            created_by_user_id: row.created_by_user_id,
+            items: []
+          });
+        }
+
+        if (row.item_id) {
+          wishlistMap.get(row.wishlist_id).items.push({
+            id: row.item_id,
+            name: row.item_name,
+            price: row.price,
+            price_currency: row.price_currency,
+            photo_url: row.photo_url,
+            url: row.url,
+            description: row.description,
+            checked_off_by_user_id: row.checked_off_by_user_id,
+            deleted: row.item_deleted,
+            created_at: row.item_created_at
+          });
+        }
+      });
+
+      const wishlists = Array.from(wishlistMap.values());
+
+      res.json({ success: true, wishlists: wishlists });
+      
+    } catch (error) {
+      console.error("Error fetching wishlists:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
   
-    try {
-      const wishlistCopiesQuery = `
-        SELECT
-            wcur.wishlist_copy_id,
-            wcur."role",
-            wc.original_wishlist_id,
-            wc."name",
-            wci."name" AS "itemName",
-            wci.id AS "itemId",
-            wci.url,
-            wci.photo_url,
-            wci.price,
-            wci.price_currency,
-            wci.checked_off_by_user_id,
-	
-            (SELECT photo_url
-              FROM "profile"
-              WHERE user_id = wci.checked_off_by_user_id) AS "checked_off_by_photo"
-
-        FROM "wishlistCopyUserRole" wcur
-        LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
-        LEFT JOIN "wishlistCopyItem" wci ON wc.id = wci.wishlist_copy_id
-
-        WHERE wcur.user_id = $1
-        AND wcur."role" IN ('owner', 'cooperator')
-        AND invitation_status = 'accepted'
-        AND wc.for_user_id = $2
-        ORDER BY wc.created_at DESC;
-        `;
-        
-        const wishlistCopiesQueryResult = await pool.query(wishlistCopiesQuery, [userId, forUserId]);
-        
-        // Process the data to create a nested structure
-        const wishlistCopiesMap = {};
-        
-        wishlistCopiesQueryResult.rows.forEach(row => {
-          const wishlistCopyId = row.wishlist_copy_id;
-          
-          // Initialize wishlist copy object if it doesn't exist
-          if (!wishlistCopiesMap[wishlistCopyId]) {
-            wishlistCopiesMap[wishlistCopyId] = {
-              id: wishlistCopyId,
-              original_wishlist_id: row.original_wishlist_id,
-              name: row.name,
-              role: row.role,
-              items: []
-            };
-          }
-          
-          // Add item to wishlist copy if item exists
-          if (row.itemId) {
-            wishlistCopiesMap[wishlistCopyId].items.push({
-              id: row.itemId,
-              name: row.itemName,
-              url: row.url,
-              photo_url: row.photo_url,
-              price: row.price,
-              price_currency: row.price_currency,
-              checkedOffBy: row.checked_off_by_user_id,
-              checkedOffByPhoto: row.checked_off_by_photo
-            });
-          }
-        });
-        
-        // Convert map to array of wishlist copies
-        const wishlistCopies = Object.values(wishlistCopiesMap);
-        
-        res.json({ success: true, wishlistCopies });
-
-    } catch (error) {
-        res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// GET /api/wishlistHub/createWishlistCopy, vytvoření kopie wishlistu a přidání uživatele jako owner role
-router.post("/createWishlistCopy/:wishlistId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
-    const originalWishlistId = req.params.wishlistId;
-    const { forUserId } = req.body;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    if (!originalWishlistId) {
-      return res.status(400).send({ success: false, message: "Missing originalWishlistId parameter" });
-    }
-    
-    if (!forUserId) {
-      return res.status(400).send({ success: false, message: "Missing forUserId parameter" });
-    }
-    
-    try {
-      // 1. Kontrola, jestli wishlist již nebyl zkopírován uživatelem
-      const existingCopyResult = await pool.query(`
-        SELECT 1 FROM "wishlistCopy"
-        WHERE original_wishlist_id = $1
-        AND for_user_id = $2
-        AND EXISTS (
-            SELECT 1 FROM "wishlistCopyUserRole"
-            WHERE wishlist_copy_id = "wishlistCopy".id
-            AND user_id = $3
-          );
-      `, [originalWishlistId, forUserId, userId]);
-      
-      if (existingCopyResult.rowCount > 0) {
-        return res.status(400).json({ success: false, message: "Wishlist already copied" });
-      }
-
-      // 2. Vytvoření kopie wishlistu
-      const createWishlistCopyQuery = `
-        INSERT INTO "wishlistCopy" (original_wishlist_id, for_user_id, "name", owner_id)
-        SELECT id, $1, "name", $2
-        FROM "wishlist"
-        WHERE id = $3
-        RETURNING id;
-      `;
-      
-      const createWishlistCopyResult = await pool.query(createWishlistCopyQuery, [forUserId, userId, originalWishlistId]);
-      const wishlistCopyId = createWishlistCopyResult.rows[0].id;
-      
-      // 3. Přidání uživatele jako owner role
-      const addOwnerRoleQuery = `
-        INSERT INTO "wishlistCopyUserRole" (wishlist_copy_id, user_id, "role", invitation_status)
-        VALUES ($1, $2, 'owner', 'accepted');
-      `;
-      
-      await pool.query(addOwnerRoleQuery, [wishlistCopyId, userId]);
-
-      // 4. Zkopírovat položky z originálu
-      const copyItemsQuery = `
-        INSERT INTO "wishlistCopyItem" (wishlist_copy_id, name, url, price, price_currency, photo_url)
-        SELECT $1, name, url, price, price_currency, photo_url
-        FROM "wishlistItem"
-        WHERE wishlist_id = $2
-      `;
-
-      await pool.query(copyItemsQuery, [wishlistCopyId, originalWishlistId]);
-      
-      res.json({ success: true, message: 'Wishlist úspěšně zkopírován, id kopie je: ' + wishlistCopyId });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// DELETE /api/wishlistHub/deleteWishlistCopy/:wishlistCopyId, smazání kopie wishlistu
-router.delete("/deleteWishlistCopy/:wishlistCopyId", authenticateUser, authorizeWishlistCopyAccess(['owner', 'cooperator']), async (req, res) => {
-    const userId = req.cookies.session_token;
-    const wishlistCopyId = req.params.wishlistCopyId;
-    const userRole = req.userRoleForWishlistCopy;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    try {
-      // Smazání kopie wishlistu, pokud je uživatel owner (cascade smazání všech rolí a položek)
-      if (userRole === 'owner') {
-        const deleteWishlistCopyQuery = `
-          DELETE FROM "wishlistCopy"
-          WHERE id = $1;
-        `;
-        
-        await pool.query(deleteWishlistCopyQuery, [wishlistCopyId]);
-        return res.json({ success: true, message: 'Wishlist úspěšně smazán' });
-      } else {
-        // Smazání role uživatele, pokud je uživatel cooperator
-        const deleteRoleQuery = `
-          DELETE FROM "wishlistCopyUserRole"
-          WHERE user_id = $1
-          AND wishlist_copy_id = $2;
-        `;
-        
-        await pool.query(deleteRoleQuery, [userId, wishlistCopyId]);
-        return res.json({ success: true, message: 'Role uživatele úspěšně smazána' });
-      }
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// PATCH /api/wishlistHub/checkOffItem/:wishlistCopyId/:itemId, označení položky jako zakoupené
-router.patch("/checkOffItem/:wishlistCopyId/:itemId", authenticateUser, authorizeWishlistCopyAccess(['owner', 'cooperator']), async (req, res) => {
-    const userId = req.cookies.session_token;
-    const wishlistCopyId = req.params.wishlistCopyId;
-    const itemId = req.params.itemId;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    try {
-      const checkOffItemQuery = `
-        UPDATE "wishlistCopyItem"
-        SET checked_off_by_user_id = $1
-        WHERE wishlist_copy_id = $2
-        AND id = $3;
-      `;
-      
-      const checkedByUserPhotoQuery = `
-        SELECT photo_url
-        FROM "profile"
-        WHERE user_id = $1;
-      `;
-
-      const userPhoto = await pool.query(checkedByUserPhotoQuery, [userId]);
-      await pool.query(checkOffItemQuery, [userId, wishlistCopyId, itemId]);
-      return res.json({ success: true, message: 'Item succesfully checked off.', checkedBy: userId, userPhoto: userPhoto.rows[0].photo_url });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// PATCH /api/wishlistHub/uncheckItem/:wishlistCopyId/:itemId, zrušení označení položky jako zakoupené
-router.patch("/uncheckItem/:wishlistCopyId/:itemId", authenticateUser, authorizeWishlistCopyAccess(['owner', 'cooperator']), async (req, res) => {
-    const userId = req.cookies.session_token;
-    const wishlistCopyId = req.params.wishlistCopyId;
-    const itemId = req.params.itemId;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    try {
-      // Ověření, že položka byla označena uživatelem
-      const itemCheckedByUserQuery = `
-        SELECT checked_off_by_user_id
-        FROM "wishlistCopyItem"
-        WHERE wishlist_copy_id = $1
-        AND id = $2
-      `;
-
-      const itemCheckedByUserResult = await pool.query(itemCheckedByUserQuery, [wishlistCopyId, itemId]);
-      const checkedByUserId = itemCheckedByUserResult.rows[0].checked_off_by_user_id;
-
-      if (checkedByUserId !== userId) {
-        return res.status(403).json({ success: false, message: 'Item was not checked off by current user' });
-      }
-
-      const uncheckItemQuery = `
-        UPDATE "wishlistCopyItem"
-        SET checked_off_by_user_id = NULL
-        WHERE wishlist_copy_id = $1
-        AND id = $2;
-      `;
-      
-      await pool.query(uncheckItemQuery, [wishlistCopyId, itemId]);
-      return res.json({ success: true, message: 'Item succesfully unchecked.' });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// POST /api/wishlistHub/addUserToWishlistCopy, pozvání uživatele do kopie wishlistu
-router.post("/addUserToWishlistCopy", authenticateUser, authorizeWishlistCopyAccess(['owner']), async (req, res) => {
-    const userId = req.cookies.session_token;
-    const { wishlistCopyId, addUserId } = req.body;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    if (!wishlistCopyId) {
-      return res.status(400).send({ success: false, message: "Missing wishlistCopyId parameter" });
-    }
-    
-    if (!addUserId) {
-      return res.status(400).send({ success: false, message: "Missing addUserId parameter" });
-    }
-    
-    try {
-      // 1. Ověření, že uživatel existuje
-      const userQuery = `
-        SELECT id
-        FROM "user"
-        WHERE id = $1;
-      `;
-      
-      const userResult = await pool.query(userQuery, [addUserId]);
-      
-      if (userResult.rowCount === 0) {
-        return res.status(400).json({ success: false, message: "User not found" });
-      }
-      
-      // 2. Ověření, že uživatel nebyl již pozván
-      const existingInvitationQuery = `
-        SELECT 1
-        FROM "wishlistCopyUserRole"
-        WHERE wishlist_copy_id = $1
-        AND user_id = $2
-      `;
-      
-      const existingInvitationResult = await pool.query(existingInvitationQuery, [wishlistCopyId, addUserId]);
-      
-      if (existingInvitationResult.rowCount > 0) {
-        return res.status(400).json({ success: false, message: "User already invited" });
-      }
-      
-      // 3. Vytvoření role uživatele
-      const inviteUserQuery = `
-        INSERT INTO "wishlistCopyUserRole" (wishlist_copy_id, user_id, "role", invitation_status)
-        VALUES ($1, $2, 'cooperator', 'pending');
-      `;
-      
-      await pool.query(inviteUserQuery, [wishlistCopyId, addUserId]);
-      
-      res.json({ success: true, message: 'User successfully invited' });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// GET /api/wishlistHub/invitations vrátí všechny pozvánky do kopie wishlistu
-router.get("/invitations", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    try {
-
-      const invitationsQuery = `
-        SELECT
-          wcur.id,
-          
-          (SELECT "name"
-          FROM "profile"
-          WHERE "user_id" = (SELECT user_id
-                            FROM "wishlistCopyUserRole"
-                            WHERE wishlist_copy_id = wcur.wishlist_copy_id
-                            AND "role" = 'owner')) AS "ownerName",
-          
-          (SELECT "photo_url"
-            FROM "profile"
-            WHERE "user_id" = (SELECT user_id
-                              FROM "wishlistCopyUserRole"
-                              WHERE wishlist_copy_id = wcur.wishlist_copy_id
-                              AND "role" = 'owner')) AS "ownerPhoto",
-                    
-          wc."name" AS "wishlistCopyName",
-          
-          (SELECT "name"
-            FROM "profile"
-            WHERE "user_id" = wc."for_user_id") AS "forPesonName",
-          
-          wcur.created_at AS "createdAt"
-
-        FROM "wishlistCopyUserRole" wcur
-        LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
-
-        WHERE wcur.invitation_status = 'pending'
-        AND wcur.user_id = $1;
-      `;
-      
-      const invitationsResult = await pool.query(invitationsQuery, [userId]);
-      
-      res.json({ success: true, invitations: invitationsResult.rows });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// DELETE /api/wishlistHub/declineInvitation/:invitationId, odmítnutí pozvánky do kopie wishlistu
-router.delete("/declineInvitation/:invitationId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
-    const invitationId = req.params.invitationId;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    try {
-      const declineInvitationQuery = `
-        DELETE FROM "wishlistCopyUserRole"
-        WHERE id = $1
-        AND user_id = $2;
-      `;
-      
-      await pool.query(declineInvitationQuery, [invitationId, userId]);
-      return res.json({ success: true, message: 'Invitation succesfully declined' });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
-});
-
-// PATCH /api/wishlistHub/acceptInvitation/:invitationId, přijetí pozvánky do kopie wishlistu
-router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
-    const invitationId = req.params.invitationId;
-    
-    if (!userId) {
-      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
-    }
-    
-    try {
-      // Ověření, zda uživatel má osobu pro kterou je wishlist přidanou ve svých osobách
-      const personId = await pool.query(`
-        SELECT pe.id
-
-        FROM "wishlistCopyUserRole" wcur
-        LEFT JOIN "wishlistCopy" wc ON wcur.wishlist_copy_id = wc.id
-        LEFT JOIN "profile" pr ON wc.for_user_id = pr.user_id
-        LEFT JOIN "person" pe ON pr.id = pe.profile_id
-
-        WHERE wcur.id = $1;
-      `, [invitationId]);
-
-      const checkPersonQuery = `
-        SELECT 1
-        FROM "userPerson"
-        WHERE user_id = $1
-        AND person_id = $2
-        AND status = 'accepted';
-      `;
-
-      const checkPersonResult = await pool.query(checkPersonQuery, [userId, personId.rows[0].id]);
-
-      if (checkPersonResult.rowCount === 0) {
-        return res.status(403).json({ success: false, message: 'Person not found in user persons' });
-      }
-
-      const acceptInvitationQuery = `
-        UPDATE "wishlistCopyUserRole"
-        SET invitation_status = 'accepted'
-        WHERE id = $1
-        AND user_id = $2;
-      `;
-      
-      await pool.query(acceptInvitationQuery, [invitationId, userId]);
-      return res.json({ success: true, message: 'Invitation succesfully accepted' });
-      
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
 });
 
 export default router;

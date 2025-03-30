@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import pool from "../../config/db.js";
 import { authenticateUser } from "../../middlewares/authMiddleware.js";
+import { hasUserPerson } from "../../middlewares/personAccessMiddleware.js";
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import e from "express";
@@ -106,7 +107,7 @@ router.delete("/DeletePerson/:personId", authenticateUser, async (req, res) => {
 });
 
 // GET /api/personsData/PersonDetails, vrátí detaily osoby a jejích wishlistů
-router.get("/PersonDetails/:personId", authenticateUser, async (req, res) => {
+router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async (req, res) => {
     const userId = req.cookies.session_token;
     const personId = sanitize(req.params.personId);
 

@@ -58,35 +58,7 @@ const WishlistHub = () => {
             }
         };
 
-        const fetchInvitations = async () => {
-            setShowSpinner(true);
-            try {
-                const res = await fetchWithAuth(
-                    "http://localhost:3000/api/wishlistHub/invitations",
-                    {
-                        method: "GET",
-                        credentials: "include",
-                    }
-                );
-
-                const data = await res.json();
-
-                if (data) {
-                    console.log("Fetched invitations data:", data.invitations);
-                    setInvitations(data.invitations);
-                } else {
-                    console.error("Error fetching invitations");
-                }
-                
-            } catch (error) {
-                console.error("Error fetching invitations data:", error);
-            } finally {
-                setShowSpinner(false);
-            }
-        }
-
         fetchPersonsData();
-        fetchInvitations();
     }, []);
 
     if (isViewingPerson !== null) {
