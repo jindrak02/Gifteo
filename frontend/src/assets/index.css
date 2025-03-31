@@ -172,6 +172,37 @@ body {
   box-shadow: -3px 10px 14px 5px rgba(0, 0, 0, 0.3);
 }
 
+.wishlist-images-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -ms-overflow-style: none;
+}
+
+.wishlist-images-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.wishlist-images-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #8F84F2;
+  border-radius: 6px;
+}
+
+.wishlist-images-wrapper {
+  display: flex;
+  padding: 4px 0;
+  min-width: min-content;
+}
+
+.wishlist-thumbnail-large {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: -3px 10px 14px 5px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
 .edit-wishlist-form {
   display: flex;
   flex-direction: column;

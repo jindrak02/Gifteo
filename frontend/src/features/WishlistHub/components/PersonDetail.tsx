@@ -15,7 +15,7 @@ interface PersonDetailProps {
     onReturn: () => void;
 }
 
-type WishlistItem = {
+interface WishlistItem {
     id: string;
     name: string;
     price: number;
@@ -24,13 +24,13 @@ type WishlistItem = {
     photo_url: string;
     checkedOffBy: string;
     checkedOffByPhoto?: string | null;
+    deleted: boolean;
 };
 
-type Wishlist = {
+interface Wishlist {
     id: string;
     name: string;
-    originalWishlistId: string;
-    role: string;
+    deleted: boolean;
     items: WishlistItem[];
 };
 
@@ -58,7 +58,8 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
 
                 if (data.success) {
                     console.log("Fetched wishlists:", data.wishlists);
-                    //setWishlists(data.wishlistCopies);
+                    setWishlists(data.wishlists);
+                    
                 } else {
                     console.error("Error fetching wishlist copies: " + data.message);
 
@@ -120,15 +121,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
     if (isViewingWishlistCopy != null) {
         return (
           <>
-            <WishlistCopyDetail
-                    personName={name}
-                    id={isViewingWishlistCopy.id}
-                    name={isViewingWishlistCopy.name}
-                    items={isViewingWishlistCopy.items}
-                    originalWishlistId={isViewingWishlistCopy.originalWishlistId}
-                    role={isViewingWishlistCopy.role}
-                    onClickBack={() => setIsViewingWishlistCopy(null)}
-                />
+            Wishlist detail
           </>
         );
     }
@@ -153,15 +146,6 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                         <h4 className="mx-2">{name.split(' ')[0]}'s Wishlists</h4>
                     </div>
 
-                    <div className="flex justify-center">
-                        <button
-                            className="btn btn-service btn-primary"
-                            onClick={() => handleAddWishlistCopy()}
-                        >
-                            Add wishlist
-                        </button>
-                    </div>
-
                     <div className="wishlists-container my-4">
                         {wishlists.length === 0 ? (
                             <div className="text-center p-4 bg-gray-100 rounded-lg">
@@ -169,12 +153,14 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                             </div>
                         ) : (
                             wishlists.map(wishlist => (
-                                <WishlistCopyThumbnail
-                                key={wishlist.id}
-                                title={wishlist.name}
-                                imageUrls={wishlist.items.map(item => item.photo_url)}
-                                user_photo_url={photo_url}
-                                />
+                                <div onClick={() => setIsViewingWishlistCopy(wishlist)} key={wishlist.id}>
+                                    <WishlistCopyThumbnail
+                                    key={wishlist.id}
+                                    title={wishlist.name}
+                                    imageUrls={wishlist.items.map(item => item.photo_url)}
+                                    user_photo_url={""}
+                                    />
+                                </div>
                             ))
                         )}
                     </div>

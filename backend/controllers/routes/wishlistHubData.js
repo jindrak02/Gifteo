@@ -32,11 +32,11 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
           w.id AS wishlist_id,
           w.name AS wishlist_name,
           w.deleted AS wishlist_deleted,
-          w.created_at AS wishlist_created_at,
-          w.visibility,
-          w.shared_with_all_my_people,
-          w.profile_id,
-          w.created_by_user_id,
+          --w.created_at AS wishlist_created_at,
+          --w.visibility,
+          --w.shared_with_all_my_people,
+          --w.profile_id,
+          --w.created_by_user_id,
 
           wi.id AS item_id,
           wi.name AS item_name,
@@ -47,7 +47,9 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
           wi.description,
           wi.checked_off_by_user_id,
           wi.deleted AS item_deleted,
-          wi.created_at AS item_created_at
+          --wi.created_at AS item_created_at,
+
+          p.photo_url AS "checkedOffByPhoto"
 
         FROM "wishlist" w
         LEFT JOIN "wishlistItem" wi
@@ -58,6 +60,8 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
               wi.deleted = true AND wi.checked_off_by_user_id IS NOT NULL
             )
           )
+        LEFT JOIN "user" u ON u.id = wi.checked_off_by_user_id
+        LEFT JOIN "profile" p ON p.user_id = u.id
 
         WHERE w.profile_id = (
             SELECT profile_id FROM "person" WHERE id = $1
@@ -100,11 +104,11 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
             id: row.wishlist_id,
             name: row.wishlist_name,
             deleted: row.wishlist_deleted,
-            visibility: row.visibility,
-            shared_with_all_my_people: row.shared_with_all_my_people,
-            created_at: row.wishlist_created_at,
-            profile_id: row.profile_id,
-            created_by_user_id: row.created_by_user_id,
+            //visibility: row.visibility,
+            //shared_with_all_my_people: row.shared_with_all_my_people,
+            //created_at: row.wishlist_created_at,
+            //profile_id: row.profile_id,
+            //created_by_user_id: row.created_by_user_id,
             items: []
           });
         }
@@ -118,9 +122,10 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
             photo_url: row.photo_url,
             url: row.url,
             description: row.description,
-            checked_off_by_user_id: row.checked_off_by_user_id,
+            chekcedOffBy: row.checked_off_by_user_id,
+            checkedOffByPhoto: row.checkedOffByPhoto || null,
             deleted: row.item_deleted,
-            created_at: row.item_created_at
+            //created_at: row.item_created_at
           });
         }
       });
