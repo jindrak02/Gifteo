@@ -3,7 +3,6 @@ import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import PersonThumbnail from "./components/PersonThumbnail";
 import PersonDetail from "./components/PersonDetail";
-import Invitations from "./components/Invitations";
 
 interface Person {
     user_id: string;
@@ -89,7 +88,7 @@ const WishlistHub = () => {
                 <hr className="my-4" />
 
                 <div>
-                    <Invitations invitationsProp={invitations}/>
+                    TODO
                 </div>
                 
         </div>

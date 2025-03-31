@@ -49,7 +49,8 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
           wi.deleted AS item_deleted,
           --wi.created_at AS item_created_at,
 
-          p.photo_url AS "checkedOffByPhoto"
+          p.photo_url AS "checkedOffByPhoto",
+          p.name AS "checkedOffByName"
 
         FROM "wishlist" w
         LEFT JOIN "wishlistItem" wi
@@ -122,8 +123,9 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
             photo_url: row.photo_url,
             url: row.url,
             description: row.description,
-            chekcedOffBy: row.checked_off_by_user_id,
+            checkedOffBy: row.checked_off_by_user_id,
             checkedOffByPhoto: row.checkedOffByPhoto || null,
+            checkedOffByName: row.checkedOffByName || null,
             deleted: row.item_deleted,
             //created_at: row.item_created_at
           });
@@ -139,6 +141,101 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
       res.status(500).send({ success: false, message: "Internal server error" });
     }
   
+});
+
+// PATCH /api/wishlistHub/checkOffItem/${item.id}, zaškrtne položku jako splněnou
+router.patch("/checkOffItem/:itemId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const itemId = sanitize(req.params.itemId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      const checkOffQuery = `
+        UPDATE "wishlistItem"
+        SET checked_off_by_user_id = $1
+        WHERE id = $2 AND deleted = false
+        RETURNING *;
+      `;
+
+      const result = await pool.query(checkOffQuery, [userId, itemId]);
+      const updatedItem = result.rows[0];
+
+      if (!updatedItem) {
+        return res.status(404).send({ success: false, message: "Item not found or already deleted" });
+      }
+
+      const checkedOffByQuery = `
+        SELECT p.photo_url AS "checkedOffByPhoto", p.name AS "checkedOffByName"
+        FROM "user" u
+        LEFT JOIN "profile" p ON p.user_id = u.id
+        WHERE u.id = $1;
+      `;
+      const checkedOffByResult = await pool.query(checkedOffByQuery, [userId]);
+      const checkedOffByRow = checkedOffByResult.rows[0];
+
+      res.json({
+        success: true,
+        item: updatedItem,
+        checkedBy: updatedItem.checked_off_by_user_id,
+        checkedByName: checkedOffByRow.checkedOffByName,
+        checkedByPhoto: checkedOffByRow.checkedOffByPhoto,
+      });
+      
+    } catch (error) {
+      console.error("Error checking off item:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
+});
+
+// PATCH /api/wishlistHub/uncheckItem/${item.id} , odškrtně položku jako nesplněnou
+router.patch("/uncheckItem/:itemId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const itemId = sanitize(req.params.itemId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      // Check if the item was checked by the same user
+      const checkQuery = `
+        SELECT checked_off_by_user_id FROM "wishlistItem"
+        WHERE id = $1 AND deleted = false;
+      `;
+      const checkResult = await pool.query(checkQuery, [itemId]);
+      const id = checkResult.rows[0]?.checked_off_by_user_id;
+
+      if (!id) {
+        return res.status(404).send({ success: false, message: "Item not checked or deleted" });
+      }
+
+      if (id != userId) {
+        return res.status(403).send({ success: false, message: "Item was not checked off by current user" });
+      }
+
+      const uncheckQuery = `
+        UPDATE "wishlistItem"
+        SET checked_off_by_user_id = NULL
+        WHERE id = $1 AND deleted = false
+        RETURNING *;
+      `;
+
+      const result = await pool.query(uncheckQuery, [itemId]);
+      const updatedItem = result.rows[0];
+
+      if (!updatedItem) {
+        return res.status(404).send({ success: false, message: "Item not found or already deleted" });
+      }
+
+      res.json({ success: true, item: updatedItem });
+      
+    } catch (error) {
+      console.error("Error unchecking item:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
 });
 
 export default router;

@@ -3,7 +3,6 @@ import Swal from "sweetalert2";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import WishlistThumbnail from "./WishlistThumbnail.tsx";
-import AddWishlistCopy from "./AddWishlistCopy.tsx";
 import WishlistDetail from "./WishlistDetail.tsx";
 
 interface PersonDetailProps {
@@ -20,10 +19,12 @@ interface WishlistItem {
     name: string;
     price: number;
     price_currency: string;
+    description: string;
     url: string;
     photo_url: string;
-    checkedOffBy: string;
-    checkedOffByPhoto?: string | null;
+    checkedOffBy: string | null;
+    checkedOffByPhoto: string | null;
+    checkedOffByName: string | null;
     deleted: boolean;
 };
 
@@ -37,7 +38,6 @@ interface Wishlist {
 const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onReturn } : PersonDetailProps ) => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [wishlists, setWishlists] = useState<Wishlist[]>([]);
-    const [isAddingWishlistCopy, setIsAddingWishlistCopy] = useState(false);
     const [isViewingWishlist, setIsViewingWishlist] = useState<Wishlist | null>(null);
 
     // Načtení wishlistů u daného uživatele
@@ -72,51 +72,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
         };
 
         fetchWishlists();
-    }, [isAddingWishlistCopy]);
-
-    const handleAddWishlistCopy = () => {
-        console.log('Add wishlist copy for person id: ' + person_id);
-        setIsAddingWishlistCopy(true);
-    }
-
-    if (isAddingWishlistCopy) {
-        return (
-          <div className="profile-container p-4">
-            <div className="profile-welcome">
-              <button
-                className="btn-service"
-                onClick={() => setIsAddingWishlistCopy(false)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-arrow-left"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
-                  />
-                </svg>
-              </button>
-              <h2 className="my-2">Add Wishlist Copy</h2>
-            </div>
-
-            <hr className="my-4" />
-
-            <div className="my-4">
-              <AddWishlistCopy
-                user_id={user_id}
-                person_id={person_id ? person_id : ""}
-                profile_id={profile_id}
-                onCopy={() => setIsAddingWishlistCopy(false)}
-              />
-            </div>
-          </div>
-        );
-    }
+    }, []);
 
     if (isViewingWishlist != null) {
         return (
@@ -162,6 +118,12 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
                 alt={name + "profile"}
               />
               <h4 className="mx-2">{name.split(" ")[0]}'s Wishlists</h4>
+            </div>
+
+            <div className="my-4 flex flex-end">
+                <button className="btn-primary btn btn-service" onClick={() => console.log('TODO: Add custom wishlist')}>
+                    Add custom wishlist
+                </button>
             </div>
 
             <div className="wishlists-container my-4">

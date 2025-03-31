@@ -68,6 +68,11 @@ body {
   align-items: center;
 }
 
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .justify-between {
   justify-content: space-between;
 }
@@ -375,8 +380,9 @@ button.text-red-500 {
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-height: 110px;
+  height: 140px;
   overflow: hidden;
+  position: relative;
 }
 
 .wishlist-item-checked {
@@ -641,6 +647,9 @@ button.text-red-500 {
   width: 25px;
   height: 25px;
   object-fit: cover;
+  position: absolute; /* Add this for absolute positioning */
+  bottom: 5px; /* Distance from bottom */
+  right: 5px; /* Distance from right */
 }
 
 .participant-thumbnail {
