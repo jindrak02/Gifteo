@@ -4,131 +4,122 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
 import AddPerson from "./AddPerson";
 
-type WishlistCopyItem = {
-    id: string;
-    name: string;
-    price: number;
-    price_currency: string;
-    url: string;
-    photo_url: string;
-    checkedOffBy: string | null;
-    checkedOffByPhoto?: string | null;
+interface WishlistItem {
+  id: string;
+  name: string;
+  price: number;
+  price_currency: string;
+  url: string;
+  photo_url: string;
+  checkedOffBy: string;
+  checkedOffByPhoto?: string | null;
+  deleted: boolean;
+};
+
+interface Wishlist {
+  id: string;
+  name: string;
+  deleted: boolean;
+  items: WishlistItem[];
 };
 
 type WishlistCopyProps = {
+    wishlist: Wishlist;
     personName: string;
-    id: string;
-    name: string;
-    originalWishlistId: string;
-    role: string;
-    items: WishlistCopyItem[];
     onClickBack: () => void;
 };
 
-const WishlistCopyDetail = ( {personName, id, name, items, onClickBack } : WishlistCopyProps) => {
-    const [wishlistItems, setWishlistItems] = useState<WishlistCopyItem[] | null>(items);
+const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopyProps) => {
+    const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(wishlist.items);
     const [showSpinner, setShowSpinner] = useState(false);
     const [isAddingPerson, setIsAddingPerson] = useState(false);
 
-    const handleCheckboxChange = async (item: WishlistCopyItem) => {
+    // const handleCheckboxChange = async (item: WishlistCopyItem) => {
 
-        // Uncheck logic implementation (only the user who checked off the item can uncheck it)
-        if (item.checkedOffBy) {
-            //console.log('Already chekced off by:', item.checkedOffBy);
-            setShowSpinner(true);
+    //     // Uncheck logic implementation (only the user who checked off the item can uncheck it)
+    //     if (item.checkedOffBy) {
+    //         //console.log('Already chekced off by:', item.checkedOffBy);
+    //         setShowSpinner(true);
 
-            try {
-                const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/uncheckItem/${id}/${item.id}`, {
-                    method: 'PATCH',
-                    credentials: 'include',
-                });
+    //         try {
+    //             const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/uncheckItem/${id}/${item.id}`, {
+    //                 method: 'PATCH',
+    //                 credentials: 'include',
+    //             });
 
-                const data = await res.json();
+    //             const data = await res.json();
 
-                if (data.success) {
-                    console.log('Item unchecked:', data);
+    //             if (data.success) {
+    //                 console.log('Item unchecked:', data);
 
-                    setWishlistItems((prevItems) => {
-                        if (!prevItems) return null;
-                        return prevItems.map((prevItem) => {
-                            if (prevItem.id === item.id) {
-                                return {
-                                    ...prevItem,
-                                    checkedOffBy: null,
-                                };
-                            }
-                            return prevItem;
-                        });
-                    });
+    //                 setWishlistItems((prevItems) => {
+    //                     if (!prevItems) return null;
+    //                     return prevItems.map((prevItem) => {
+    //                         if (prevItem.id === item.id) {
+    //                             return {
+    //                                 ...prevItem,
+    //                                 checkedOffBy: null,
+    //                             };
+    //                         }
+    //                         return prevItem;
+    //                     });
+    //                 });
 
-                } else {
-                    console.error('Failed to uncheck item:', data.message);
-                    if (data.message === 'Item was not checked off by current user') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'You can only uncheck items that you have checked off!',
-                        });    
-                    }
-                }
+    //             } else {
+    //                 console.error('Failed to uncheck item:', data.message);
+    //                 if (data.message === 'Item was not checked off by current user') {
+    //                     Swal.fire({
+    //                         icon: 'error',
+    //                         title: 'Oops...',
+    //                         text: 'You can only uncheck items that you have checked off!',
+    //                     });    
+    //                 }
+    //             }
                 
-            } catch (error) {
-                console.error('Error unchecking item:', error);
-            } finally {
-                setShowSpinner(false);
-            }
+    //         } catch (error) {
+    //             console.error('Error unchecking item:', error);
+    //         } finally {
+    //             setShowSpinner(false);
+    //         }
 
-            return;
-        };
+    //         return;
+    //     };
         
-        // Check off logic implementation
-        setShowSpinner(true);
-        try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/checkOffItem/${id}/${item.id}`, {
-                method: 'PATCH',
-                credentials: 'include',
-            });
+    //     // Check off logic implementation
+    //     setShowSpinner(true);
+    //     try {
+    //         const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/checkOffItem/${id}/${item.id}`, {
+    //             method: 'PATCH',
+    //             credentials: 'include',
+    //         });
 
-            const data = await res.json();
+    //         const data = await res.json();
             
-            if (data.success) {
-                console.log('Item checked off:', data);
+    //         if (data.success) {
+    //             console.log('Item checked off:', data);
 
-                setWishlistItems((prevItems) => {
-                    if (!prevItems) return null;
-                    return prevItems.map((prevItem) => {
-                        if (prevItem.id === item.id) {
-                            return {
-                                ...prevItem,
-                                checkedOffBy: data.checkedBy,
-                                checkedOffByPhoto: data.userPhoto,
-                            };
-                        }
-                        return prevItem;
-                    });
-                });
-            } else {
-                console.error('Failed to check off item:', data.message);
-            }
-        } catch (error) {
-            console.error('Error checking off item:', error);
-        } finally {
-            setShowSpinner(false);
-        }
-    };
-
-    const handleAddPerson = async () => {
-        // console.log('Add person to wishlist: ', id);
-        setIsAddingPerson(true);
-    }
-    
-    if (isAddingPerson) {
-        return (
-            <>
-                <AddPerson wishlistCopyName={name} wishlistCopyId={id} onClickBack={() => setIsAddingPerson(false)}/>
-            </>
-        );
-    }
+    //             setWishlistItems((prevItems) => {
+    //                 if (!prevItems) return null;
+    //                 return prevItems.map((prevItem) => {
+    //                     if (prevItem.id === item.id) {
+    //                         return {
+    //                             ...prevItem,
+    //                             checkedOffBy: data.checkedBy,
+    //                             checkedOffByPhoto: data.userPhoto,
+    //                         };
+    //                     }
+    //                     return prevItem;
+    //                 });
+    //             });
+    //         } else {
+    //             console.error('Failed to check off item:', data.message);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error checking off item:', error);
+    //     } finally {
+    //         setShowSpinner(false);
+    //     }
+    // };
 
     return (
       <>
@@ -157,11 +148,11 @@ const WishlistCopyDetail = ( {personName, id, name, items, onClickBack } : Wishl
           <div className="wishlist-copy-detail">
             <div>
               <div className="flex">
-                <p className="m-0">Participants:</p>
+                <p className="m-0">Participants: TODO</p>
                 <img className="participant-thumbnail mx-2" src="https://res.cloudinary.com/db82w52p8/image/upload/v1742726338/profile_pictures/j9gjf3itbe9t3wfzqwqk.jpg" alt="" />
               </div>
               <div className="flex justify-between">
-                <h3 className="my-4">{name}</h3>
+                <h3 className="my-4">{wishlist.name}</h3>
                 <button
                   className="btn btn-secondary"
                   onClick={() =>
@@ -208,7 +199,7 @@ const WishlistCopyDetail = ( {personName, id, name, items, onClickBack } : Wishl
                       className="form-check-input"
                       type="checkbox"
                       checked={item.checkedOffBy != null}
-                      onChange={() => handleCheckboxChange(item)}
+                      onChange={() => console.log('TODO: handle checkbox change')}
                       id={`checkbox-${item.id}`}
                     />
                     {item.checkedOffBy != null ? (
@@ -235,19 +226,6 @@ const WishlistCopyDetail = ( {personName, id, name, items, onClickBack } : Wishl
                     viewBox="0 0 16 16"
                     >
                     <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105" />
-                    </svg>
-                </button>
-                <button className="icon-button" onClick={() => handleAddPerson()}>
-                    <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-person-add"
-                    viewBox="0 0 16 16"
-                    >
-                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                    <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z" />
                     </svg>
                 </button>
           </div>

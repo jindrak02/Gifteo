@@ -175,7 +175,7 @@ body {
 .wishlist-images-scroll-container {
   width: 100%;
   overflow-x: auto;
-  scrollbar-width: thin;
+  /* scrollbar-width: thin; */
   -ms-overflow-style: none;
 }
 
@@ -648,4 +648,14 @@ button.text-red-500 {
   height: 20px;
   object-fit: cover;
   border-radius: 50%;
+}
+
+.wishlist-thumbnail-disabled {
+  opacity: 0.4;
+}
+
+.inactive-wishlist-alert {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-radius: 5px;
 }

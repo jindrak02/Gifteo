@@ -41,7 +41,7 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, on
           </div>
         )}
       </div>
-      <div className="d-flex">
+      {/* <div className="d-flex">
         {imageUrls.map((url, index) => (
           <img
             key={index}
@@ -50,6 +50,19 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, on
             className="wishlist-thumbnail me-2"
           />
         ))}
+      </div> */}
+
+      <div className="wishlist-images-scroll-container">
+        <div className="wishlist-images-wrapper">
+          {imageUrls.map((url, index) => (
+            <img
+              key={index}
+              src={url}
+              alt={`Item ${index + 1}`}
+              className="wishlist-thumbnail-large me-2"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

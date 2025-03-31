@@ -2,12 +2,13 @@ interface WishlistThumbnailProps {
   title: string;
   imageUrls: string[];
   user_photo_url: string;
+  deleted: boolean;
 }
 
-const WishlistCopyThumbnail = ({ title, imageUrls, }: WishlistThumbnailProps) => {
+const WishlistCopyThumbnail = ({ title, imageUrls, deleted }: WishlistThumbnailProps) => {
 
   return (
-    <div className="wishlist-card p-3 rounded shadow-sm my-4">
+    <div className={deleted ? "wishlist-thumbnail-disabled wishlist-card p-3 rounded shadow-sm mb-4" : "wishlist-card p-3 rounded shadow-sm my-4"}>
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="mb-0">{title}</h5>
       </div>
