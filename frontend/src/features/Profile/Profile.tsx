@@ -281,6 +281,12 @@ const Profile = () => {
       }
     );
 
+    console.log('Sending data to server...');
+    console.log(JSON.stringify({
+      items: items,
+    }));
+    
+
     const data = await res.json();
 
     if (data.success) {

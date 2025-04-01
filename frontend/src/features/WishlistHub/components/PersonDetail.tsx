@@ -26,6 +26,7 @@ interface WishlistItem {
     checkedOffByPhoto: string | null;
     checkedOffByName: string | null;
     deleted: boolean;
+    modifiedByOwner: Date | null;
 };
 
 interface Wishlist {

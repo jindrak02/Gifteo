@@ -15,6 +15,7 @@ interface WishlistItem {
   checkedOffByPhoto: string | null;
   checkedOffByName: string | null;
   deleted: boolean;
+  modifiedByOwner: Date | null;
 };
 
 interface Wishlist {
@@ -175,72 +176,79 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
               </div>
 
               {wishlistItems?.map((item, index) => (
-                <div key={index}>
+                <div key={index} className="my-4">
                   {item.deleted ? (<p className="inactive-wishlist-alert m-0">This item is no longer active</p>) : null}
+                  
                 <div
                   className={[
-                    "wishlist-item",
+                    "wishlist-item my-0",
                     item.checkedOffBy != null ? "wishlist-item-checked" : "",
                     item.deleted ? "wishlist-item-disabled" : ""
                   ].filter(Boolean).join(" ")}
                   >
-                  <img
-                    src={item.photo_url}
-                    alt={item.name}
-                    className="wishlist-thumbnail"
-                  />
-                  <div className="wishlist-item-details mx-3">
-                    <div className="wishlist-item-name">{item.name}</div>
-                    
-                    <a
-                      href={item.deleted ? undefined : item.url}
-                      className="wishlist-item-url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Link to buy
-                    </a>
-                  </div>
-
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      checked={item.checkedOffBy != null}
-                      onChange={item.deleted ? undefined : () => handleCheckboxChange(item)}
-                      disabled={item.deleted}
-                      id={`checkbox-${item.id}`}
+                    <img
+                      src={item.photo_url}
+                      alt={item.name}
+                      className="wishlist-thumbnail"
                     />
-                  </div>
+                    <div className="wishlist-item-details mx-3">
+                      <div className="wishlist-item-name">{item.name}</div>
+                      
+                      <a
+                        href={item.deleted ? undefined : item.url}
+                        className="wishlist-item-url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Link to buy
+                      </a>
+                    </div>
 
-                  <button
-                    className="btn btn-light btn-sm"
-                    onClick={() => setShowItemDetails(showItemDetails === index ? null : index)}
-                    >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-chevron-down"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={item.checkedOffBy != null}
+                        onChange={item.deleted ? undefined : () => handleCheckboxChange(item)}
+                        disabled={item.deleted}
+                        id={`checkbox-${item.id}`}
                       />
-                    </svg>
-                  </button>
+                    </div>
 
-                  {item.checkedOffBy != null ? (
-                      <img
-                        className="check-off-img rounded"
-                        src={item.checkedOffByPhoto || ""}
-                        alt="img"
-                      />
-                    ) : null
-                  }
+                    <button
+                      className="btn btn-light btn-sm"
+                      onClick={() => setShowItemDetails(showItemDetails === index ? null : index)}
+                      >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-chevron-down"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+                        />
+                      </svg>
+                    </button>
+
+                    {item.checkedOffBy != null ? (
+                        <img
+                          className="check-off-img rounded"
+                          src={item.checkedOffByPhoto || ""}
+                          alt="img"
+                        />
+                      ) : null
+                    }
                 </div>
+                {item.modifiedByOwner != null ? (
+                    <p className="modified-item-alert">
+                      ❔ This item was modified at {new Date(item.modifiedByOwner).toLocaleDateString()}
+                    </p>
+                ) : null}
+
 
                 <div className="wishlist-item-details-wrapper">
                     {showItemDetails === index && (

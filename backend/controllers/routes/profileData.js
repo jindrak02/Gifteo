@@ -278,17 +278,11 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
   const { items } = req.body;
   const wishlistId = req.params.wishlistId;
 
-  //Pokud je items.price prázdné, undefined, null nebo "" nastavím ho na null
-  items.forEach(item => {
-    if (item.price == undefined || item.price === "" || item.price === ' ') {
-      item.price = null;
-    }
-  });
-
   console.log(items);
 
   try {
-
+    
+    // 1. Soft delete položek, které nejsou v seznamu
     const existingIds = items
     .filter(item => item.id)
     .map(item => item.id);
@@ -315,22 +309,47 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
     }
 
     // 2. Aktualizace existujícíh položek
+    const existingItemsQuery = `
+      SELECT id, name, description, price, price_currency, photo_url, url
+      FROM "wishlistItem"
+      WHERE wishlist_id = $1 AND deleted = false;
+    `;
+    const { rows: existingItems } = await pool.query(existingItemsQuery, [wishlistId]);
+
+    const existingItemsMap = new Map();
+    for (const item of existingItems) {
+      existingItemsMap.set(item.id, item);
+    }
+
     for (const item of items) {
       if (item.id) {
-        const updateItemQuery = `
-          UPDATE "wishlistItem"
-          SET name = $1, description = $2, price = NULLIF($3, '')::NUMERIC, price_currency = $4, photo_url = $5, url = $6
-          WHERE id = $7;
-        `;
-        await pool.query(updateItemQuery,[
-          sanitize(item.name), 
-          sanitize(item.description || ""),
-          sanitize(item.price),
-          sanitize(item.currency),
-          sanitize(item.photo_url), 
-          sanitize(item.url), 
-          sanitize(item.id)
-        ]);
+          const existing = existingItemsMap.get(item.id);
+          if (!existing) continue;
+
+          const changed =
+            sanitize(item.name) !== existing.name ||
+            sanitize(item.description || "") !== existing.description ||
+            parseFloat(item.price ?? null) !== parseFloat(existing.price ?? null) ||
+            sanitize(item.currency) !== existing.price_currency ||
+            sanitize(item.photo_url) !== existing.photo_url ||
+            sanitize(item.url) !== existing.url;
+
+          if (!changed) continue;
+
+          const updateItemQuery = `
+            UPDATE "wishlistItem"
+            SET name = $1, description = $2, price = NULLIF($3, '')::NUMERIC, price_currency = $4, photo_url = $5, url = $6, modified_by_owner = NOW()
+            WHERE id = $7;
+          `;
+          await pool.query(updateItemQuery,[
+            sanitize(item.name), 
+            sanitize(item.description || ""),
+            sanitize(item.price),
+            sanitize(item.currency),
+            sanitize(item.photo_url), 
+            sanitize(item.url), 
+            sanitize(item.id)
+          ]);
       }
     }
 

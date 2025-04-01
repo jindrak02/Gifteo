@@ -47,6 +47,7 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
           wi.description,
           wi.checked_off_by_user_id,
           wi.deleted AS item_deleted,
+          wi.modified_by_owner,
           --wi.created_at AS item_created_at,
 
           p.photo_url AS "checkedOffByPhoto",
@@ -127,6 +128,7 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
             checkedOffByPhoto: row.checkedOffByPhoto || null,
             checkedOffByName: row.checkedOffByName || null,
             deleted: row.item_deleted,
+            modifiedByOwner: row.modified_by_owner,
             //created_at: row.item_created_at
           });
         }

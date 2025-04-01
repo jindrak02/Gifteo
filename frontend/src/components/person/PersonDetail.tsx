@@ -160,20 +160,24 @@ const PersonDetail = function (props: PersonDetailProps) {
             </div>
 
             <div className="my-4 my-wishlists-wrapper">
-              {personData?.wishlists.map((wishlist) => (
-                <div
-                  className="wishlists-container my-4"
-                  key={wishlist.wishlist_id}
-                  onClick={() => setShowWishlistDetail(wishlist.wishlist_id)}
-                >
-                  <WishlistThumbnail
-                    showButtons={false}
+              {personData?.wishlists && personData.wishlists.length > 0 ? (
+                personData.wishlists.map((wishlist) => (
+                  <div
+                    className="wishlists-container my-4"
                     key={wishlist.wishlist_id}
-                    title={wishlist.name}
-                    imageUrls={wishlist.items}
-                  />
-                </div>
-              ))}
+                    onClick={() => setShowWishlistDetail(wishlist.wishlist_id)}
+                  >
+                    <WishlistThumbnail
+                      showButtons={false}
+                      key={wishlist.wishlist_id}
+                      title={wishlist.name}
+                      imageUrls={wishlist.items}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="alert alert-info">This person doesn't have any wishlists yet.</p>
+              )}
             </div>
           </div>
         </div>

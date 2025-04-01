@@ -141,7 +141,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
           <div>
             <img
               className="wishlist-thumbnail"
-              src={item.photo_url}
+              src={item.photo_url === "" ? undefined : item.photo_url}
               alt="item photo"
             />
           </div>
