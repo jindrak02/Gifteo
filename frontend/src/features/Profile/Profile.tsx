@@ -117,7 +117,7 @@ const Profile = () => {
   // Odhlášení uživatele
   const handleLogOut = async function () {
     const result = await Swal.fire({
-      title: "Do you really want to Log Out?",
+      title: "Log Out?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -232,7 +232,7 @@ const Profile = () => {
   const handleDeleteWishlist = async (wishlistId: string) => {
     const result = await Swal.fire({
       title: "Delete wishlist",
-      text: "Are you sure?",
+      text: "Are you sure? It can still be seen to some users.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",

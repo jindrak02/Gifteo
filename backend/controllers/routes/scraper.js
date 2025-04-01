@@ -38,11 +38,44 @@ function extractJSONLD($) {
 }
 
 // Heuristické vyhledávání informací (fallback)
-function heuristicExtraction($) {
-    const title = $('h1').first().text().trim() || $('title').text().trim();
-    const price = $("[class*='price'], [id*='price']").first().text().trim();
-    const image = $("img").first().attr("src");
-    const description = $("meta[name='description']").attr("content") || "";
+function heuristicExtraction($, url) {
+    let title = "";
+    let price = "";
+    let image = "";
+    let description = "";    
+
+    /**
+     * 
+     * Customizace pro konkrétní weby
+     * 
+     */
+    // Alza.cz
+    if (url.includes("alza.cz")) {
+        const alzaImage = $("img[alt*='Hlavní obrázek'], img[title*='Hlavní obrázek']").attr("src");
+        if (alzaImage) {
+            image = alzaImage.startsWith("http") ? alzaImage : "https://www.alza.cz" + alzaImage;
+        }
+
+        const alzaPrice = $(".price-box__primary-price__value.js-price-box__primary-price__value")
+            .first()
+            .text()
+            .replace(/\s/g, "")  // odstraní &nbsp;
+            .replace(/-$/, "")   // odstraní pomlčku na konci, např. "7 290,-" => "7290"
+            .trim();
+        if (alzaPrice) {
+            price = alzaPrice;
+        }
+    }
+
+    /**
+     * 
+     * Fallback pro ostatní weby
+     * 
+     */
+    if(title === "") title = $('h1').first().text().trim() || $('title').text().trim();
+    if(price === "") price = $("[class*='price'], [id*='price']").first().text().trim();
+    if(image === "") image = $("img").first().attr("src");
+    if(description === "") description = $("meta[name='description']").attr("content") || "";
   
     return { title, price, image, description };
 }
@@ -94,7 +127,7 @@ router.post("/wishlistItemData", authenticateUser, async (req, res) => {
     
         const ogData = extractOpenGraph($);
         const jsonldData = extractJSONLD($);
-        const fallbackData = heuristicExtraction($);
+        const fallbackData = heuristicExtraction($, url);
 
         const rawTitle = ogData.title || jsonldData.name || fallbackData.title || "";
         const rawPrice = (jsonldData.offers && jsonldData.offers.price) ||

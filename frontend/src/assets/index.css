@@ -668,3 +668,8 @@ button.text-red-500 {
   color: #721c24;
   border-radius: 5px;
 }
+
+.wishlist-item-disabled {
+  background-color: #cfcfcf;
+  opacity: 0.4;
+}

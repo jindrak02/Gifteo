@@ -176,12 +176,13 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
 
               {wishlistItems?.map((item, index) => (
                 <div key={index}>
+                  {item.deleted ? (<p className="inactive-wishlist-alert m-0">This item is no longer active</p>) : null}
                 <div
-                  className={
-                    item.checkedOffBy != null
-                      ? "wishlist-item wishlist-item-checked"
-                      : "wishlist-item"
-                  }
+                  className={[
+                    "wishlist-item",
+                    item.checkedOffBy != null ? "wishlist-item-checked" : "",
+                    item.deleted ? "wishlist-item-disabled" : ""
+                  ].filter(Boolean).join(" ")}
                   >
                   <img
                     src={item.photo_url}
@@ -190,11 +191,9 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                   />
                   <div className="wishlist-item-details mx-3">
                     <div className="wishlist-item-name">{item.name}</div>
-                    <div className="wishlist-item-price">
-                      {item.price} {item.price_currency}
-                    </div>
+                    
                     <a
-                      href={item.url}
+                      href={item.deleted ? undefined : item.url}
                       className="wishlist-item-url"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -208,7 +207,8 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                       className="form-check-input"
                       type="checkbox"
                       checked={item.checkedOffBy != null}
-                      onChange={() => handleCheckboxChange(item)}
+                      onChange={item.deleted ? undefined : () => handleCheckboxChange(item)}
+                      disabled={item.deleted}
                       id={`checkbox-${item.id}`}
                     />
                   </div>
@@ -242,7 +242,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                   }
                 </div>
 
-                <div>
+                <div className="wishlist-item-details-wrapper">
                     {showItemDetails === index && (
                         <div className="wishlist-item-details-expanded mb-4">
                             {item.checkedOffBy != null ? (

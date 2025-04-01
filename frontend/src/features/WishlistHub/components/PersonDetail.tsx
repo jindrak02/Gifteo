@@ -35,7 +35,7 @@ interface Wishlist {
     items: WishlistItem[];
 };
 
-const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onReturn } : PersonDetailProps ) => {
+const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailProps ) => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [wishlists, setWishlists] = useState<Wishlist[]>([]);
     const [isViewingWishlist, setIsViewingWishlist] = useState<Wishlist | null>(null);
@@ -72,7 +72,7 @@ const PersonDetail = ( {user_id, person_id, profile_id, name, photo_url, onRetur
         };
 
         fetchWishlists();
-    }, []);
+    }, [isViewingWishlist]);
 
     if (isViewingWishlist != null) {
         return (

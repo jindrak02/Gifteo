@@ -48,7 +48,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
   const removeItem = (index: number) => {
     Swal.fire({
       title: "Remove item?",
-      text: "This cannot be undone.",
+      text: "It can still be seen to some users.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes",
