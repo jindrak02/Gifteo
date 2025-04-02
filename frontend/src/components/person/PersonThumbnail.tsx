@@ -41,9 +41,9 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
            className="profile-picture-thumbnail-lg rounded-circle me-3 shadow"
           />
           <ul className="person-thumbnail-wishlists">
-            {wishlists.map((wishlist, index) => (
+            {wishlists.length > 0 ? (wishlists.map((wishlist, index) => (
               <li key={index}>{wishlist}</li>
-            ))}
+            ))) : (<p>This user has no wishlists yet 🥲</p>)}
           </ul>
         </div>
 
