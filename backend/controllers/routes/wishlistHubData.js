@@ -240,4 +240,124 @@ router.patch("/uncheckItem/:itemId", authenticateUser, async (req, res) => {
     }
 });
 
+// GET /api/wishlistHub/wishlistVisibility/:wishlistId, vrátí viditelnost wishlistu
+router.get("/wishlistVisibility/:wishlistId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistId = sanitize(req.params.wishlistId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      const visibilityQuery = `
+        SELECT 
+          w.id AS wishlist_id,
+          w.name AS wishlist_name,
+          w.shared_with_all_my_people,
+          ws.shared_with_user_id,
+          pr.name AS shared_with_user_name
+        
+        FROM wishlist w
+        LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id
+        LEFT JOIN "profile" pr ON ws.shared_with_user_id = pr.user_id
+
+        WHERE w.id = $1
+        AND w.deleted = false;
+      `;
+
+      const result = await pool.query(visibilityQuery, [wishlistId]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).send({ success: false, message: "Wishlist not found or already deleted" });
+      }
+
+      const firstRow = result.rows[0];
+      const wishlistVisibility = {
+        id: firstRow.wishlist_id,
+        name: firstRow.wishlist_name,
+        sharedWithAllMyPeople: firstRow.shared_with_all_my_people,
+        sharedUsers: []
+      };
+
+      if (!firstRow.shared_with_all_my_people) {
+        result.rows.forEach(row => {
+          if (row.shared_with_user_id) {
+            wishlistVisibility.sharedUsers.push({
+              user_id: row.shared_with_user_id,
+              name: row.shared_with_user_name
+            });
+          }
+        });
+      }
+
+      res.json({ success: true, wishlistVisibility: wishlistVisibility });
+      
+    } catch (error) {
+      console.error("Error fetching wishlist visibility:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
+});
+
+// PATCH /api/wishlistHub/updateWishlistVisibility/${wishlistId}, aktualizuje viditelnost wishlistu
+router.patch("/updateWishlistVisibility/:wishlistId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistId = sanitize(req.params.wishlistId);
+    const { sharedWithAllMyPeople, sharedUsers } = req.body;
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      // 1. Nastavíme novou viditelnost wishlistu
+      const updateQuery = `
+        UPDATE wishlist
+        SET shared_with_all_my_people = $1
+        WHERE id = $2 AND deleted = false
+        RETURNING *;
+      `;
+
+      const result = await pool.query(updateQuery, [sharedWithAllMyPeople, wishlistId]);
+      const updatedWishlist = result.rows[0];
+
+      if (!updatedWishlist) {
+        return res.status(404).send({ success: false, message: "Wishlist not found or already deleted" });
+      }
+
+      // 2. Smažeme všechny aktuálně sdílené uživatele
+      await pool.query(`DELETE FROM "wishlistSharedWith" WHERE wishlist_id = $1;`, [wishlistId]);
+
+      // 3. Pokud je wishlist private, přidáme vybrené uživatelose
+      if (!sharedWithAllMyPeople && sharedUsers && sharedUsers.length > 0) {
+        const insertQuery = `
+          INSERT INTO "wishlistSharedWith" (wishlist_id, shared_with_user_id)
+          VALUES ($1, $2)
+          RETURNING *;
+        `;
+
+        for (const user of sharedUsers) {
+          await pool.query(insertQuery, [wishlistId, user.user_id]);
+        }
+
+        const sharedUsersQuery = `
+          SELECT p.user_id, p.name
+          FROM "wishlistSharedWith" ws
+          JOIN "profile" p ON ws.shared_with_user_id = p.user_id
+          WHERE ws.wishlist_id = $1;
+        `;
+        const sharedUsersResult = await pool.query(sharedUsersQuery, [wishlistId]);
+        const sharedUsersRows = sharedUsersResult.rows;
+
+        return res.json({ success: true, updatedWishlist, sharedUsers: sharedUsersRows });
+      }
+
+      return res.json({ success: true, updatedWishlist, sharedUsers: [] });
+      
+    } catch (error) {
+      console.error("Error updating wishlist visibility:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
+});
+
 export default router;
