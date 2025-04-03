@@ -1,4 +1,5 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { InvitationProvider } from './store/InvitationContext.tsx';
 import Login from './features/Login/Login.tsx';
 import NavPanel from './components/ui/NavPanel.tsx';
 import { Navigate, Route, Routes } from "react-router-dom";
@@ -27,7 +28,7 @@ const App = () => {
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-
+      <InvitationProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/profile" />} />
           <Route path="profile" element={<Profile/>} />
@@ -38,6 +39,7 @@ const App = () => {
         </Routes>
 
         <NavPanel/>
+      </InvitationProvider>
     </GoogleOAuthProvider>
   );
 }

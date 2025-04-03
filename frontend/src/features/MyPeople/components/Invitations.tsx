@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useInvitations } from '../../../store/InvitationContext';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import Swal from 'sweetalert2';
 import { fetchWithAuth } from '../../../utils/fetchWithAuth';
@@ -17,6 +18,7 @@ interface InvitationProps {
 const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
     const [invitations, setInvitations] = useState<Invitation[]>(invitationProps);
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
+    const { fetchInvitations } = useInvitations();
 
     const handleAccept = async (invitationId: string) => {
         Swal.fire({
@@ -42,7 +44,7 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                     if (data.success) {
                         console.log('Invitation accepted');
                         setInvitations(invitations.filter(invitation => invitation.id !== invitationId));
-
+                        await fetchInvitations();
                         Swal.fire({
                             title: 'Invitation accepted',
                             icon: 'success',
@@ -87,7 +89,8 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                     if (data.success) {
                         console.log('Invitation rejected');
                         setInvitations(invitations.filter(invitation => invitation.id !== invitationId));
-
+                        await fetchInvitations();
+                        
                         Swal.fire({
                             title: 'Invitation rejected',
                             icon: 'success',

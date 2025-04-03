@@ -6,6 +6,7 @@ import Invitations from "./components/Invitations";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useInvitations } from "../../store/InvitationContext";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 
 interface Person {
@@ -29,8 +30,8 @@ const MyPeople = () => {
     const [showPersonDetail, setShowPersonDetail] = useState<string | null>(null);
     const [isAddingPerson, setIsAddingPerson] = useState<boolean>(false);
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
-    const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [isViewingInvitations, setIsViewingInvitations] = useState<boolean>(false);
+    const { invitations, fetchInvitations } = useInvitations();
     const location = useLocation();
 
     useEffect(() => {
@@ -67,34 +68,7 @@ const MyPeople = () => {
             }
         };
 
-        const fetchInvitationsData = async () => {
-            setShowSpinner(true);
-            try {
-                const res = await fetchWithAuth(
-                    "personsData/invitations",
-                    {
-                        method: "GET",
-                        credentials: "include",
-                    }
-                );
-
-                const data = await res.json();
-
-                if (data) {
-                    console.log("Fetched invitations data:", data);
-                    setInvitations(data);
-                } else {
-                    console.error("Error fetching user invitations");
-                }
-                setShowSpinner(false);
-                
-            } catch (error) {
-                console.error("Error fetching invitations data:", error);
-            }
-        }
-
         fetchPersonsData();
-        fetchInvitationsData();
     }, [isViewingInvitations, showPersonDetail]);
     
     const handleDetail = (personId: string) => {
@@ -218,6 +192,12 @@ const MyPeople = () => {
                 </div>
 
                 <hr className="my-4" />
+
+                {invitations.length != 0 && (
+                    <div className="text-center my-4">
+                        <p className="text-muted">You have {invitations.length} new invitation(s).</p>
+                    </div>
+                )}
 
                 { persons.length === 0 && (
                     <div className="text-center my-4">
