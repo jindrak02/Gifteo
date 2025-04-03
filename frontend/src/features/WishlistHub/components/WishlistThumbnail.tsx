@@ -27,10 +27,10 @@ const WishlistCopyThumbnail = ({ title, imageUrls, deleted, participantsPhotoUrl
         </div>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center mt-2">
+      <div className="d-flex align-items-center mt-2">
         <p className="my-0 mx-2">Participants </p>
         <div className="flex">
-          {participantsPhotoUrls.map((url, index) => (
+          {participantsPhotoUrls.slice(0,3).map((url, index) => (
             <img
               key={index}
               src={url}
