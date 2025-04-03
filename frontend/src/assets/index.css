@@ -140,6 +140,13 @@ body {
   object-fit: cover;
 }
 
+.profile-picture-thumbnail-sm {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+}
+
+
 .profile-wishlists {
   display: flex;
   justify-content: space-between;

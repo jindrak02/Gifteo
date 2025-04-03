@@ -134,24 +134,25 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
                 </div>
               ) : (
                 wishlists.map((wishlist) => (
-                  <div
+                    <div
                     onClick={wishlist.deleted ? undefined : () => setIsViewingWishlist(wishlist)}
                     key={wishlist.id}
                     >
-                        {wishlist.deleted ? (
-                        <p className="my-0 text-center inactive-wishlist-alert">
-                            This wishlist is no longer active
-                        </p>
-                        ) : ("")}
+                      {wishlist.deleted ? (
+                      <p className="my-0 text-center inactive-wishlist-alert">
+                        This wishlist is no longer active
+                      </p>
+                      ) : ("")}
 
-                        <WishlistThumbnail
-                        key={wishlist.id}
-                        title={wishlist.name}
-                        imageUrls={wishlist.items.map((item) => item.photo_url)}
-                        user_photo_url={""}
-                        deleted={wishlist.deleted}
-                        />
-                  </div>
+                      <WishlistThumbnail
+                      key={wishlist.id}
+                      title={wishlist.name}
+                      imageUrls={wishlist.items.map((item) => item.photo_url)}
+                      user_photo_url={""}
+                      deleted={wishlist.deleted}
+                      participantsPhotoUrls={[...new Set(wishlist.items.map((item) => item.checkedOffByPhoto).filter((url) => url !== null))] as string[]}
+                      />
+                    </div>
                 ))
               )}
             </div>

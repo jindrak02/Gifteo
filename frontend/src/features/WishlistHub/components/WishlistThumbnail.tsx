@@ -3,9 +3,10 @@ interface WishlistThumbnailProps {
   imageUrls: string[];
   user_photo_url: string;
   deleted: boolean;
+  participantsPhotoUrls: string[];
 }
 
-const WishlistCopyThumbnail = ({ title, imageUrls, deleted }: WishlistThumbnailProps) => {
+const WishlistCopyThumbnail = ({ title, imageUrls, deleted, participantsPhotoUrls }: WishlistThumbnailProps) => {
 
   return (
     <div className={deleted ? "wishlist-thumbnail-disabled wishlist-card p-3 rounded shadow-sm mb-4" : "wishlist-card p-3 rounded shadow-sm my-4"}>
@@ -27,7 +28,20 @@ const WishlistCopyThumbnail = ({ title, imageUrls, deleted }: WishlistThumbnailP
       </div>
 
       <div className="d-flex justify-content-between align-items-center mt-2">
-        <p className="my-0">Participants: TODO </p>
+        <p className="my-0 mx-2">Participants </p>
+        <div className="flex">
+          {participantsPhotoUrls.map((url, index) => (
+            <img
+              key={index}
+              src={url}
+              alt={`Participant ${index + 1}`}
+              className="profile-picture-thumbnail-sm rounded-circle me-1"
+            />
+          ))}
+          {participantsPhotoUrls.length > 3 && (
+            <span className="extra-participants-count">+{participantsPhotoUrls.length - 3}</span>
+          )}
+        </div>
       </div>
     </div>
   );
