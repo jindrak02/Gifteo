@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import WishlistThumbnail from "../../components/wishlist/WishlistThumbnail";
 import Swal from "sweetalert2";
@@ -29,6 +30,13 @@ const Profile = () => {
   const [isAddingWishlist, setIsAddingWishlist] = useState(false);
   const [wishlists, setWishlists] = useState<Array<any>>([]);
   const [isEditingWishlist, setIsEditingWishlist] = useState<string | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsEditingWishlist(null);
+    setIsAddingWishlist(false);
+    setIsEditing(false);
+  }, [location.key]);
 
   // Načtení dat o profilu a wishlistech z API
   useEffect(() => {

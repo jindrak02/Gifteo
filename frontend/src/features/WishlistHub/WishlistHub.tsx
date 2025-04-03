@@ -1,4 +1,5 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect, use} from "react";
+import { useLocation } from "react-router-dom";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import PersonThumbnail from "./components/PersonThumbnail";
@@ -28,6 +29,12 @@ const WishlistHub = () => {
     const [isViewingPerson, setIsViewingPerson] = useState<Person | null>(null);
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [isViewingInvitations, setIsViewingInvitations] = useState<boolean>(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        setIsViewingPerson(null);
+        setIsViewingInvitations(false);
+    }, [location.key]);
 
     // Načtení osob (a jejich dat) uživatele
     useEffect(() => {

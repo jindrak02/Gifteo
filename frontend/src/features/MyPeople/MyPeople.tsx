@@ -5,6 +5,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Invitations from "./components/Invitations";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 
 interface Person {
@@ -30,6 +31,13 @@ const MyPeople = () => {
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [isViewingInvitations, setIsViewingInvitations] = useState<boolean>(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        setShowPersonDetail(null);
+        setIsAddingPerson(false);
+        setIsViewingInvitations(false);
+    }, [location.key]);
     
     // Načtení osob (a jejich dat) uživatele
     useEffect(() => {
