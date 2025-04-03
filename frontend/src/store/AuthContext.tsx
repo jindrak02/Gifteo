@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { fetchApi } from '../utils/fetchApi';
 
 interface AuthContextType {
   user: Object | null;
@@ -12,7 +13,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     async function checkSession() {
-      const res = await fetch("http://localhost:3000/api/auth/checkCookie", {
+      const res = await fetchApi("auth/checkCookie", {
         credentials: "include", // Posílání cookies
       });
 
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   async function logout() {
-    await fetch("http://localhost:3000/api/auth/logout", {
+    await fetchApi("auth/logout", {
       method: "POST",
       credentials: "include",
     });

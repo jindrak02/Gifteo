@@ -35,7 +35,7 @@ const WishlistHub = () => {
             setShowSpinner(true);
             try {
                 const res = await fetchWithAuth(
-                "http://localhost:3000/api/personsData/UserPersons",
+                "personsData/UserPersons",
                 {
                     method: "GET",
                     credentials: "include",

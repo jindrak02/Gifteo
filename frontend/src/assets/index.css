@@ -330,7 +330,7 @@ button.text-red-500 {
   padding: 10px;
   background-color: #E6E6FA;
   border-radius: 10px;
-  max-height: 150px;
+  max-height: 140px;
   overflow: hidden;
   cursor: pointer;
 }
@@ -677,4 +677,12 @@ button.text-red-500 {
 
 .modified-item-alert {
   font-size: x-small;
+}
+
+.list-group-item.active{
+  background-color: #dddce0 !important;
+}
+
+.bg-primary{
+  background-color: #8F84F2 !important;
 }

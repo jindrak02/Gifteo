@@ -38,7 +38,7 @@ const MyPeople = () => {
             setShowSpinner(true);
             try {
                 const res = await fetchWithAuth(
-                "http://localhost:3000/api/personsData/UserPersons",
+                "personsData/UserPersons",
                 {
                     method: "GET",
                     credentials: "include",
@@ -64,7 +64,7 @@ const MyPeople = () => {
             setShowSpinner(true);
             try {
                 const res = await fetchWithAuth(
-                    "http://localhost:3000/api/personsData/invitations",
+                    "personsData/invitations",
                     {
                         method: "GET",
                         credentials: "include",
@@ -117,7 +117,7 @@ const MyPeople = () => {
         if (result.isConfirmed) {
           // Remove the user person from database
           const res = await fetchWithAuth(
-            `http://localhost:3000/api/personsData/DeletePerson/${personId}`,
+            `personsData/DeletePerson/${personId}`,
             {
               method: "DELETE",
               credentials: "include",

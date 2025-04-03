@@ -28,7 +28,7 @@ const WishlistDetail = (props: WishlistDetailProps) => {
 
             try {
                 const res = await fetchWithAuth(
-                    `http://localhost:3000/api/personsData/WishlistItems/${props.wishlistId}`,
+                    `personsData/WishlistItems/${props.wishlistId}`,
                     {
                         method: "GET",
                         credentials: "include",

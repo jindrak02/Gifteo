@@ -37,7 +37,7 @@ const Profile = () => {
       try {
         // Zde načteme data o profilu z API
         const fetchProfileData = async () => {
-          const res = await fetchWithAuth("http://localhost:3000/api/profileData/profile", {
+          const res = await fetchWithAuth("profileData/profile", {
             method: "GET",
             credentials: "include", // Posílání cookies
           });
@@ -55,7 +55,7 @@ const Profile = () => {
         // Zde načteme data o zájemch profilu z API
         const fetchProfileInterests = async () => {
           const res = await fetchWithAuth(
-            "http://localhost:3000/api/profileData/profileInterest",
+            "profileData/profileInterest",
             {
               method: "GET",
               credentials: "include", // Posílání cookies
@@ -81,7 +81,7 @@ const Profile = () => {
         // Zde načteme data o wishlistech z API
         const fetchProfileWishlists = async () => {
           const res = await fetchWithAuth(
-            `http://localhost:3000/api/profileData/wishlistsData`,
+            `profileData/wishlistsData`,
             {
               method: "GET",
               credentials: "include", // Posílání cookies
@@ -126,7 +126,7 @@ const Profile = () => {
     });
 
     if (result.isConfirmed) {
-      const res = await fetchWithAuth("http://localhost:3000/api/auth/logout", {
+      const res = await fetchWithAuth("auth/logout", {
         method: "POST",
         credentials: "include", // Posílání cookies
       });
@@ -185,7 +185,7 @@ const Profile = () => {
     }
   
     try {
-      const res = await fetchWithAuth("http://localhost:3000/api/profileData/updateProfile", {
+      const res = await fetchWithAuth("profileData/updateProfile", {
         method: "PUT",
         credentials: "include", // Posílání cookies
         body: formData,
@@ -208,7 +208,7 @@ const Profile = () => {
   };
   
   const handleAddWishlist = async (wishlistName: string) => {
-    const res = await fetchWithAuth("http://localhost:3000/api/profileData/addWishlist", {
+    const res = await fetchWithAuth("profileData/addWishlist", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -242,7 +242,7 @@ const Profile = () => {
 
     if (result.isConfirmed) {
       const res = await fetchWithAuth(
-        `http://localhost:3000/api/profileData/deleteWishlist/${wishlistId}`,
+        `profileData/deleteWishlist/${wishlistId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -268,7 +268,7 @@ const Profile = () => {
     console.log("Saving wishlist with items:", items);
     
     const res = await fetchWithAuth(
-      `http://localhost:3000/api/profileData/updateWishlist/${wishlistId}`,
+      `profileData/updateWishlist/${wishlistId}`,
       {
         method: "PUT",
         credentials: "include",
@@ -303,7 +303,7 @@ const Profile = () => {
     if (isEditing) {
       const fetchAvailableInterests = async () => {
         try {
-          const res = await fetchWithAuth("http://localhost:3000/api/profileData/interests", {
+          const res = await fetchWithAuth("profileData/interests", {
             method: "GET",
             credentials: "include", // Posílání cookies
           });
@@ -501,34 +501,13 @@ const Profile = () => {
     const wishlist = wishlists.find((w) => w.id === isEditingWishlist);
     
     return (
-      <div className="container p-4 rounded profile-container">
-        <div className="profile-welcome">
-          <button className="btn-service" onClick={() => setIsEditingWishlist(null)}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-arrow-left"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
-                fillRule="evenodd"
-              ></path>
-            </svg>
-          </button>
-          <h2 className="my-2">Edit Wishlist</h2>
-        </div>
-        
-        <hr className="my-4" />
-
         <WishlistEditForm
           items={wishlist.items}
           name={wishlist.name}
+          id={isEditingWishlist}
           onSubmit={(items) => handleSaveWishlist(wishlist.id, items)}
+          onClickBack={() => setIsEditingWishlist(null)}
         />
-      </div>
     );
   }
   

@@ -31,7 +31,7 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                 setShowSpinner(true);
                 try {
                     const res = await fetchWithAuth(
-                        `http://localhost:3000/api/personsData/acceptInvitation/${invitationId}`,
+                        `personsData/acceptInvitation/${invitationId}`,
                         {
                             method: 'PATCH',
                             credentials: 'include',
@@ -76,7 +76,7 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                 setShowSpinner(true);
                 try {
                     const res = await fetchWithAuth(
-                        `http://localhost:3000/api/personsData/rejectInvitation/${invitationId}`,
+                        `personsData/rejectInvitation/${invitationId}`,
                         {
                             method: 'DELETE',
                             credentials: 'include',

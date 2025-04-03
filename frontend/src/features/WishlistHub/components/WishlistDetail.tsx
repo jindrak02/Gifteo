@@ -44,7 +44,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
             setShowSpinner(true);
 
             try {
-                const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/uncheckItem/${item.id}`, {
+                const res = await fetchWithAuth(`wishlistHub/uncheckItem/${item.id}`, {
                     method: 'PATCH',
                     credentials: 'include',
                 });
@@ -92,7 +92,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
         // Check off logic implementation
         setShowSpinner(true);
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/wishlistHub/checkOffItem/${item.id}`, {
+            const res = await fetchWithAuth(`wishlistHub/checkOffItem/${item.id}`, {
                 method: 'PATCH',
                 credentials: 'include',
             });

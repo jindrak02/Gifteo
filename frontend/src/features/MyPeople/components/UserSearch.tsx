@@ -21,7 +21,7 @@ const UserSearch = () => {
 
                 try {
                     const res = await fetchWithAuth(
-                        `http://localhost:3000/api/personsData/UserProfile/${query}`,
+                        `personsData/UserProfile/${query}`,
                         {
                             method: "GET",
                             credentials: "include",
@@ -57,7 +57,7 @@ const UserSearch = () => {
 
         try {
             const res = await fetchWithAuth(
-                `http://localhost:3000/api/personsData/AddPerson`,
+                `personsData/AddPerson`,
                 {
                     method: "POST",
                     credentials: "include",

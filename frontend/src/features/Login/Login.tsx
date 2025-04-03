@@ -1,6 +1,7 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../store/AuthContext';
 import { useEffect, useState } from 'react';
+import { fetchApi } from '../../utils/fetchApi';
 
 const Login = () => {
   const { user, logout } = useAuth();
@@ -20,7 +21,7 @@ const Login = () => {
     const googleToken = response.credential;
     console.log(response);
 
-    const res = await fetch("http://localhost:3000/api/auth/google", {
+    const res = await fetchApi("auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: googleToken }),

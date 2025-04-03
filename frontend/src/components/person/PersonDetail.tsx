@@ -35,7 +35,7 @@ const PersonDetail = function (props: PersonDetailProps) {
 
             try {
                 const res = await fetchWithAuth(
-                    `http://localhost:3000/api/personsData/PersonDetails/${props.personId}`,
+                    `personsData/PersonDetails/${props.personId}`,
                     {
                         method: "GET",
                         credentials: "include",
