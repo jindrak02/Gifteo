@@ -241,14 +241,20 @@ router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
                 pers.id as person_id,
                 u.email,
                 p.name,
-                p.photo_url
+                p.photo_url,
+                up.status as "connectionStatus"
+                
             FROM "user" u
             LEFT JOIN "profile" p ON u.id = p.user_id
-            LEFT JOIN "person" pers on p.id = pers.profile_id
-            WHERE p.name ILIKE $1;
+            LEFT JOIN "person" pers ON p.id = pers.profile_id
+            LEFT JOIN "userPerson" up 
+                ON up.user_id = $2
+                AND up.person_id = pers.id
+            WHERE (p.name ILIKE $1 OR u.email ILIKE $1)
+            AND u.id != $2;
         `;
 
-        const userProfileQueryResult = await pool.query(userProfileQuery, [`%${userName}%`]);
+        const userProfileQueryResult = await pool.query(userProfileQuery, [`%${userName}%`, userId]);
         res.json(userProfileQueryResult.rows);
 
     } catch (error) {

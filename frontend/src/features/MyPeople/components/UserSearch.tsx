@@ -4,9 +4,17 @@ import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import UserSearchThumbnail from "../../../components/user/UserSearchThumbnail";
 import Swal from "sweetalert2";
 
+interface User{
+    person_id: string;
+    name: string;
+    email: string;
+    photo_url: string;
+    connectionStatus: 'pending' | 'accepted' | 'rejected' | null;
+}
+
 const UserSearch = () => {
     const [query, setQuery] = useState("");
-    const [users, setUsers] = useState<{ person_id: string; name: string; email: string; photo_url: string }[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
     useEffect(() => {
@@ -115,6 +123,7 @@ const UserSearch = () => {
                             name={user.name}
                             profilePicture={user.photo_url}
                             onInvite={() => handleInvite(user.person_id)}
+                            connectionStatus={user.connectionStatus}
                         />
                     ))}
                 </ul>
