@@ -26,7 +26,6 @@ interface Invitation {
 const MyPeople = () => {
     const [persons, setPersons] = useState<Person[]>([]);
     const [showPersonDetail, setShowPersonDetail] = useState<string | null>(null);
-    const [personDetailName, setPersonDetailName] = useState<string | null>(null);
     const [isAddingPerson, setIsAddingPerson] = useState<boolean>(false);
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
     const [invitations, setInvitations] = useState<Invitation[]>([]);
@@ -88,19 +87,10 @@ const MyPeople = () => {
 
         fetchPersonsData();
         fetchInvitationsData();
-    }, [isViewingInvitations]);
+    }, [isViewingInvitations, showPersonDetail]);
     
     const handleDetail = (personId: string) => {
-        console.log(personId + "Detail clicked");
         setShowPersonDetail(personId);
-        const personName = persons.find((person) => person.person_id == personId)?.name;
-        
-        if (personName) {
-            const firstName = personName.includes(' ') ? personName.split(' ')[0] : personName;
-            setPersonDetailName(firstName);
-        } else {
-            setPersonDetailName(null);
-        }
     };
     
     const handleDelete = async (personId: string, userId: string) => {
@@ -149,9 +139,18 @@ const MyPeople = () => {
 
     // Pokud je kliknuto na detail osoby, zobrazí se detail osoby
     if (showPersonDetail !== null) {
+        const person = persons.find((person) => person.person_id === showPersonDetail);
+        if (!person) {
+            return <div>Person not found</div>;
+        }
+
         return (
             <>
-                <PersonDetail personId={showPersonDetail} onClickBack={() => setShowPersonDetail(null)} />
+                <PersonDetail
+                    personId={showPersonDetail}
+                    person={person}
+                    onClickBack={() => setShowPersonDetail(null)}
+                />
             </>
         );
     }
@@ -226,7 +225,6 @@ const MyPeople = () => {
                     name={person.name}
                     wishlists={person.wishlists.map((wishlist) => wishlist.name)}
                     onDetail={() => handleDetail(person.person_id)}
-                    onDelete={() => handleDelete(person.person_id, person.user_id)}
                     />
                 ))}
 

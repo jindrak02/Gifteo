@@ -113,7 +113,13 @@ const WishlistHub = () => {
 
                 <div>
                     <div>
-                        <p>Choose who do you want to gift</p>
+                        <p className="text-center">Choose who do you want to gift</p>
+                        {persons.length === 0 && (
+                            <div className="alert alert-light" role="alert">
+                                You don't have any people yet. Add them to your profile to start gifting.
+                            </div>
+                        )}
+
                         {persons.map((person) => (
                             <PersonThumbnail
                                 key={person.user_id}

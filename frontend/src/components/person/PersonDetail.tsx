@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import WishlistThumbnail from "../wishlist/WishlistThumbnail";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
@@ -6,8 +7,18 @@ import WishlistDetail from "../wishlist/WishlistDetail";
 
 type PersonDetailProps = {
     personId: string;
+    person: Person;
     onClickBack: () => void;
 };
+
+interface Person {
+  user_id: string;
+  person_id: string;
+  profile_id: string;
+  name: string;
+  photo_url: string;
+  wishlists: { name: string }[];
+}
 
 type PersonData = {
     person_id: string;
@@ -60,6 +71,50 @@ const PersonDetail = function (props: PersonDetailProps) {
         fetchPersonData();
     }, [props.personId]);
 
+    const handleDelete = async (personId: string, userId: string) => {
+          
+          Swal.fire({
+            title: "Are you sure?",
+            text: "Do you realy want to remove this person from your persons?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#8F84F2",
+            confirmButtonText: "Yes, remove",
+          }).then(async (result) => {
+    
+            if (result.isConfirmed) {
+              // Remove the user person from database
+              const res = await fetchWithAuth(
+                `personsData/DeletePerson/${personId}`,
+                {
+                  method: "DELETE",
+                  credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ secondUserId: userId }),
+                }
+              );
+    
+              const data = await res.json();
+    
+              if (data.success) {
+                console.log(personId + " Deleted");
+                props.onClickBack();
+              } else {
+                console.error("Error deleting person");
+                Swal.fire("Error", "Error removing person.", "success");
+              }
+    
+              Swal.fire("Removed", "Your person has been removed.", "success");
+            } else {
+              console.log(personId + " Delete canceled");
+              return;
+            }
+          });
+        };
+
     if (showWishlistDetail !== null) {
         // console.log("Show wishlist detail", showWishlistDetail);
         return (
@@ -101,10 +156,7 @@ const PersonDetail = function (props: PersonDetailProps) {
       <>
         <div className="profile-container p-4">
           <div className="profile-welcome">
-            <button
-              className="btn-service"
-              onClick={props.onClickBack}
-            >
+            <button className="btn-service" onClick={props.onClickBack}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -119,7 +171,9 @@ const PersonDetail = function (props: PersonDetailProps) {
                 />
               </svg>
             </button>
-            <h2 className="my-2">My people - {personData?.name.split(' ')[0]}</h2>
+            <h2 className="my-2">
+              My people - {personData?.name.split(" ")[0]}
+            </h2>
           </div>
 
           <hr className="my-4" />
@@ -134,8 +188,13 @@ const PersonDetail = function (props: PersonDetailProps) {
                 />
               </div>
 
-              <div className="flex-grow-1">
+              <div className="flex-grow-1 flex justify-between">
                 <h3 className="mb-0">{personData?.name}</h3>
+                <button className="btn btn-secondary btn-sm" onClick={() => handleDelete(props.person.person_id, props.person.user_id)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-x-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708"/>
+                  </svg>
+                </button>
               </div>
             </div>
 
@@ -176,7 +235,9 @@ const PersonDetail = function (props: PersonDetailProps) {
                   </div>
                 ))
               ) : (
-                <p className="alert alert-info">This person doesn't have any wishlists yet.</p>
+                <p className="alert alert-light">
+                  This person doesn't have any wishlists yet.
+                </p>
               )}
             </div>
           </div>
