@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
+import WishlistComments from "./WishlistComments";
 
 interface WishlistItem {
   id: string;
@@ -35,6 +36,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(wishlist.items);
     const [showSpinner, setShowSpinner] = useState(false);
     const [showItemDetails, setShowItemDetails] = useState<number | null>(null);
+    const [isViewingComments, setIsViewingComments] = useState(false);
 
     const handleCheckboxChange = async (item: WishlistItem) => {
 
@@ -125,6 +127,16 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
             setShowSpinner(false);
         }
     };
+
+    if (isViewingComments) {
+      return (
+        <WishlistComments
+          wishlistId={wishlist.id}
+          wishlistName={wishlist.name}
+          onClickBack={() => setIsViewingComments(false)}
+        />
+      );
+    }
 
 
     return (
@@ -237,7 +249,11 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                     {item.checkedOffBy != null ? (
                         <img
                           className="check-off-img rounded"
-                          src={item.checkedOffByPhoto || ""}
+                          src={item.checkedOffByPhoto || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2281862025.jpg"}
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
+                          }}
                           alt="img"
                         />
                       ) : null
@@ -273,7 +289,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
           </div>
 
           <div className="fixed-buttons">
-            <button className="icon-button">
+            <button className="icon-button" onClick={() => setIsViewingComments(true)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"

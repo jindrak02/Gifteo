@@ -686,3 +686,36 @@ button.text-red-500 {
 .bg-primary{
   background-color: #8F84F2 !important;
 }
+
+/* Comments Component Styles */
+.wishlist-comments-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.comment-item {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  background-color: #fff;
+}
+
+.comment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.add-comment-form textarea {
+  border-radius: 8px;
+  resize: none;
+}
+
+.add-comment-form button {
+  background-color: #8F84F2;
+  border-color: #8F84F2;
+}
+
+.add-comment-form button:hover {
+  background-color: #6F2BF6;
+  border-color: #6F2BF6;
+}

@@ -360,4 +360,40 @@ router.patch("/updateWishlistVisibility/:wishlistId", authenticateUser, async (r
     }
 });
 
+// GET /api/wishlistHub/wishlistComments/${wishlistId}, vrátí komentáře k wishlistu
+router.get("/wishlistComments/:wishlistId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistId = sanitize(req.params.wishlistId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      const commentsQuery = `
+        SELECT
+          c.id,
+          p."name" AS author,
+          p.photo_url AS "authorImg",
+          c.content AS text,
+          c.created_at AS "timestamp"
+          
+        FROM "comment" c
+        LEFT JOIN "profile" p ON c.user_id = p.user_id
+
+        WHERE c.wishlist_id = 'a6839bde-92d3-4b4a-95b5-42d50516c195'
+        ORDER BY c.created_at DESC;
+      `;
+
+      const result = await pool.query(commentsQuery, [wishlistId]);
+      const comments = result.rows;
+
+      res.json({ success: true, comments: comments });
+      
+    } catch (error) {
+      console.error("Error fetching wishlist comments:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
+});
+
 export default router;
