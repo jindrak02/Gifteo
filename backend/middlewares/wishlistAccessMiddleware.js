@@ -22,7 +22,7 @@ export function hasWishlistAccess() {
         }
 
         try {
-            const queryResult  = await pool.query(`
+            const queryResult = await pool.query(`
                 SELECT 1
 
                 FROM wishlist w
@@ -48,7 +48,9 @@ export function hasWishlistAccess() {
                 LIMIT 1;
             `, [userId, wishlistId]);
 
-            const rows = queryResult .rows;
+            const rows = queryResult.rows;
+            console.log('rows', rows);
+            
             
             if (rows.length === 0) {
                 return res.status(403).send({ success: false, message: "Access denied – wishlist is private or not shared with you" });

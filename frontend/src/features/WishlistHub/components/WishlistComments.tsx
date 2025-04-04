@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchWithAuth } from '../../../utils/fetchWithAuth';
 import UpperPanel from '../../../components/ui/UpperPanel';
+import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 
 interface Comment {
   id: string;
@@ -16,23 +18,37 @@ type CommentProps = {
 };
 
 const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps ) => {
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: '1',
-      author: 'John Doe',
-      authorImg: 'https://mudrkrotka.cz/wp-content/uploads/2016/06/team-1.jpg',
-      text: 'This wishlist looks great! I already know what I want to get you.',
-      timestamp: '2023-05-10T14:22:00Z'
-    },
-    {
-      id: '2',
-      author: 'Jane Smith',
-      authorImg: 'https://via.placeholder.com/30',
-      text: 'Happy birthday in advance! Can\'t wait to celebrate with you.',
-      timestamp: '2023-05-11T09:15:00Z'
-    }
-  ]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      setShowSpinner(true);
+      try {
+        const res = await fetchWithAuth(`wishlistHub/wishlistComments/${wishlistId}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            console.log('Fetched comments:', data.comments);
+            setComments(data.comments);
+        } else {
+            console.error('Failed to fetch comments:', data.message);
+        }
+
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      } finally {
+        setShowSpinner(false);
+      }
+    };
+
+    fetchComments();
+  }, [wishlistId]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -91,6 +107,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
         </div>
 
         </div>
+        <LoadingSpinner className={showSpinner ? "" : "hidden"} />
     </div>
   );
 };

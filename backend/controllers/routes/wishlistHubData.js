@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import pool from "../../config/db.js";
 import { authenticateUser } from "../../middlewares/authMiddleware.js";
 import { hasUserPerson } from "../../middlewares/personAccessMiddleware.js";
+import { hasWishlistAccess } from "../../middlewares/wishlistAccessMiddleware.js";
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 
@@ -361,7 +362,7 @@ router.patch("/updateWishlistVisibility/:wishlistId", authenticateUser, async (r
 });
 
 // GET /api/wishlistHub/wishlistComments/${wishlistId}, vrátí komentáře k wishlistu
-router.get("/wishlistComments/:wishlistId", authenticateUser, async (req, res) => {
+router.get("/wishlistComments/:wishlistId", authenticateUser, hasWishlistAccess(), async (req, res) => {
     const userId = req.cookies.session_token;
     const wishlistId = sanitize(req.params.wishlistId);
 
@@ -381,7 +382,7 @@ router.get("/wishlistComments/:wishlistId", authenticateUser, async (req, res) =
         FROM "comment" c
         LEFT JOIN "profile" p ON c.user_id = p.user_id
 
-        WHERE c.wishlist_id = 'a6839bde-92d3-4b4a-95b5-42d50516c195'
+        WHERE c.wishlist_id = $1
         ORDER BY c.created_at DESC;
       `;
 
