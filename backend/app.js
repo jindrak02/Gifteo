@@ -7,6 +7,7 @@ import profileDataRouter from './controllers/routes/profileData.js';
 import personsDataRouter from './controllers/routes/personsData.js';
 import scraperRouter from './controllers/routes/scraper.js';
 import hubRouter from './controllers/routes/wishlistHubData.js';
+import customWishlistRouter from './controllers/routes/customWishlists.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -25,20 +26,12 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Použití autentizačního routeru
 app.use('/api/auth', authRouter);
-
-// Použití routeru s daty o profilech a wishlistech
 app.use('/api/profileData', profileDataRouter);
-
-// Použití routeru s daty o osobách a propojeních
 app.use('/api/personsData', personsDataRouter);
-
-// Použití routeru s scraperem
 app.use('/api/scraper', scraperRouter);
-
-// Použití wishlistHub routeru
 app.use('/api/wishlistHub', hubRouter);
+app.use('/api/customWishlists', customWishlistRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

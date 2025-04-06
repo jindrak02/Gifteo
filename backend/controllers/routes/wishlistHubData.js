@@ -20,7 +20,7 @@ router.use(express.json());
 
 // GET /api/wishlistHub/wishlistsFor/:personId, vrátí všechny wishlisty pro danou osobu na které má uživatel přístup
 router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (req, res) => {
-    const userId = req.cookies.session_token;;
+    const userId = req.cookies.session_token;
     const personId = sanitize(req.params.personId);
 
     if (!userId) {
@@ -89,6 +89,7 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
               AND shared_with_user_id = $2
           )
         )
+        AND w.is_custom = false
         ORDER BY w.created_at DESC, wi.created_at ASC;
       `;
 

@@ -199,6 +199,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
       WHERE w.profile_id = $1
       AND w.deleted = false
       AND w.created_by_user_id = $2
+      AND w.is_custom = false
       ORDER BY w.created_at DESC;
     `;
     const wishlistsQueryResult = await pool.query(wishlistsQuery, [profileId, userId]);

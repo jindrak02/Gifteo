@@ -93,6 +93,12 @@ body {
   align-items: center;
 }
 
+.profile-welcome-no-btn {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .logout-btn {
   border: solid 1px #333;
 }
