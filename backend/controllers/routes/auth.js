@@ -98,6 +98,10 @@ router.post('/logout', async (req, res) => {
 
 router.get('/checkCookie', authenticateUser, (req, res) => {
   res.send({ success: true, message: "Uživatel je přihlášen", user: req.user });
+  console.log('Cookie je platná a uživatel je přihlášen: ');
+  console.log(req.user)
+  
+  
 });
 
 export default router;

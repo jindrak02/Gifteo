@@ -9,8 +9,7 @@ export function authenticateUser(req, res, next) {
       .status(401)
       .json({ success: false, message: "Neautorizovaný přístup" });
   }
-
-  // Ověřit, zda uživatel existuje v databázi
+  
   pool
     .query('SELECT * FROM "user" WHERE id = $1', [sessionToken])
     .then((result) => {
@@ -21,7 +20,7 @@ export function authenticateUser(req, res, next) {
           .json({ success: false, message: "Neplatná session" });
       }
 
-      req.user = result.rows[0]; // Přidání uživatelských dat do requestu
+      req.user = result.rows[0];
       next(); // Continue to the protected route or next middleware
     })
     .catch((error) => {

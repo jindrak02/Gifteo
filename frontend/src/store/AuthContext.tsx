@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.ok) {
         const data = await res.json();
-        setUser({ userId: data.userId });
+        setUser({ userId: data.user.id });
       } else {
         console.log("No session found.");
       }

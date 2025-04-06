@@ -375,6 +375,7 @@ router.get("/wishlistComments/:wishlistId", authenticateUser, hasWishlistAccess(
         SELECT
           c.id,
           p."name" AS author,
+          p.user_id AS "authorId",
           p.photo_url AS "authorImg",
           c.content AS text,
           c.created_at AS "timestamp"
@@ -419,6 +420,7 @@ router.post("/addComment/:wishlistId", authenticateUser, hasWishlistAccess(), as
         SELECT
           c.id,
           p."name" AS author,
+          p.user_id AS "authorId",
           p.photo_url AS "authorImg",
           c.content AS text,
           c.created_at AS "timestamp"
