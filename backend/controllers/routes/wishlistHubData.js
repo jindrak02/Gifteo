@@ -446,4 +446,35 @@ router.post("/addComment/:wishlistId", authenticateUser, hasWishlistAccess(), as
     }
 });
 
+// DELETE /api/wishlistHub/deleteComment/${commentId}/${wishlistId}, smaže komentář k wishlistu
+router.delete("/deleteComment/:commentId/:wishlistId", authenticateUser, hasWishlistAccess(), async (req, res) => {
+    const userId = req.cookies.session_token;
+    const commentId = sanitize(req.params.commentId);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      const deleteCommentQuery = `
+        DELETE FROM "comment"
+        WHERE id = $1 AND user_id = $2
+        RETURNING *;
+      `;
+
+      const result = await pool.query(deleteCommentQuery, [commentId, userId]);
+      const deletedComment = result.rows[0];
+
+      if (!deletedComment) {
+        return res.status(404).send({ success: false, message: "Comment not found or already deleted" });
+      }
+
+      res.json({ success: true, message: "Comment deleted successfully" });
+      
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
+});
+
 export default router;

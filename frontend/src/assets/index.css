@@ -698,6 +698,7 @@ button.text-red-500 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   background-color: #fff;
+  position: relative;
 }
 
 .comment-item:hover {
@@ -718,4 +719,15 @@ button.text-red-500 {
 .add-comment-form button:hover {
   background-color: #6F2BF6;
   border-color: #6F2BF6;
+}
+
+.comment-action-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.comment-action-btn:hover {
+  opacity: 1;
+  background-color: #f8f9fa !important;
+  border-radius: 50%;
 }
