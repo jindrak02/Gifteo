@@ -195,11 +195,13 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
       FROM "wishlist" w
       LEFT JOIN "wishlistItem" wi
         ON w.id = wi.wishlist_id AND wi.deleted = false
+
       WHERE w.profile_id = $1
       AND w.deleted = false
+      AND w.created_by_user_id = $2
       ORDER BY w.created_at DESC;
     `;
-    const wishlistsQueryResult = await pool.query(wishlistsQuery, [profileId]);
+    const wishlistsQueryResult = await pool.query(wishlistsQuery, [profileId, userId]);
 
     const wishlistsMap = new Map();
 

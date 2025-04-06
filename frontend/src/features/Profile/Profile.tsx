@@ -590,7 +590,7 @@ const Profile = () => {
           {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
         </div>
 
-        <div className="bio my-4">
+        <div className="bio my-4 alert alert-secondary">
           <p>{profileData?.bio}</p>
           <p>
             <strong>Birthday: </strong>{" "}

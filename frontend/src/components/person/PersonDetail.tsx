@@ -208,7 +208,7 @@ const PersonDetail = function (props: PersonDetailProps) {
               {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
             </div>
 
-            <div className="bio my-4">
+            <div className="bio my-4 alert alert-secondary">
               <p>{personData?.bio}</p>
               <p>
                 <strong>Birthday: </strong>
@@ -219,21 +219,24 @@ const PersonDetail = function (props: PersonDetailProps) {
             </div>
 
             <div className="my-4 my-wishlists-wrapper">
+
               {personData?.wishlists && personData.wishlists.length > 0 ? (
-                personData.wishlists.map((wishlist) => (
-                  <div
-                    className="wishlists-container my-4"
-                    key={wishlist.wishlist_id}
-                    onClick={() => setShowWishlistDetail(wishlist.wishlist_id)}
-                  >
-                    <WishlistThumbnail
-                      showButtons={false}
+                <div>
+                  {personData.wishlists.map((wishlist) => (
+                    <div
+                      className="wishlists-container my-4"
                       key={wishlist.wishlist_id}
-                      title={wishlist.name}
-                      imageUrls={wishlist.items}
-                    />
-                  </div>
-                ))
+                      onClick={() => setShowWishlistDetail(wishlist.wishlist_id)}
+                    >
+                      <WishlistThumbnail
+                        showButtons={false}
+                        key={wishlist.wishlist_id}
+                        title={wishlist.name}
+                        imageUrls={wishlist.items}
+                      />
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <p className="alert alert-light">
                   This person doesn't have any wishlists yet.
