@@ -2,14 +2,18 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import { fetchApi } from '../utils/fetchApi';
 
 interface AuthContextType {
-  user: Object | null;
+  user: User | null;
   logout: () => void;
+}
+
+interface User {
+  userId: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState <any>(null);
+  const [user, setUser] = useState <User | null>(null);
 
   useEffect(() => {
     async function checkSession() {

@@ -397,4 +397,51 @@ router.get("/wishlistComments/:wishlistId", authenticateUser, hasWishlistAccess(
     }
 });
 
+// POST /api/wishlistHub/addComment/${wishlistId}, přidá komentář k wishlistu
+router.post("/addComment/:wishlistId", authenticateUser, hasWishlistAccess(), async (req, res) => {
+    const userId = req.cookies.session_token;
+    const wishlistId = sanitize(req.params.wishlistId);
+    const text= sanitize(req.body.text);
+
+    if (!userId) {
+      return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+      const addCommentQuery = `
+        INSERT INTO "comment" (user_id, wishlist_id, content)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+      `;
+      const addCommentQueryResult = await pool.query(addCommentQuery, [userId, wishlistId, text]);
+
+      const newCommentQuery = `
+        SELECT
+          c.id,
+          p."name" AS author,
+          p.photo_url AS "authorImg",
+          c.content AS text,
+          c.created_at AS "timestamp"
+          
+        FROM "comment" c
+        LEFT JOIN "profile" p ON c.user_id = p.user_id
+
+        WHERE c.id = $1;
+      `;
+
+      const newCommentQueryResult = await pool.query(newCommentQuery, [addCommentQueryResult.rows[0].id]);
+      const newComment = newCommentQueryResult.rows[0];
+
+      if (!newComment) {
+        return res.status(404).send({ success: false, message: "Failed to add comment" });
+      }
+
+      res.json({ success: true, comment: newComment });
+      
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      res.status(500).send({ success: false, message: "Internal server error" });
+    }
+});
+
 export default router;
