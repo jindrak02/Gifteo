@@ -9,7 +9,7 @@ interface WishlistThumbnailProps {
 
 const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, onClick }: WishlistThumbnailProps) => {
   return (
-    <div className="wishlist-card p-3 rounded shadow-sm my-4">
+    <div className="wishlist-card p-3 rounded shadow-sm mb-4">
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="mb-0" onClick={onClick}>{title}</h5>
         {showButtons && ( // Conditionally render buttons

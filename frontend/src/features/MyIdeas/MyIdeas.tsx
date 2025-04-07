@@ -16,6 +16,7 @@ interface CustomWishlist {
     items: Item[];
     ownerName: string;
     ownerPhotoUrl: string;
+    is_shared: boolean;
 }
 
 interface Item {
@@ -41,7 +42,12 @@ const MyIdeas = () => {
     const [isAddingWishlist, setIsAddingWishlist] = useState(false);
     const [isEditingWishlist, setIsEditingWishlist] = useState<string | null> (null);
     const [isViewingWishlist, setIsViewingWishlist] = useState<string | null> (null);
+    const [expandSharedSection, setExpandSharedSection] = useState(true);
+    const [expandMySection, setExpandMySection] = useState(true);
     const location = useLocation();
+
+    const myWishlists = customWishlists.filter(wishlist => !wishlist.is_shared);
+    const sharedWithMeWishlists = customWishlists.filter(wishlist => wishlist.is_shared);
     
     useEffect(() => {
         setIsAddingWishlist(false);
@@ -222,34 +228,84 @@ const MyIdeas = () => {
             
             <div className="container">
                 <div className="my-custom-wishlists">
-                    <div className="flex justify-between mb-4">
-                        <p className="p-0 m-0">My custom wishlists: </p>
-                        <button className="btn btn-primary btn-service" onClick={() => setIsAddingWishlist(true)}>
+
+                        <div className="flex justify-between alert alert-secondary">
+                            <p className="p-0 m-0">My custom wishlists</p>
+                            <button className="btn" onClick={() => setExpandMySection(!expandMySection)}>
+                                {expandMySection? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
+                                        <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-up" viewBox="0 0 16 16">
+                                        <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
+
+                    <div className={expandMySection? "flex-end flex-column mb-4" : "hidden"}>
+                        <button className="btn btn-primary btn-service my-4" onClick={() => setIsAddingWishlist(true)}>
                             Create new wishlist
                         </button>
+                        {myWishlists.length > 0 ? (
+                            <div>
+                                {myWishlists.map((wishlist) => (
+                                    <WishlistThumbnail
+                                        key={wishlist.id}
+                                        title={wishlist.name}
+                                        imageUrls={wishlist.items.map((item) => item.photo_url)}
+                                        showButtons={true}
+                                        onDelete={() => handleDeleteWishlist(wishlist.id)}
+                                        onEdit={() => setIsEditingWishlist(wishlist.id)}
+                                        onClick={() => setIsViewingWishlist(wishlist.id)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="">You dont have any custom wishlists for your close ones yet.</p>
+                        )}
                     </div>
-
-                    {customWishlists.length > 0 ? (
-                        <div>
-                            {customWishlists.map((wishlist) => (
-                                <WishlistThumbnail
-                                    key={wishlist.id}
-                                    title={wishlist.name}
-                                    imageUrls={wishlist.items.map((item) => item.photo_url)}
-                                    showButtons={true}
-                                    onDelete={() => handleDeleteWishlist(wishlist.id)}
-                                    onEdit={() => setIsEditingWishlist(wishlist.id)}
-                                    onClick={() => setIsViewingWishlist(wishlist.id)}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="alert alert-secondary">You dont have any custom wishlists for your close ones yet.</p>
-                    )}
                 </div>
 
                 <div className="my-added-custom-wishlists my-4">
-                    <p className="p-0 m-0">Custom wishlists shared with you: </p>
+                    <div className="flex justify-between alert alert-secondary">
+                        <p className="p-0 m-0">Custom wishlists shared with you</p>
+                        <button className="btn" onClick={() => setExpandSharedSection(!expandSharedSection)}>
+                                {expandSharedSection? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
+                                        <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-up" viewBox="0 0 16 16">
+                                        <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+                                    </svg>
+                                )}
+                        </button>
+                    </div>
+
+                    {sharedWithMeWishlists.length > 0 ? (
+                        <div className={expandSharedSection? "mt-4" : "hidden"}>
+                            {sharedWithMeWishlists.map((wishlist) => (
+                                <div key={wishlist.id} className="mb-4">
+                                    <div className="flex">
+                                        <img className="profile-picture-thumbnail-sm rounded-circle" src={wishlist.ownerPhotoUrl} alt={wishlist.ownerName} />
+                                        <p className="my-0 mx-2">{wishlist.ownerName.split(' ')[0]} shares with you</p>
+                                    </div>
+
+                                    <WishlistThumbnail
+                                        key={wishlist.id}
+                                        title={wishlist.name}
+                                        imageUrls={wishlist.items.map((item) => item.photo_url)}
+                                        showButtons={false}
+                                        onClick={() => setIsViewingWishlist(wishlist.id)}
+                                    />
+                                </ div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="">No wishlists have been shared with you yet.</p>
+                    )}
                 </div>
             </div>
         </div>

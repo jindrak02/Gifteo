@@ -18,7 +18,7 @@ const router = express.Router();
 router.use(cookieParser());
 router.use(express.json());
 
-// GET /api/customWishlists, vrátí všechny custom wishlists vytvořené uživatelem
+// GET /api/customWishlists, vrátí všechny custom wishlists vytvořené uživatelem nebo sdílené s ním
 router.get("/", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     
@@ -50,12 +50,16 @@ router.get("/", authenticateUser, async (req, res) => {
 
             FROM wishlist w
             LEFT JOIN "wishlistItem" wi ON w.id = wi.wishlist_id
-            LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id
+            LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id AND ws.shared_with_user_id = $1
             LEFT JOIN profile p ON p.user_id = w.created_by_user_id
 
             WHERE w.is_custom = true
-            AND (w.created_by_user_id = $1 OR ws.shared_with_user_id = $1)
             AND w.deleted = false
+            AND (
+                w.created_by_user_id = $1
+                OR w.shared_with_all_my_people = true
+                OR ws.shared_with_user_id IS NOT NULL
+            )
             AND (wi.deleted = false OR wi.id IS NULL)
 
             ORDER BY w.created_at DESC;
@@ -76,6 +80,7 @@ router.get("/", authenticateUser, async (req, res) => {
                     items: [],
                     ownerName: row.ownerName,
                     ownerPhotoUrl: row.ownerPhotoUrl,
+                    is_shared: row.is_shared,
                 };
             }
             
