@@ -34,7 +34,7 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
             WHERE up.user_id = $1
             AND up.status = 'accepted';
         `;
-        const personWishlistQuery = `SELECT w."name" FROM "wishlist" w WHERE w.profile_id = $1 AND w.deleted = false;`;
+        const personWishlistQuery = `SELECT w."name" FROM "wishlist" w WHERE w.profile_id = $1 AND w.deleted = false AND w.is_custom = false;`;
         
         const peopleQueryResult = await pool.query(peopleQuery, [userId]);
         
@@ -148,9 +148,15 @@ router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async 
             FROM "profile" p
             LEFT JOIN "person" pers on p.id = pers.profile_id
             LEFT JOIN "wishlist" w on p.id = w.profile_id
+            LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id AND ws.shared_with_user_id = $2
+
             WHERE pers.id = $1
+            AND w.is_custom = false
             AND w.deleted = false
-            AND w.shared_with_all_my_people = true;
+            AND (
+                w.shared_with_all_my_people = true
+                OR ws.shared_with_user_id IS NOT NULL
+            );
         `;
 
         const wishlistItems = `
@@ -164,7 +170,7 @@ router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async 
 
         const personDetailsQueryResult = await pool.query(personDetailsQuery, [personId]);
         const personInterestsQueryResult = await pool.query(personInterestsQuery, [personId]);
-        const personWishlistsQueryResult = await pool.query(personWishlistsQuery, [personId]);
+        const personWishlistsQueryResult = await pool.query(personWishlistsQuery, [personId, userId]);
 
         // Vytvoření objektu s detaily osoby
         const personDetails = personDetailsQueryResult.rows[0];
