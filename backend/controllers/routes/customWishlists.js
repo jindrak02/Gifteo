@@ -32,6 +32,7 @@ router.get("/", authenticateUser, async (req, res) => {
                 w.id,
                 w."name",
                 w.profile_id,
+                w.deleted,
                 wi.id AS item_id,
                 wi."name" AS item_name,
                 wi.description,
@@ -46,12 +47,19 @@ router.get("/", authenticateUser, async (req, res) => {
                 END AS is_shared,
 
                 p.name "ownerName",
-	            p.photo_url AS "ownerPhotoUrl"
+	            p.photo_url AS "ownerPhotoUrl",
+
+                wi.checked_off_by_user_id AS "checkedOffBy",
+                cb_profile.name AS "checkedOffByName",
+                cb_profile.photo_url AS "checkedOffByPhoto",
+
+                wi.modified_by_owner AS "modifiedByOwner"
 
             FROM wishlist w
             LEFT JOIN "wishlistItem" wi ON w.id = wi.wishlist_id
             LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id AND ws.shared_with_user_id = $1
             LEFT JOIN profile p ON p.user_id = w.created_by_user_id
+            LEFT JOIN profile cb_profile ON cb_profile.user_id = wi.checked_off_by_user_id
 
             WHERE w.is_custom = true
             AND w.deleted = false
@@ -77,6 +85,7 @@ router.get("/", authenticateUser, async (req, res) => {
                     id: row.id,
                     name: row.name,
                     forProfile: row.profile_id,
+                    deleted: row.deleted,
                     items: [],
                     ownerName: row.ownerName,
                     ownerPhotoUrl: row.ownerPhotoUrl,
@@ -93,7 +102,11 @@ router.get("/", authenticateUser, async (req, res) => {
                     photo_url: row.imageUrl || "",
                     price: parseFloat(row.price) || 0,
                     currency: row.priceCurrency || "USD",
-                    url: row.url || ""
+                    url: row.url || "",
+                    checkedOffBy: row.checkedOffBy || null,
+                    checkedOffByName: row.checkedOffByName || null,
+                    checkedOffByPhoto: row.checkedOffByPhoto || null,
+                    modifiedByOwner: row.modifiedByOwner || null,
                 });
             }
         });

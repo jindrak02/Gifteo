@@ -17,6 +17,7 @@ interface CustomWishlist {
     ownerName: string;
     ownerPhotoUrl: string;
     is_shared: boolean;
+    deleted: boolean;
 }
 
 interface Item {
@@ -27,6 +28,11 @@ interface Item {
     price: number;
     currency: string;
     url: string;
+    checkedOffBy: string | null;
+    checkedOffByPhoto: string | null;
+    checkedOffByName: string | null;
+    deleted: boolean;
+    modifiedByOwner: Date | null;
 }
 
 interface Person {
@@ -211,10 +217,26 @@ const MyIdeas = () => {
     }
 
     if (isViewingWishlist) {
+        const wishlist = customWishlists.find(wishlist => wishlist.id === isViewingWishlist);
+        const person = connectedPersons.find(person => person.profileId === wishlist?.forProfile);
+        const personName = person ? person.name : "Unknown";
+
+        if (!wishlist) {
+            return <div className="alert alert-warning">Wishlist not found</div>;
+        }
+
+        const adaptedWishlist = {
+            ...wishlist,
+            items: wishlist.items.map(item => ({
+                ...item,
+                price_currency: item.currency, // currency to price_currency
+            }))
+        };
+
         return (
             <WishlistCopyDetail
-                wishlist={customWishlists.find(wishlist => wishlist.id === isViewingWishlist) || null}
-                personName={"TODO: add a name of person who wishlist is for"}
+                wishlist={adaptedWishlist}
+                personName={personName}
                 onClickBack={() => setIsViewingWishlist(null)}
             />
         ) 

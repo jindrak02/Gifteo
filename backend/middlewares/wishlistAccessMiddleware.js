@@ -36,7 +36,8 @@ export function hasWishlistAccess() {
                     
                 WHERE w.id = $2
                 AND (
-                    p.user_id = $1 -- uživatel je vlastníkem wishlistu
+                    (w.is_custom = false AND p.user_id = $1) -- uživatel je vlastníkem wishlistu
+                    OR (w.is_custom = true AND w.created_by_user_id = $1) -- uživatel je vlastníkem wishlistu (pro custom wishlist)
                     OR (
                         up.user_id IS NOT NULL -- propojen přes userPerson (accepted)
                         AND (
