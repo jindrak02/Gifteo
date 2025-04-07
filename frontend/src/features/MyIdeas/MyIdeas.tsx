@@ -229,7 +229,7 @@ const MyIdeas = () => {
             <div className="container">
                 <div className="my-custom-wishlists">
 
-                        <div className="flex justify-between alert alert-secondary">
+                        <div className="flex justify-between">
                             <p className="p-0 m-0">My custom wishlists</p>
                             <button className="btn" onClick={() => setExpandMySection(!expandMySection)}>
                                 {expandMySection? (
@@ -269,8 +269,8 @@ const MyIdeas = () => {
                 </div>
 
                 <div className="my-added-custom-wishlists my-4">
-                    <div className="flex justify-between alert alert-secondary">
-                        <p className="p-0 m-0">Custom wishlists shared with you</p>
+                    <div className="flex justify-between">
+                        <p className="p-0 m-0">Custom wishlists shared with me</p>
                         <button className="btn" onClick={() => setExpandSharedSection(!expandSharedSection)}>
                                 {expandSharedSection? (
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
@@ -284,9 +284,9 @@ const MyIdeas = () => {
                         </button>
                     </div>
 
+                    <div className={expandSharedSection? "mt-4" : "hidden"}>
                     {sharedWithMeWishlists.length > 0 ? (
-                        <div className={expandSharedSection? "mt-4" : "hidden"}>
-                            {sharedWithMeWishlists.map((wishlist) => (
+                            sharedWithMeWishlists.map((wishlist) => (
                                 <div key={wishlist.id} className="mb-4">
                                     <div className="flex">
                                         <img className="profile-picture-thumbnail-sm rounded-circle" src={wishlist.ownerPhotoUrl} alt={wishlist.ownerName} />
@@ -300,12 +300,14 @@ const MyIdeas = () => {
                                         showButtons={false}
                                         onClick={() => setIsViewingWishlist(wishlist.id)}
                                     />
-                                </ div>
-                            ))}
-                        </div>
+                                </div>
+                            
+                            ))
                     ) : (
                         <p className="">No wishlists have been shared with you yet.</p>
                     )}
+                    </div>
+
                 </div>
             </div>
         </div>

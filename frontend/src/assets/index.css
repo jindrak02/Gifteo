@@ -741,3 +741,15 @@ button.text-red-500 {
 .text-red {
   color: #FF0000;
 }
+
+.my-custom-wishlists{
+  background-color: #e7e3e3;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.my-added-custom-wishlists {
+  background-color: #e7e3e3;
+  padding: 10px;
+  border-radius: 10px;
+}
