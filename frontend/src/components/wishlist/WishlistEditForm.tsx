@@ -19,11 +19,12 @@ interface WishlistFormProps {
   items: WishlistItem[];
   name: string;
   id: string;
+  forProfile?: string;
   onSubmit: (items: WishlistItem[]) => void;
   onClickBack: () => void;
 }
 
-const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, name:name, id:id, onSubmit, onClickBack }) => {
+const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, name:name, id:id, forProfile, onSubmit, onClickBack }) => {
   const [items, setItems] = useState<WishlistItem[]>(initialItems);
   const [showButtons, setShowButtons] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
@@ -127,6 +128,7 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
         onClickBack={() => setShowWishlistSettings(false)}
         wishlistId={id}
         wishlistName={name}
+        wishlistForProfile={forProfile}
       />
     );
   }

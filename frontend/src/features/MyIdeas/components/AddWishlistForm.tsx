@@ -1,9 +1,9 @@
 import React, { useState, useEffect, use } from "react";
 import Swal from "sweetalert2";
-import { fetchWithAuth } from "../../utils/fetchWithAuth";
+import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Select from 'react-select';
-import UpperPanel from "../../components/ui/UpperPanel";
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import UpperPanel from "../../../components/ui/UpperPanel";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 type AddWishlistFormProps = {
     onClickBack: () => void;

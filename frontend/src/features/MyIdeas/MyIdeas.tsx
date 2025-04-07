@@ -5,12 +5,14 @@ import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import UpperPanel from "../../components/ui/UpperPanel";
 import WishlistThumbnail from "../../components/wishlist/WishlistThumbnail";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import AddWishlistForm from "./AddWishlistForm";
+import AddWishlistForm from "./components/AddWishlistForm";
 import WishlistEditForm from "../../components/wishlist/WishlistEditForm";
+import WishlistCopyDetail from "../WishlistHub/components/WishlistDetail";
 
 interface CustomWishlist {
     id: string;
     name: string;
+    forProfile: string;
     items: Item[];
     ownerName: string;
     ownerPhotoUrl: string;
@@ -196,9 +198,20 @@ const MyIdeas = () => {
                 id={isEditingWishlist}
                 items={customWishlists.find(wishlist => wishlist.id === isEditingWishlist)?.items || []}
                 name={customWishlists.find(wishlist => wishlist.id === isEditingWishlist)?.name || ""}
+                forProfile={customWishlists.find(wishlist => wishlist.id === isEditingWishlist)?.forProfile || ""}
                 onSubmit={(items) => handleSaveWishlist(isEditingWishlist, items)}
             />
         )
+    }
+
+    if (isViewingWishlist) {
+        return (
+            <WishlistCopyDetail
+                wishlist={customWishlists.find(wishlist => wishlist.id === isViewingWishlist) || null}
+                personName={"TODO: add a name of person who wishlist is for"}
+                onClickBack={() => setIsViewingWishlist(null)}
+            />
+        ) 
     }
 
     return (
@@ -226,7 +239,7 @@ const MyIdeas = () => {
                                     showButtons={true}
                                     onDelete={() => handleDeleteWishlist(wishlist.id)}
                                     onEdit={() => setIsEditingWishlist(wishlist.id)}
-                                    onClick={() => console.log('Wishlist clicked - show wishlist details with checkoffing items')}
+                                    onClick={() => setIsViewingWishlist(wishlist.id)}
                                 />
                             ))}
                         </div>

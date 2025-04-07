@@ -6,10 +6,12 @@ import Swal from "sweetalert2";
 
 interface User {
     user_id: string;
+    profile_id: string;
     name: string;
+    photo_url: string;
 }
 
-const WishlistSettings = function (props: { onClickBack: () => void; wishlistId: string; wishlistName: string; }) {
+const WishlistSettings = function (props: { onClickBack: () => void; wishlistId: string; wishlistName: string; wishlistForProfile?: string; }) {
     const [isPublic, setIsPublic] = useState(true);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -74,11 +76,48 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
 
     }, [props.wishlistId]);
 
+    const handleVisibilityToggle = () => {
+        // Zobrazíme varování pouze pokud z private wishlistu děláme public a zároveň je wishlist určen pro konkrétní osobu (props.wishlistForProfile)
+        if (!isPublic && props.wishlistForProfile) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: "Making this wishlist public will allow the person it's intended for to see it as well.",
+                showCancelButton: true,
+                confirmButtonText: 'Continue',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setIsPublic(true);
+                }
+            });
+        } else {
+            // V opačném případě přepneme viditelnost wishlistu
+            setIsPublic(!isPublic);
+        }
+    };
+
     const handleUserSelect = (userId: string) => {
         if (selectedUsers.includes(userId)) {
             setSelectedUsers(selectedUsers.filter(id => id !== userId));
         } else {
-            setSelectedUsers([...selectedUsers, userId]);
+            // Pokud se uživatel pokouší sdílet wishlist s tím, pro koho je určen, upozorníme ho na to. (Pouze v případě, že props wishlistForProfile je definováno)
+            const wishlistForProfile = users.find(user => user.user_id === userId)?.profile_id;
+            if (props.wishlistForProfile && props.wishlistForProfile === wishlistForProfile) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: "You are trying to share wishlist with the person that wishlist is for.",
+                    showCancelButton: true,
+                    confirmButtonText: 'Continue',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setSelectedUsers([...selectedUsers, userId]);
+                    }
+                });
+            } else {
+                setSelectedUsers([...selectedUsers, userId]);
+            }
         }
     };
 
@@ -147,7 +186,7 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
                             className="form-check-input"
                             type="checkbox"
                             checked={isPublic}
-                            onChange={() => setIsPublic(!isPublic)}
+                            onChange={handleVisibilityToggle}
                             id="visibilityToggle"
                         />
                         </div>
@@ -167,7 +206,8 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
                                         className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${selectedUsers.includes(user.user_id) ? 'active' : ''}`}
                                         onClick={() => handleUserSelect(user.user_id)}
                                     >
-                                        {user.name}
+                                        <img className="profile-picture-thumbnail-sm rounded" src={user.photo_url} alt={user.name} />
+                                        <p className={props.wishlistForProfile && props.wishlistForProfile == user.profile_id ? "text-red" : ""}>{user.name}</p>
                                         {selectedUsers.includes(user.user_id) && (
                                             <span className="badge bg-primary rounded-pill">✓</span>
                                         )}

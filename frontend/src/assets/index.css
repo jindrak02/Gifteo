@@ -737,3 +737,7 @@ button.text-red-500 {
   background-color: #f8f9fa !important;
   border-radius: 50%;
 }
+
+.text-red {
+  color: #FF0000;
+}

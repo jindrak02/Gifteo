@@ -34,14 +34,26 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
             WHERE up.user_id = $1
             AND up.status = 'accepted';
         `;
-        const personWishlistQuery = `SELECT w."name" FROM "wishlist" w WHERE w.profile_id = $1 AND w.deleted = false AND w.is_custom = false;`;
+        const personWishlistQuery = `
+            SELECT w."name"
+            
+            FROM "wishlist" w
+            LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id AND ws.shared_with_user_id = $2
+            
+            WHERE w.profile_id = $1
+            AND w.deleted = false
+            AND (
+                w.shared_with_all_my_people = true
+                OR ws.shared_with_user_id IS NOT NULL
+            )
+            AND w.is_custom = false;`;
         
         const peopleQueryResult = await pool.query(peopleQuery, [userId]);
         
         // Get wishlist for each person
         const enrichedPeopleData = await Promise.all(
             peopleQueryResult.rows.map(async (person) => {
-                const wishlistResult = await pool.query(personWishlistQuery, [person.profile_id]);
+                const wishlistResult = await pool.query(personWishlistQuery, [person.profile_id, userId]);
                 return {
                     ...person,
                     wishlists: wishlistResult.rows

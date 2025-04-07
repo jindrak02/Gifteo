@@ -31,6 +31,7 @@ router.get("/", authenticateUser, async (req, res) => {
             SELECT
                 w.id,
                 w."name",
+                w.profile_id,
                 wi.id AS item_id,
                 wi."name" AS item_name,
                 wi.description,
@@ -71,6 +72,7 @@ router.get("/", authenticateUser, async (req, res) => {
                 wishlistsMap[row.id] = {
                     id: row.id,
                     name: row.name,
+                    forProfile: row.profile_id,
                     items: [],
                     ownerName: row.ownerName,
                     ownerPhotoUrl: row.ownerPhotoUrl,
