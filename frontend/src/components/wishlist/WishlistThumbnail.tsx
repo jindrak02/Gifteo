@@ -9,9 +9,9 @@ interface WishlistThumbnailProps {
 
 const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, onClick }: WishlistThumbnailProps) => {
   return (
-    <div className="wishlist-card p-3 rounded shadow-sm my-4" onClick={onClick}>
+    <div className="wishlist-card p-3 rounded shadow-sm my-4">
       <div className="d-flex justify-content-between align-items-center mb-2">
-        <h5 className="mb-0">{title}</h5>
+        <h5 className="mb-0" onClick={onClick}>{title}</h5>
         {showButtons && ( // Conditionally render buttons
           <div>
             <button className="btn btn-light btn-sm me-2" onClick={onEdit}>
@@ -52,7 +52,7 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, on
         ))}
       </div> */}
 
-      <div className="wishlist-images-scroll-container">
+      <div className="wishlist-images-scroll-container" onClick={onClick}>
         <div className="wishlist-images-wrapper">
           {imageUrls.map((url, index) => (
             <img

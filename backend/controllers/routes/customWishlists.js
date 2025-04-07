@@ -83,9 +83,9 @@ router.get("/", authenticateUser, async (req, res) => {
                     id: row.item_id,
                     name: row.item_name,
                     description: row.description || "",
-                    imageUrl: row.imageUrl || "",
+                    photo_url: row.imageUrl || "",
                     price: parseFloat(row.price) || 0,
-                    priceCurrency: row.priceCurrency || "USD",
+                    currency: row.priceCurrency || "USD",
                     url: row.url || ""
                 });
             }
@@ -106,5 +106,56 @@ router.get("/", authenticateUser, async (req, res) => {
     }
 });
 
+// POST /api/customWishlists, vytvoří nový custom wishlist
+router.post("/", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const name = sanitize(req.body.name);
+    const forProfile = sanitize(req.body.forProfile);
+    
+    if (!userId) {
+        return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    if (!name) {
+        return res.status(400).json({ success: false, message: "Name is required" });
+    }
+    if (!forProfile) {
+        return res.status(400).json({ success: false, message: "Profile is required" });
+    }
+
+    try {
+
+        const insertQuery = `
+            INSERT INTO wishlist (
+                profile_id,
+                name,
+                visibility,
+                created_by_user_id,
+                shared_with_all_my_people,
+                is_custom
+            ) VALUES (
+                $1,               
+                $2,               
+                'private',        
+                $3,               
+                false,            
+                true
+            )
+            RETURNING *;
+        `;
+
+        const result = await pool.query(insertQuery, [forProfile, name, userId]);
+        const newWishlistId = result.rows[0].id;
+
+        res.status(201).json({
+            success: true,
+            message: "Custom wishlist created successfully",
+            wishlistId: newWishlistId
+        });
+
+    } catch (error) {
+        console.error("Error creating custom wishlist:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 export default router;

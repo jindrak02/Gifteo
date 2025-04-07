@@ -275,34 +275,41 @@ const Profile = () => {
     console.log("wishlist id:", wishlistId);    
     console.log("Saving wishlist with items:", items);
     
-    const res = await fetchWithAuth(
-      `profileData/updateWishlist/${wishlistId}`,
-      {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          items: items,
-        }),
+    setShowSpinner(true);
+    try {
+      const res = await fetchWithAuth(
+        `profileData/updateWishlist/${wishlistId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            items: items,
+          }),
+        }
+      );
+  
+      console.log('Sending data to server...');
+      console.log(JSON.stringify({
+        items: items,
+      }));
+      
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        console.log("Wishlist updated successfully.");
+        setIsEditingWishlist(null);
+      } else {
+        // Vypíšeme chybu
+        console.error("Error updating wishlist:", data.message);
       }
-    );
-
-    console.log('Sending data to server...');
-    console.log(JSON.stringify({
-      items: items,
-    }));
-    
-
-    const data = await res.json();
-
-    if (data.success) {
-      console.log("Wishlist updated successfully.");
-      setIsEditingWishlist(null);
-    } else {
-      // Vypíšeme chybu
-      console.error("Error updating wishlist:", data.message);
+    } catch (error) {
+      console.error("Error saving wishlist:", error);
+    } finally {
+      setShowSpinner(false);
     }
   };
   

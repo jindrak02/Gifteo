@@ -65,9 +65,14 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
     });
   };
   
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(items); // Zavolání callbacku s daty
+    setShowSpinner(true);
+    try {
+      await onSubmit(items); // Wait for the callback to complete
+    } finally {
+      setShowSpinner(false);
+    }
   };
   
   const toggleShowButtons = () => {
