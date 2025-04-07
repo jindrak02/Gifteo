@@ -604,37 +604,6 @@ button.text-red-500 {
   background-color: #6F2BF6;
 }
 
-.fixed-buttons {
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
-  z-index: 1000;
-}
-
-.icon-button {
-  background-color: #8F84F2;
-  border: 1px solid #8F84F2;
-  color: white;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.icon-button:hover {
-  background-color: #f0f0f0;
-  color: black;
-}
-
 .form-check {
   display: flex;
   flex-direction: column;
