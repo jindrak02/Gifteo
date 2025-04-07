@@ -140,6 +140,46 @@ const MyIdeas = () => {
         }
     }
 
+    const handleDeleteWishlist = async (wishlistId: string) => {
+        const result = await Swal.fire({
+          title: "Delete wishlist",
+          text: "Are you sure? It can still be seen to some users.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#8F84F2",
+          confirmButtonText: "Yes, delete it!",
+        });
+    
+        if (result.isConfirmed) {
+          const res = await fetchWithAuth(
+            `profileData/deleteWishlist/${wishlistId}`,
+            {
+              method: "DELETE",
+              credentials: "include",
+            }
+          );
+    
+          const data = await res.json();
+    
+          if (data.success) {
+            console.log("Wishlist deleted successfully.");
+            setCustomWishlists((prevWishlists) =>
+              prevWishlists.filter((wishlist) => wishlist.id !== wishlistId)
+            );
+          } else {
+            console.log("Wishlist deletion failed:", data.message);
+            Swal.fire({
+              icon: "error",
+                title: "Oops...",
+                text: "This should absolutely never happen! Yet, here we are.",
+                confirmButtonColor: "#8F84F2",
+                confirmButtonText: "OK",
+            });
+          }
+        }
+    };
+
     if (isAddingWishlist) {
         return (
             <AddWishlistForm
@@ -184,7 +224,7 @@ const MyIdeas = () => {
                                     title={wishlist.name}
                                     imageUrls={wishlist.items.map((item) => item.photo_url)}
                                     showButtons={true}
-                                    onDelete={() => console.log('Delete wishlist')}
+                                    onDelete={() => handleDeleteWishlist(wishlist.id)}
                                     onEdit={() => setIsEditingWishlist(wishlist.id)}
                                     onClick={() => console.log('Wishlist clicked - show wishlist details with checkoffing items')}
                                 />
