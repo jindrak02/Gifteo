@@ -9,6 +9,7 @@ import scraperRouter from './controllers/routes/scraper.js';
 import hubRouter from './controllers/routes/wishlistHubData.js';
 import customWishlistRouter from './controllers/routes/customWishlists.js';
 import cookieParser from 'cookie-parser';
+import './cron/calendarNotifier.js';
 
 dotenv.config();
 
