@@ -11,19 +11,26 @@ export const checkEvents = async () => {
     const today = new Date();
 
     const result = await pool.query(`
-        SELECT e.id, e.name, e.date, e.notification_days_before, u.email, p.name as person_name
-        FROM "calendarEvent" e
-        JOIN "profile" p ON p.id = e.profile_id
+        SELECT 
+            n.id AS notification_id,
+            n.days_before,
+            e.name AS event_name,
+            e.date AS event_date,
+            u.email,
+            p.name AS person_name
+        FROM "calendarEventNotification" n
+        JOIN "calendarEvent" e ON n.event_id = e.id
+        LEFT JOIN "profile" p ON p.id = e.profile_id
         JOIN "user" u ON u.id = e.created_by_user_id
-        WHERE e.notification_days_before IS NOT NULL
-        AND (e.notified_at IS NULL OR e.notified_at < CURRENT_DATE)
+        WHERE 
+            n.notified_at IS NULL
     `);
 
     console.log('[CRON] Získaná data z databáze:', result.rows);
 
     for (const event of result.rows) {
-        const notifyDate = new Date(event.date);
-        notifyDate.setDate(notifyDate.getDate() - event.notification_days_before);
+        const notifyDate = new Date(event.event_date);
+        notifyDate.setDate(notifyDate.getDate() - event.days_before);
     
         const shouldNotifyToday =
           notifyDate.getFullYear() === today.getFullYear() &&
@@ -31,15 +38,26 @@ export const checkEvents = async () => {
           notifyDate.getDate() === today.getDate();
     
         if (shouldNotifyToday) {
-          await sendEmail({
-            to: event.email,
-            subject: `Připomínka: ${event.name} pro ${event.person_name} se blíží!`,
-            html: `
-              <p>Nezapomeň – <strong>${event.name}</strong> pro osobu <strong>${event.person_name}</strong> se koná <strong>${format(new Date(event.date), 'd.M.yyyy')}</strong>.</p>
-              <p>Možná je čas připravit dárek! 🎁</p>
-              <a href="http://localhost:5173/">Otevřít Gifteo</a>
-            `
-          });
+            try {
+                await sendEmail({
+                    to: event.email,
+                    subject: `Připomínka: ${event.event_name}${event.person_name ? ` pro ${event.person_name}` : ''} se blíží!`,
+                    html: `
+                      <p>Nezapomeň – <strong>${event.event_name}</strong>${event.person_name ? ` pro osobu <strong>${event.person_name}</strong>` : ''} se koná <strong>${format(new Date(event.event_date), 'd.M.yyyy')}</strong>.</p>
+                      <p>Možná je čas připravit dárek! 🎁</p>
+                      <a href="http://localhost:5173/">Otevřít Gifteo</a>
+                    `
+                  });
+        
+                  await pool.query(`
+                        UPDATE "calendarEventNotification"
+                        SET notified_at = CURRENT_DATE
+                        WHERE id = $1
+                    `, [event.notification_id]);
+            } catch (error) {
+                console.error('Chyba při odesílání e-mailu:', error);
+            }
+        
         }
     }
     
