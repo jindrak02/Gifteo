@@ -81,10 +81,17 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
             source: event.source
         }));
 
-        res.status(200).json({ success: true, events });
+        res.status(200).json({ success: true, events, countryCode });
 
     } catch (error) {
-        console.error("Error fetching upcoming events:", error);
+        console.log('Error fetching upcoming events:', error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 });
+
+
+
+
+
+
+export default router;

@@ -8,6 +8,7 @@ import personsDataRouter from './controllers/routes/personsData.js';
 import scraperRouter from './controllers/routes/scraper.js';
 import hubRouter from './controllers/routes/wishlistHubData.js';
 import customWishlistRouter from './controllers/routes/customWishlists.js';
+import calendarRouter from './controllers/routes/calendar.js';
 import cookieParser from 'cookie-parser';
 import './cron/calendarNotifier.js';
 
@@ -33,6 +34,7 @@ app.use('/api/personsData', personsDataRouter);
 app.use('/api/scraper', scraperRouter);
 app.use('/api/wishlistHub', hubRouter);
 app.use('/api/customWishlists', customWishlistRouter);
+app.use('/api/calendar', calendarRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
