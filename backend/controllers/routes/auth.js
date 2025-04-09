@@ -5,6 +5,7 @@ import pool from "../../config/db.js";
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';
+import { getCountry } from '../../utils/getCountry.js';
 
 dotenv.config();
 
@@ -34,15 +35,17 @@ router.post('/google', async (req, res) => {
     const userQueryResult = await pool.query(userQuery, [email]);
 
     if (userQueryResult.rows.length === 0) {
-      // Založení nového uživatel v db
-      const insertUserQuery = 'INSERT INTO "user" (email, google_id) VALUES ($1, $2) RETURNING *';
+      // Založení nového uživatelose v db
+      const countryCode = getCountry(req);
+
+      const insertUserQuery = 'INSERT INTO "user" (email, google_id, country_code) VALUES ($1, $2, $3) RETURNING *';
 
       const insertUserQueryResult = await pool.query(insertUserQuery, [
         email,
         googleId,
+        countryCode,
       ]);
 
-      // Založení profilu uživatele s defaultními hodnotami z google
       const insertProfileQuery = 'INSERT INTO "profile" ("user_id", "name", "photo_url", "bio") VALUES ($1, $2, $3, $4) RETURNING *;';
 
       const insertProfileQueryResult = await pool.query(insertProfileQuery, [
@@ -52,19 +55,17 @@ router.post('/google', async (req, res) => {
         'Happy to gift and to be gifted!',
       ]);
 
-      // Založení osoby uživatele v tabulce person
       const insertPersonQuery = 'INSERT INTO "person" ("profile_id", "is_gifteo_user") VALUES ($1, $2) RETURNING *;';
       const insertPersonQueryResult = await pool.query(insertPersonQuery, [insertProfileQueryResult.rows[0].id, true]);
 
       console.log("User created");
 
-      // Tu probíhá vytvoření session tokenu (cookie)
+      
       res.cookie("session_token", insertUserQueryResult.rows[0].id, {
-        httpOnly: true, // JavaScript nemůže cookie přečíst
-        secure: process.env.NODE_ENV === "production", // Secure v produkci
-        sameSite: "Lax", // Chrání před CSRF
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
         maxAge: 60 * 60 * 1000, // 1 hodina
-        //maxAge: 20 * 1000, // 20 vteřin
       });
       console.log('Autentizační cookie nastavena');
 
@@ -72,13 +73,12 @@ router.post('/google', async (req, res) => {
     } else {
       console.log("User already exists");
 
-      // Tu probíhá vytvoření session tokenu (cookie)
+      
       res.cookie("session_token", userQueryResult.rows[0].id, {
-        httpOnly: true, // JavaScript nemůže cookie přečíst
-        secure: process.env.NODE_ENV === "production", // Secure v produkci
-        sameSite: "Lax", // Chrání před CSRF
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
         maxAge: 60 * 60 * 1000, // 1 hodina
-        //maxAge: 20 * 1000, // 20 vteřin
       });
       console.log('Autentizační cookie nastavena');
 

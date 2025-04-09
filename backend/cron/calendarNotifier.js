@@ -9,6 +9,6 @@ import { checkEvents } from './checkEvents.js';
  * and sends an email notification to the user email
  */
 
-cron.schedule('0 0 * * *', checkEvents);
+cron.schedule('15 0 * * *', checkEvents);
 
 export {checkEvents}
