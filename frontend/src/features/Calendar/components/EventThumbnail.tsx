@@ -9,6 +9,7 @@ interface EventThumbnailProps {
     eventFor: string;
     eventForPhoto: string | null;
     source: string;
+    notifications: number[];
 }
 
 const EventThumbnail: React.FC<EventThumbnailProps> = ({
@@ -18,41 +19,56 @@ const EventThumbnail: React.FC<EventThumbnailProps> = ({
     eventDate,
     eventFor,
     eventForPhoto,
-    source
+    source,
+    notifications
 }) => {
     const formattedDate = countryCode ? formatDate(eventDate, countryCode) : eventDate;
     
-
-    // Determine the image to display
     const imageUrl = (eventForPhoto || "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg") || "https://via.placeholder.com/50";
     
-    // Determine label based on event source
     const sourceLabel = source === "global" ? "Global Event" : "Personal Event";
-    const sourceClass = source === "global" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800";
+    const sourceClass = source === "global" ? "bg-secondary" : "bg-purple text-white";
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-4 mb-4 flex-column hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-lg font-semibold">{eventName}</h3>
-            
-            <div className="flex">
-                <div className="">
-                    <img 
-                        src={imageUrl} 
-                        alt={eventFor || "Event"} 
-                        className="profile-picture-thumbnail-sm rounded-circle object-cover"
-                    />
-                </div>
-                <div className="mx-4">
-                    <p className="text-gray-600">{formattedDate}</p>
-                    {eventFor && <p className="text-sm text-gray-500">For: {eventFor}</p>}
-                </div>
+        <div className="card shadow-sm mb-3 hover-shadow">
+            <div className="card-body">
+                <h3 className="card-title fw-semibold">{eventName}</h3>
                 
-            </div>
+                <div className="d-flex">
+                    <div>
+                        <img 
+                            src={imageUrl} 
+                            alt={eventFor || "Event"} 
+                            className="profile-picture-thumbnail-sm rounded-circle"
+                        />
+                    </div>
+                    <div className="ms-3">
+                        <p className="text-secondary">{formattedDate}</p>
+                        {eventFor && <p className="small text-muted">For: {eventFor}</p>}
+                    </div>
+                </div>
 
-            <div className='flex-end'>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${sourceClass}`}>
-                    {sourceLabel}
-                </span>
+                {notifications && notifications.length > 0 && (
+                    <div className="mt-2">
+                        <p className="small text-muted">Notifications:</p>
+                        <div className="d-flex flex-wrap gap-1 mt-1">
+                            {notifications.map((days, index) => (
+                                <span 
+                                    key={index} 
+                                    className="badge bg-light text-dark me-1"
+                                >
+                                    {days} {days === 1 ? 'day' : 'days'} before
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="d-flex justify-content-end mt-2">
+                    <span className={`badge ${sourceClass} rounded-pill px-3`}>
+                        {sourceLabel}
+                    </span>
+                </div>
             </div>
         </div>
     );

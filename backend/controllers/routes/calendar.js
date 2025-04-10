@@ -44,10 +44,13 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
                 ce.name AS "eventName",
                 ce.date AS "eventDate",
                 p.name AS "eventFor",
-                p.photo_url AS "eventForPhoto"
+                p.photo_url AS "eventForPhoto",
+                cen.days_before AS "notification"
             
             FROM "calendarEvent" ce
             LEFT JOIN "profile" p ON ce.profile_id = p.id
+            LEFT JOIN "calendarEventNotification" cen ON ce.id = cen.event_id
+
             WHERE created_by_user_id = $1
             AND date BETWEEN $2 AND $3
 
@@ -60,9 +63,11 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
                 name AS "eventName",
                 make_date(EXTRACT(YEAR FROM $2::date)::int, month, day) AS "eventDate",
                 '' AS "eventFor",
-                'https://static-00.iconduck.com/assets.00/globe-icon-2048x2048-5ralwwgx.png' AS "eventForPhoto"
+                'https://static-00.iconduck.com/assets.00/globe-icon-2048x2048-5ralwwgx.png' AS "eventForPhoto",
+                notification_days_before AS "notification"
             
             FROM "globalEvent"
+
             WHERE country_code IN ($4)
             AND (
                 (day IS NOT NULL AND make_date(EXTRACT(YEAR FROM $2::date)::int, month, day) BETWEEN $2 AND $3)
@@ -72,14 +77,31 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
         `;
 
         const eventsResult = await pool.query(eventsQuery, [userId, today, endDate, countryCode]);
-        const events = eventsResult.rows.map(event => ({
-            eventId: event.eventId,
-            eventName: sanitize(event.eventName),
-            eventDate: event.eventDate,
-            eventFor: sanitize(event.eventFor),
-            eventForPhoto: event.eventForPhoto,
-            source: event.source
-        }));
+        const rawRows = eventsResult.rows;
+
+        const eventsMap = rawRows.reduce((acc, row) => {
+            const eventId = row.eventId;
+            if (!acc[eventId]) {
+                acc[eventId] = {
+                    eventId: eventId,
+                    eventName: sanitize(row.eventName),
+                    eventDate: row.eventDate,
+                    eventFor: sanitize(row.eventFor),
+                    eventForPhoto: row.eventForPhoto,
+                    source: row.source,
+                    notifications: [],
+                };
+            }
+
+            if (row.notification !== null) {
+                acc[eventId].notifications.push(row.notification);
+            }
+
+            return acc;
+        }
+        , {});
+
+        const events = Object.values(eventsMap);
 
         res.status(200).json({ success: true, events, countryCode });
 

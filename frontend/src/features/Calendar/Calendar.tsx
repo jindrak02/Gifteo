@@ -12,6 +12,7 @@ interface Event {
     eventFor: string;
     eventForPhoto: string | null;
     source: string;
+    notifications: number[];
 }
 
 const Calendar = () => {
@@ -83,6 +84,7 @@ const Calendar = () => {
                                 eventFor={event.eventFor}
                                 eventForPhoto={event.eventForPhoto}
                                 source={event.source}
+                                notifications={event.notifications}
                             />
                         ))}
                     </div>
