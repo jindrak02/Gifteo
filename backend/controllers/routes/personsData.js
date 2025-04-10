@@ -27,10 +27,11 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
   
     try {
       const peopleQuery = `
-        SELECT pr.user_id, up.person_id, p.profile_id, pr."name", pr.photo_url
+        SELECT pr.user_id, up.person_id, p.profile_id, pr."name", pr.photo_url, u.country_code
             FROM "userPerson" up
             LEFT JOIN "person" p ON up.person_id = p.id
             LEFT JOIN "profile" pr ON p.profile_id = pr.id
+            LEFT JOIN "user" u ON pr.user_id = u.id
             WHERE up.user_id = $1
             AND up.status = 'accepted';
         `;

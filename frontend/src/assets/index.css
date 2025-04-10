@@ -726,3 +726,30 @@ button.text-red-500 {
 .bg-purple {
   background-color: #8F84F2 !important;
 }
+
+/* Events Section Styling */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-item {
+  transition: all 0.2s ease;
+  border-left: 3px solid #8F84F2;
+}
+
+.event-item:hover {
+  transform: translateX(2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-name {
+  font-size: 1em;
+  color: #333;
+}
+
+.event-date {
+  font-size: 0.85em;
+  padding: 4px 8px;
+}

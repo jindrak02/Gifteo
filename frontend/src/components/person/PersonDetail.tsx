@@ -4,6 +4,7 @@ import WishlistThumbnail from "../wishlist/WishlistThumbnail";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import WishlistDetail from "../wishlist/WishlistDetail";
+import formatDate from "../../utils/formatDateToCountryCode";
 
 type PersonDetailProps = {
     personId: string;
@@ -18,6 +19,7 @@ interface Person {
   name: string;
   photo_url: string;
   wishlists: { name: string }[];
+  country_code: string;
 }
 
 type PersonData = {
@@ -34,10 +36,16 @@ type PersonData = {
     }[];
 };
 
+interface Event {
+    eventName: string;
+    eventDate: string;
+}
+
 const PersonDetail = function (props: PersonDetailProps) {
     const [showSpinner, setShowSpinner] = useState(false);
     const [personData, setPersonData] = useState<PersonData | null>(null);
     const [showWishlistDetail, setShowWishlistDetail] = useState<string | null>(null);
+    const [events, setEvents] = useState<Event[]>([]);
 
     // Načtení dat osoby
     useEffect(() => {
@@ -68,7 +76,34 @@ const PersonDetail = function (props: PersonDetailProps) {
             setShowSpinner(false);
         };
 
+        const fetchPersonEvents = async () => {
+            setShowSpinner(true);
+            try {
+              const res = await fetchWithAuth(
+                `calendar/events/${props.person.profile_id}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                const data = await res.json();
+
+                if (data.success) {
+                    console.log("Fetched person events:", data);
+                    setEvents(data.events);
+                } else {
+                    console.error("Error fetching person events");
+                }
+            } catch (error) {
+                console.error("Error fetching person events:", error);
+            } finally {
+                setShowSpinner(false);
+            }
+        }
+
         fetchPersonData();
+        fetchPersonEvents();
     }, [props.personId]);
 
     const handleDelete = async (personId: string, userId: string) => {
@@ -216,6 +251,26 @@ const PersonDetail = function (props: PersonDetailProps) {
                   ? new Date(personData.birthdate).toLocaleDateString()
                   : "N/A"}
               </p>
+            </div>
+
+            <div className="events my-4 alert alert-secondary">
+              <h5 className="mb-3">Events</h5>
+              {events.length > 0 ? (
+                <div className="event-list">
+                  {events.map((event, index) => (
+                    <div className="event-item mb-2 p-2 bg-white rounded shadow-sm" key={index}>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="event-name fw-bold">{event.eventName}</span>
+                        <span className="event-date badge bg-purple">{formatDate(event.eventDate, props.person.country_code)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="alert alert-light">
+                  You don't have any events for this person yet.
+                </p>
+              )}
             </div>
 
             <div className="my-4 my-wishlists-wrapper">

@@ -260,5 +260,43 @@ router.delete("/events/:eventId", authenticateUser, async (req, res) => {
     }
 });
 
+// GET /api/calendar/events/:profileId, vrátí událost pro osobu
+router.get("/events/:profileId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const { profileId } = req.params;
+
+    if (!userId) {
+        return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+        const eventsQuery = `
+            SELECT
+                ce.name AS "eventName",
+                ce.date AS "eventDate",
+                p.id AS "eventForId",
+                p.name AS "eventFor"
+            
+            FROM "calendarEvent" ce
+            LEFT JOIN "profile" p ON ce.profile_id = p.id
+
+            WHERE profile_id = $1
+            AND created_by_user_id = $2
+            AND ce.date >= CURRENT_DATE
+
+            ORDER BY ce.date ASC
+        `;
+
+        const eventsResult = await pool.query(eventsQuery, [sanitize(profileId), userId]);
+        const events = eventsResult.rows;
+
+        res.status(200).json({ success: true, events });
+
+    } catch (error) {
+        console.log('Error fetching events for profile:', error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
+
 
 export default router;

@@ -16,6 +16,7 @@ interface Person {
   name: string;
   photo_url: string;
   wishlists: { name: string }[];
+  country_code: string;
 }
 
 interface Invitation {
