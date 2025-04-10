@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import UpperPanel from "../../components/ui/UpperPanel";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import EventThumbnail from "./components/EventThumbnail";
+import CreateEventForm from "./components/CreateEventForm";
+import "../../assets/Calendar.css";
 
 interface Event {
     eventId: string;
@@ -15,60 +18,117 @@ interface Event {
     notifications: number[];
 }
 
+interface Person {
+    name: string;
+    photoUrl: string;
+    profileId: string;
+}
+
 const Calendar = () => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [events, setEvents] = useState<Event[]>([]);
     const [countryCode, setCountryCode] = useState<string | null>(null);
+    const [isAddingEvent, setIsAddingEvent] = useState(false);
+    const [connectedPersons, setConnectedPersons] = useState<Person[]>([]);
+    const location = useLocation();
+
+    useEffect(() => {
+        setIsAddingEvent(false);
+    },[location.key]);
 
     useEffect(() => {
         const fetchUpcomingEvents = async () => {
-            setShowSpinner(true);
-            try {
-                const res = await fetchWithAuth("calendar/events/upcoming", {
-                    method: "GET",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
+          setShowSpinner(true);
+          try {
+            const res = await fetchWithAuth("calendar/events/upcoming", {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
 
-                const data = await res.json();
+            const data = await res.json();
 
-                if (data.success) {
-                    console.log("Upcoming events:", data.events);
-                    console.log('Country code: ', data.countryCode);
-                    
-                    setEvents(data.events);
-                    setCountryCode(data.countryCode);
-                } else {
-                    console.error("Error fetching upcoming events:", data.message);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: data.message,
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching upcoming events:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Failed to fetch upcoming events.",
-                });
-            } finally {
-                setShowSpinner(false);
+            if (data.success) {
+              setEvents(data.events);
+              setCountryCode(data.countryCode);
+            } else {
+              console.error("Error fetching upcoming events:", data.message);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: data.message,
+              });
             }
+          } catch (error) {
+            console.error("Error fetching upcoming events:", error);
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to fetch upcoming events.",
+            });
+          } finally {
+            setShowSpinner(false);
+          }
+        };
+
+        const fetchPersons = async () => {
+          setShowSpinner(true);
+          try {
+            const res = await fetchWithAuth("personsData/UserPersons", {
+              method: "GET",
+              credentials: "include",
+            });
+            const data = await res.json();
+
+            if (data) {
+              const newData = data.map((person: any) => ({
+                name: person.name,
+                photoUrl: person.photo_url,
+                profileId: person.profile_id,
+              }));
+
+              setConnectedPersons(newData);
+              
+            } else {
+              console.error("Failed to fetch persons data:", data);
+            }
+          } catch (error) {
+            console.error("Error fetching persons:", error);
+          } finally {
+            setShowSpinner(false);
+          }
         };
 
         fetchUpcomingEvents();
-    }, []);
+        fetchPersons();
+    }, [isAddingEvent]);
+
+    if(isAddingEvent) {
+        return (
+            <div className="profile-container p-4">
+                <CreateEventForm
+                    onClose={() => setIsAddingEvent(false)}
+                    connectedPersons={connectedPersons}
+                    onEventCreated={() => {
+                        setIsAddingEvent(false);
+                        setShowSpinner(true);
+                    }}
+                />
+            </div>
+        );
+    }
 
     return (
         <>
             <div className="profile-container p-4">
                 <UpperPanel name="My calendar" />
 
-                <h3 className="text-2xl font-bold mb-4">Upcoming Events</h3>
+                <div className="flex justify-between mb-4">
+                    <h3 className="text-2xl font-bold">Upcoming Events</h3>
+                    <button className="btn btn-service btn-primary" onClick={() => setIsAddingEvent(true)}>Add event</button>
+                </div>
 
                 <LoadingSpinner className={showSpinner ? "" : "hidden"} />
 

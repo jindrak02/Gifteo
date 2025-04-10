@@ -111,8 +111,47 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
     }
 });
 
+// POST /api/calendar/events, vytvoří novou událost pro uživatele
+router.post("/events", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const { name, date, profileId, notifications } = req.body;
 
+    if (!userId) {
+        return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
 
+    try {
+        const sanitizedName = sanitize(name);
+        const sanitizedDate = new Date(date);
+        const sanitizedProfileId = sanitize(profileId);
+
+        const insertEventQuery = `
+            INSERT INTO "calendarEvent" (name, date, created_by_user_id, profile_id)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id
+        `;
+        const insertEventResult = await pool.query(insertEventQuery, [sanitizedName, sanitizedDate, userId, sanitizedProfileId]);
+        const eventId = insertEventResult.rows[0].id;
+
+        if (notifications && notifications.length > 0) {
+            const limitedNotifications = notifications.slice(0, 3);
+
+            for (const notification of limitedNotifications) {
+                const insertNotificationQuery = `
+                    INSERT INTO "calendarEventNotification" (event_id, days_before)
+                    VALUES ($1, $2)
+                `;
+                await pool.query(insertNotificationQuery, [eventId, sanitize(notification)]);
+            }
+        }
+
+        res.status(201).json({ success: true, message: "Event created successfully" });
+
+    } catch (error) {
+        console.log('Error creating event:', error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
 
 
 
