@@ -227,5 +227,38 @@ router.patch("/events/:eventId", authenticateUser, async (req, res) => {
 
 });
 
+// DELETE /api/calendar/events/:eventId, smaže událost pro uživatele
+router.delete("/events/:eventId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const { eventId } = req.params;
+
+    if (!userId) {
+        return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+
+    try {
+        const checkQuery = `
+          SELECT 1 FROM "calendarEvent"
+          WHERE id = $1 AND created_by_user_id = $2
+        `;
+        const checkResult = await pool.query(checkQuery, [eventId, userId]);
+    
+        if (checkResult.rowCount === 0) {
+          return res.status(403).json({ success: false, message: "Not allowed to delete this event" });
+        }
+
+        const deleteEventQuery = `
+            DELETE FROM "calendarEvent" WHERE id = $1
+        `;
+        await pool.query(deleteEventQuery, [sanitize(eventId)]);
+
+        res.status(200).json({ success: true, message: "Event deleted successfully" });
+
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
+
 
 export default router;

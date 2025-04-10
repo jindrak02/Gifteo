@@ -111,6 +111,63 @@ const Calendar = () => {
         fetchPersons();
     }, [isAddingEvent, isEditingEvent]);
 
+    const handleDeleteEvent = async (eventId: string) => {
+
+        const deleteEvent = async (eventId: string) => {setShowSpinner(true);
+            try {
+                const res = await fetchWithAuth(`calendar/events/${eventId}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = await res.json();
+    
+                if (data.success) {
+                    setEvents(events.filter(event => event.eventId !== eventId));
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: data.message,
+                    });
+                }
+                else {
+                    console.error("Error deleting event:", data.message);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message,
+                    });
+                }
+                
+            } catch (error) {
+                console.error("Error deleting event:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to delete event.",
+                });
+            } finally {
+                setShowSpinner(false);
+            }
+        }
+
+        Swal.fire({
+            title: "Delete event",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD3333",
+            cancelButtonColor: "#8F84F2",
+            confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await deleteEvent(eventId);
+            }
+        });
+    };
+
     // #region scrollnutí uživatele na referenci nové události
     // Tato část kódu slouží k scrollnutí uživatele na referenci nové události kterou vytvořil pomocí CreateEventForm
     const eventRefs = React.useRef<{[key: string]: React.RefObject<HTMLDivElement | null>}>({});
@@ -197,6 +254,9 @@ const Calendar = () => {
                                         notifications={event.notifications}
                                         onEdit={() => {
                                             setIsEditingEvent(event.eventId);
+                                        }}
+                                        onDelete={() => {
+                                            handleDeleteEvent(event.eventId);
                                         }}
                                     />
                             </div>
