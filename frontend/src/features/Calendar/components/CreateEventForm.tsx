@@ -6,7 +6,7 @@ import UpperPanel from "../../../components/ui/UpperPanel";
 
 interface CreateEventFormProps {
     onClose: () => void;
-    onEventCreated: () => void;
+    onEventCreated: (eventId: string) => void;
     connectedPersons: {
         name: string;
         photoUrl: string;
@@ -21,7 +21,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
 }) => {
     const [eventName, setEventName] = useState("");
     const [eventDate, setEventDate] = useState("");
-    const [selectedPerson, setSelectedPerson] = useState("");
+    const [selectedPerson, setSelectedPerson] = useState<string | undefined>(undefined);
     const [notifications, setNotifications] = useState<number[]>([14]); // Default 7 days notification
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [newNotification, setNewNotification] = useState<number>(1);
@@ -64,7 +64,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                 title: "Success",
                 text: "Event added successfully!",
                 });
-                onEventCreated();
+                onEventCreated(data.eventId);
             } else {
                 console.error("Error creating event:", data.message);
                 Swal.fire({
@@ -164,7 +164,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                 value={selectedPerson}
                                 onChange={(e) => setSelectedPerson(e.target.value)}
                             >
-                                <option value="">Select a person</option>
+                                <option value={undefined}>Select a person</option>
                                 {connectedPersons.map((person) => (
                                 <option key={person.profileId} value={person.profileId}>
                                     {person.name}

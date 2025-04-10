@@ -30,6 +30,7 @@ const Calendar = () => {
     const [countryCode, setCountryCode] = useState<string | null>(null);
     const [isAddingEvent, setIsAddingEvent] = useState(false);
     const [connectedPersons, setConnectedPersons] = useState<Person[]>([]);
+    const [newEventId, setNewEventId] = useState<string | null>(null);
     const location = useLocation();
 
     useEffect(() => {
@@ -105,15 +106,38 @@ const Calendar = () => {
         fetchPersons();
     }, [isAddingEvent]);
 
+    // #region scrollnutí uživatele na referenci nové události
+    // Tato část kódu slouží k scrollnutí uživatele na referenci nové události kterou vytvořil pomocí CreateEventForm
+    const eventRefs = React.useRef<{[key: string]: React.RefObject<HTMLDivElement | null>}>({});
+
+    useEffect(() => {
+        if (newEventId && eventRefs.current[newEventId]?.current) {
+            eventRefs.current[newEventId]?.current?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            setTimeout(() => setNewEventId(null), 5000);
+        }
+    }, [events, newEventId]);
+
+    events.forEach(event => {
+        if (!eventRefs.current[event.eventId]) {
+            eventRefs.current[event.eventId] = React.createRef<HTMLDivElement>();
+        }
+    });
+    // #endregion
+
     if(isAddingEvent) {
         return (
             <div className="profile-container p-4">
                 <CreateEventForm
                     onClose={() => setIsAddingEvent(false)}
                     connectedPersons={connectedPersons}
-                    onEventCreated={() => {
+                    onEventCreated={(eventId: string) => {
                         setIsAddingEvent(false);
                         setShowSpinner(true);
+                        setNewEventId(eventId);
                     }}
                 />
             </div>
@@ -135,17 +159,22 @@ const Calendar = () => {
                 {events.length > 0 ? (
                     <div className="mt-4">
                         {events.map((event) => (
-                            <EventThumbnail
-                                countryCode={countryCode}
+                            <div
                                 key={event.eventId}
-                                eventId={event.eventId}
-                                eventName={event.eventName}
-                                eventDate={event.eventDate}
-                                eventFor={event.eventFor}
-                                eventForPhoto={event.eventForPhoto}
-                                source={event.source}
-                                notifications={event.notifications}
-                            />
+                                ref={eventRefs.current[event.eventId]}
+                                className={newEventId === event.eventId ? "highlight-new-event" : ""}
+                            >
+                                    <EventThumbnail
+                                        countryCode={countryCode}
+                                        eventId={event.eventId}
+                                        eventName={event.eventName}
+                                        eventDate={event.eventDate}
+                                        eventFor={event.eventFor}
+                                        eventForPhoto={event.eventForPhoto}
+                                        source={event.source}
+                                        notifications={event.notifications}
+                                    />
+                            </div>
                         ))}
                     </div>
                 ) : (

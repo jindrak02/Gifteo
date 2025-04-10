@@ -22,3 +22,7 @@
   height: 40px;
   object-fit: cover;
 }
+
+.highlight-new-event {
+  border: 3px solid #8f84f2;
+}

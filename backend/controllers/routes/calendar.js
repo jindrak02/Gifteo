@@ -123,14 +123,26 @@ router.post("/events", authenticateUser, async (req, res) => {
     try {
         const sanitizedName = sanitize(name);
         const sanitizedDate = new Date(date);
-        const sanitizedProfileId = sanitize(profileId);
 
-        const insertEventQuery = `
-            INSERT INTO "calendarEvent" (name, date, created_by_user_id, profile_id)
-            VALUES ($1, $2, $3, $4)
-            RETURNING id
-        `;
-        const insertEventResult = await pool.query(insertEventQuery, [sanitizedName, sanitizedDate, userId, sanitizedProfileId]);
+        let insertEventResult;
+
+        if (!profileId) {
+            const insertEventQuery = `
+                INSERT INTO "calendarEvent" (name, date, created_by_user_id)
+                VALUES ($1, $2, $3)
+                RETURNING id
+            `;
+            insertEventResult = await pool.query(insertEventQuery, [sanitizedName, sanitizedDate, userId]);
+
+        } else {
+            const insertEventQuery = `
+                INSERT INTO "calendarEvent" (name, date, created_by_user_id, profile_id)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id
+            `;
+            insertEventResult = await pool.query(insertEventQuery, [sanitizedName, sanitizedDate, userId, sanitize(profileId)]);
+        }
+
         const eventId = insertEventResult.rows[0].id;
 
         if (notifications && notifications.length > 0) {
@@ -145,7 +157,7 @@ router.post("/events", authenticateUser, async (req, res) => {
             }
         }
 
-        res.status(201).json({ success: true, message: "Event created successfully" });
+        res.status(201).json({ success: true, message: "Event created successfully", eventId });
 
     } catch (error) {
         console.log('Error creating event:', error);
