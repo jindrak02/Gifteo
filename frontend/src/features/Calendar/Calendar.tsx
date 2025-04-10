@@ -6,12 +6,14 @@ import UpperPanel from "../../components/ui/UpperPanel";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import EventThumbnail from "./components/EventThumbnail";
 import CreateEventForm from "./components/CreateEventForm";
+import EditEventForm from "./components/EditEventForm";
 import "../../assets/Calendar.css";
 
 interface Event {
     eventId: string;
     eventName: string;
     eventDate: string;
+    eventForId: string;
     eventFor: string;
     eventForPhoto: string | null;
     source: string;
@@ -29,6 +31,7 @@ const Calendar = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const [countryCode, setCountryCode] = useState<string | null>(null);
     const [isAddingEvent, setIsAddingEvent] = useState(false);
+    const [isEditingEvent, setIsEditingEvent] = useState<string | null>(null);
     const [connectedPersons, setConnectedPersons] = useState<Person[]>([]);
     const [newEventId, setNewEventId] = useState<string | null>(null);
     const location = useLocation();
@@ -40,38 +43,40 @@ const Calendar = () => {
     useEffect(() => {
         const fetchUpcomingEvents = async () => {
           setShowSpinner(true);
-          try {
-            const res = await fetchWithAuth("calendar/events/upcoming", {
-              method: "GET",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
+            try {
+                const res = await fetchWithAuth("calendar/events/upcoming", {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                });
 
-            const data = await res.json();
+                const data = await res.json();
 
-            if (data.success) {
-              setEvents(data.events);
-              setCountryCode(data.countryCode);
-            } else {
-              console.error("Error fetching upcoming events:", data.message);
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: data.message,
-              });
+                if (data.success) {
+                    console.log('Fetched upcoming events:', data.events);
+                    
+                    setEvents(data.events);
+                    setCountryCode(data.countryCode);
+                } else {
+                    console.error("Error fetching upcoming events:", data.message);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message,
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching upcoming events:", error);
+                    Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to fetch upcoming events.",
+                });
+            } finally {
+                setShowSpinner(false);
             }
-          } catch (error) {
-            console.error("Error fetching upcoming events:", error);
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to fetch upcoming events.",
-            });
-          } finally {
-            setShowSpinner(false);
-          }
         };
 
         const fetchPersons = async () => {
@@ -101,10 +106,10 @@ const Calendar = () => {
             setShowSpinner(false);
           }
         };
-
+        
         fetchUpcomingEvents();
         fetchPersons();
-    }, [isAddingEvent]);
+    }, [isAddingEvent, isEditingEvent]);
 
     // #region scrollnutí uživatele na referenci nové události
     // Tato část kódu slouží k scrollnutí uživatele na referenci nové události kterou vytvořil pomocí CreateEventForm
@@ -136,7 +141,24 @@ const Calendar = () => {
                     connectedPersons={connectedPersons}
                     onEventCreated={(eventId: string) => {
                         setIsAddingEvent(false);
-                        setShowSpinner(true);
+                        setShowSpinner(false);
+                        setNewEventId(eventId);
+                    }}
+                />
+            </div>
+        );
+    }
+
+    if(isEditingEvent !== null) {
+        return (
+            <div className="profile-container p-4">
+                <EditEventForm
+                    connectedPersons={connectedPersons}
+                    event={events.find(event => event.eventId === isEditingEvent)!}
+                    onClose={() => setIsEditingEvent(null)}
+                    onEventEdited={(eventId: string) => {
+                        setIsEditingEvent(null);
+                        setShowSpinner(false);
                         setNewEventId(eventId);
                     }}
                 />
@@ -173,6 +195,9 @@ const Calendar = () => {
                                         eventForPhoto={event.eventForPhoto}
                                         source={event.source}
                                         notifications={event.notifications}
+                                        onEdit={() => {
+                                            setIsEditingEvent(event.eventId);
+                                        }}
                                     />
                             </div>
                         ))}

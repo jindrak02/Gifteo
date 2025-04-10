@@ -43,6 +43,7 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
                 ce.id AS "eventId",
                 ce.name AS "eventName",
                 ce.date AS "eventDate",
+                p.id AS "eventForId",
                 p.name AS "eventFor",
                 p.photo_url AS "eventForPhoto",
                 cen.days_before AS "notification"
@@ -62,6 +63,7 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
                 id AS "eventId",
                 name AS "eventName",
                 make_date(EXTRACT(YEAR FROM $2::date)::int, month, day) AS "eventDate",
+                'ce81d003-9582-48af-bb0c-f20452c56e5e' AS "eventForId",
                 '' AS "eventFor",
                 'https://static-00.iconduck.com/assets.00/globe-icon-2048x2048-5ralwwgx.png' AS "eventForPhoto",
                 notification_days_before AS "notification"
@@ -86,6 +88,7 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
                     eventId: eventId,
                     eventName: sanitize(row.eventName),
                     eventDate: row.eventDate,
+                    eventForId: row.eventForId,
                     eventFor: sanitize(row.eventFor),
                     eventForPhoto: row.eventForPhoto,
                     source: row.source,
@@ -102,6 +105,8 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
         , {});
 
         const events = Object.values(eventsMap);
+        console.log('Upcoming events:', events);
+        
 
         res.status(200).json({ success: true, events, countryCode });
 
@@ -123,6 +128,9 @@ router.post("/events", authenticateUser, async (req, res) => {
     try {
         const sanitizedName = sanitize(name);
         const sanitizedDate = new Date(date);
+
+        console.log('Event date sanitized:', sanitizedDate);
+        
 
         let insertEventResult;
 
@@ -165,6 +173,59 @@ router.post("/events", authenticateUser, async (req, res) => {
     }
 });
 
+// PATCH /api/calendar/events/:eventId, upraví událost pro uživatele
+router.patch("/events/:eventId", authenticateUser, async (req, res) => {
+    const userId = req.cookies.session_token;
+    const { eventId } = req.params;
+    const { name, date, profileId, notifications } = req.body;
+
+    if (!userId) {
+        return res.status(401).send({ success: false, message: "User ID not found in cookies" });
+    }
+    
+    try {
+        const checkQuery = `
+          SELECT 1 FROM "calendarEvent"
+          WHERE id = $1 AND created_by_user_id = $2
+        `;
+        const checkResult = await pool.query(checkQuery, [eventId, userId]);
+    
+        if (checkResult.rowCount === 0) {
+          return res.status(403).json({ success: false, message: "Not allowed to update this event" });
+        }
+
+        const updateEventQuery = `
+            UPDATE "calendarEvent"
+            SET name = $1,
+                date = $2,
+                profile_id = $3
+            WHERE id = $4
+        `;
+        await pool.query(updateEventQuery, [sanitize(name), new Date(date), sanitize(profileId) || null, sanitize(eventId)]);
+    
+        const deleteNotificationsQuery = `
+            DELETE FROM "calendarEventNotification" WHERE event_id = $1
+        `;
+        await pool.query(deleteNotificationsQuery, [sanitize(eventId)]);
+    
+        const limitedNotifications = (notifications || []).slice(0, 3);
+
+        for (const notification of limitedNotifications) {
+            const insertNotificationQuery = `
+                INSERT INTO "calendarEventNotification" (event_id, days_before)
+                VALUES ($1, $2)
+            `;
+            await pool.query(insertNotificationQuery, [eventId, notification]);
+        }
+    
+        res.status(200).json({ success: true, message: "Event updated successfully", eventId });
+
+    } catch (error) {
+        console.error('Error updating event:', error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+
+});
 
 
 export default router;

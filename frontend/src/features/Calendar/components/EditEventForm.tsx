@@ -4,9 +4,10 @@ import Swal from "sweetalert2";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import UpperPanel from "../../../components/ui/UpperPanel";
 
-interface CreateEventFormProps {
+interface EditEventFormProps {
+    event: Event
     onClose: () => void;
-    onEventCreated: (eventId: string) => void;
+    onEventEdited: (eventId: string) => void;
     connectedPersons: {
         name: string;
         photoUrl: string;
@@ -14,15 +15,41 @@ interface CreateEventFormProps {
     }[];
 }
 
-const CreateEventForm: React.FC<CreateEventFormProps> = ({
+interface Event {
+    eventId: string;
+    eventName: string;
+    eventDate: string;
+    eventForId: string;
+    eventFor: string;
+    eventForPhoto: string | null;
+    source: string;
+    notifications: number[];
+}
+
+const EditEventForm: React.FC<EditEventFormProps> = ({
+    event,
     onClose,
-    onEventCreated,
+    onEventEdited,
     connectedPersons,
 }) => {
-    const [eventName, setEventName] = useState("");
-    const [eventDate, setEventDate] = useState("");
-    const [selectedPerson, setSelectedPerson] = useState<string | undefined>(undefined);
-    const [notifications, setNotifications] = useState<number[]>([14]); // Default 7 days notification
+
+    const formatDateForInput = (date: string) => {
+        const localDate = new Date(date);
+
+        const year = localDate.getFullYear();
+        const month = String(localDate.getMonth() + 1).padStart(2, '0'); // Měsíce jsou 0-indexované
+        const day = String(localDate.getDate()).padStart(2, '0');
+
+        // console.log('Vstup:', date);
+        // console.log('Výstup:', localDate);
+        // console.log('Formát:', `${year}-${month}-${day}`);
+        return `${year}-${month}-${day}`;
+    }
+
+    const [eventName, setEventName] = useState(event.eventName);
+    const [eventDate, setEventDate] = useState(formatDateForInput(event.eventDate));
+    const [selectedPerson, setSelectedPerson] = useState<string | undefined>(event.eventForId || undefined);
+    const [notifications, setNotifications] = useState<number[]>(event.notifications || []);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [newNotification, setNewNotification] = useState<number>(1);
 
@@ -30,20 +57,28 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
         e.preventDefault();
         
         if (!eventName || !eventDate) {
-        Swal.fire({
-            icon: "error",
-            title: "Missing information",
-            text: "Please fill all required fields.",
-        });
-        return;
+            Swal.fire({
+                icon: "error",
+                title: "Missing information",
+                text: "Please fill all required fields.",
+            });
+            return;
         }
 
         setIsSubmitting(true);
         
         try {
+
+            console.log('Submitting event:', {
+                name: eventName,
+                date: eventDate,
+                profileId: selectedPerson || null,
+                notifications: notifications
+            });
             
-            const res = await fetchWithAuth("calendar/events", {
-                method: "POST",
+            
+            const res = await fetchWithAuth(`calendar/events/${event.eventId}`, {
+                method: "PATCH",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
@@ -56,9 +91,6 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                 }),
             });
 
-            console.log('saving event with date:', eventDate);
-            
-
             const data = await res.json();
 
             if (data.success) {
@@ -67,7 +99,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                 title: "Success",
                 text: "Event added successfully!",
                 });
-                onEventCreated(data.eventId);
+                onEventEdited(data.eventId);
             } else {
                 console.error("Error creating event:", data.message);
                 Swal.fire({
@@ -77,6 +109,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                 });
             }
             
+
         } catch (error) {
             console.error("Error creating event:", error);
             Swal.fire({
@@ -112,14 +145,14 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     return (
         <>
             <UpperPanel
-                name="Create Event"
+                name={event.eventName}
                 onClickBack={onClose}
             />
 
             <div className="card shadow-lg max-w-lg mx-auto mt-5">
 
                 <div className="card-header bg-primary text-white py-3">
-                    <h5 className="mb-0">Add New Event</h5>
+                    <h5 className="mb-0">Edit {event.eventName}</h5>
                 </div>
 
                 <div className="card-body p-4">
@@ -165,14 +198,16 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                 className="form-select"
                                 id="person"
                                 value={selectedPerson}
-                                onChange={(e) => setSelectedPerson(e.target.value)}
+                                onChange={(e) => setSelectedPerson(e.target.value !== "undefined" ? e.target.value : undefined)}
                             >
-                                <option value={undefined}>Select a person</option>
+                                <option value="undefined">Select a person</option>
+
                                 {connectedPersons.map((person) => (
                                 <option key={person.profileId} value={person.profileId}>
                                     {person.name}
                                 </option>
                                 ))}
+
                             </select>
                         </div>
 
@@ -229,10 +264,10 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                 {isSubmitting ? (
                                 <>
                                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Creating...
+                                    Updating...
                                 </>
                                 ) : (
-                                "Create Event"
+                                "Update Event"
                                 )}
                             </button>
                         </div>
@@ -248,4 +283,4 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     );
 };
 
-export default CreateEventForm;
+export default EditEventForm;
