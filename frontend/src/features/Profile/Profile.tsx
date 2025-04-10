@@ -57,7 +57,6 @@ const Profile = () => {
           const data = await res.json();
           data.birthdate = new Date(data.birthdate); // Převést birthdate na instanci Date
           setProfileData(data);
-          //console.log(data);
         };
 
         // Zde načteme data o zájemch profilu z API

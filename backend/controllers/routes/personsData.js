@@ -384,7 +384,7 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
         `;
         const acceptInvitationResult = await pool.query(acceptInvitationQuery, [invitationId]);
 
-        // Propojí osoby navzájem (sendera přidá receiverovi)
+        // #region Propojí osoby navzájem (sendera přidá receiverovi)
             // 1. Zjistíme id osoby, která poslala pozvánku
             const senderIdQuery = `
                 SELECT pers.id
@@ -395,6 +395,10 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
             `;
             const senderIdResult = await pool.query(senderIdQuery, [invitationId]);
 
+            if (senderIdResult.rows.length === 0) {
+                return res.status(400).send({ success: false, message: "Sender not found for the given invitation ID" });
+            }
+
             // 2. Propojíme osoby
             const addPersonQuery = `
                 INSERT INTO "userPerson" ("user_id", "person_id", "status")
@@ -403,6 +407,79 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
             `;
             const addPersonResult = await pool.query(addPersonQuery, [userId, senderIdResult.rows[0].id, 'accepted']);
 
+            // 3. Přidáme narozeniny osobám navzájem do kalendáře
+            const birthdayQuery = `
+                SELECT 
+                    sender_prof.id AS sender_profile_id,
+                    sender_prof.user_id AS sender_user_id,
+                    sender_prof.name AS sender_name,
+                    sender_prof.birthdate AS sender_birthdate,
+
+                    receiver_prof.id AS receiver_profile_id,
+                    receiver_prof.user_id AS receiver_user_id,
+                    receiver_prof.name AS receiver_name,
+                    receiver_prof.birthdate AS receiver_birthdate
+
+                FROM "userPerson" up
+                JOIN "profile" sender_prof ON up.user_id = sender_prof.user_id
+                JOIN "person" pers ON up.person_id = pers.id
+                JOIN "profile" receiver_prof ON pers.profile_id = receiver_prof.id
+
+                WHERE up.id = $1;
+            `;
+            const birthdayResult = await pool.query(birthdayQuery, [invitationId]);
+
+            const senderProfileId = birthdayResult.rows[0].sender_profile_id;
+            const senderUserId = birthdayResult.rows[0].sender_user_id;
+            const senderName = birthdayResult.rows[0].sender_name;
+            const senderBirthdate = birthdayResult.rows[0].sender_birthdate;
+
+            const receiverProfileId = birthdayResult.rows[0].receiver_profile_id;
+            const receiverUserId = birthdayResult.rows[0].receiver_user_id;
+            const receiverName = birthdayResult.rows[0].receiver_name;
+            const receiverBirthdate = birthdayResult.rows[0].receiver_birthdate;
+
+            const getBirthdayString = (birthdate) => {
+                const birthdayDate = new Date(birthdate);
+                const birthdayMonth = birthdayDate.getMonth() + 1;
+                const birthdayDay = birthdayDate.getDate();
+                const birthdayYear = new Date().getFullYear();
+                const birthdayDateString = `${birthdayYear}-${birthdayMonth}-${birthdayDay}`;
+
+                return birthdayDateString;
+            }
+
+            if (senderBirthdate != null) {
+                try {
+                    const senderBirthdayDateString = getBirthdayString(senderBirthdate);
+                    const addBirthdayQuerySender = `
+                        INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name",  "date")
+                        VALUES ($1, $2, $3, $4)
+                        RETURNING *;
+                    `;
+                    await pool.query(addBirthdayQuerySender, [senderProfileId, receiverUserId, `${senderName}´s Birthday`, senderBirthdayDateString]);   
+                } catch (error) {
+                    console.error("Error parsing sender's birthday:", error);
+                }
+            }
+
+            if (receiverBirthdate != null) {
+                try {
+                    const receiverBirthdayDateString = getBirthdayString(receiverBirthdate);
+                    const addBirthdayQueryReceiver = `
+                        INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name",  "date")
+                        VALUES ($1, $2, $3, $4)
+                        RETURNING *;
+                    `;
+                    await pool.query(addBirthdayQueryReceiver, [receiverProfileId, senderUserId, `${receiverName}´s Birthday`, receiverBirthdayDateString]);   
+                } catch (error) {
+                    console.error("Error parsing receiver's birthday:", error);
+                }
+            }
+
+
+
+        // #endregion
         res.send({success: true, message: "Invitation accepted successfully"});
 
     } catch (error) {

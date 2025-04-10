@@ -34,6 +34,9 @@ router.get("/profile", authenticateUser, async (req, res) => {
     const profileQuery = 'SELECT * FROM "profile" profile WHERE profile.user_id = $1;';
     const profileQueryResult = await pool.query(profileQuery,[userId]);
 
+    console.log('Profil uživatele:', profileQueryResult.rows[0]);
+    
+
     res.json(profileQueryResult.rows[0]);
 
   } catch (error) {
