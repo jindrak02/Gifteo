@@ -38,6 +38,7 @@ const Calendar = () => {
 
     useEffect(() => {
         setIsAddingEvent(false);
+        setIsEditingEvent(null);
     },[location.key]);
 
     useEffect(() => {

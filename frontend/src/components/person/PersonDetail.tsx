@@ -110,7 +110,7 @@ const PersonDetail = function (props: PersonDetailProps) {
           
           Swal.fire({
             title: "Are you sure?",
-            text: "Do you realy want to remove this person from your persons?",
+            text: "Do you realy want to remove this person from your persons? This will also remove all events in calendar for this person.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",

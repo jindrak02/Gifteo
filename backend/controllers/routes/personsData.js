@@ -111,6 +111,32 @@ router.delete("/DeletePerson/:personId", authenticateUser, async (req, res) => {
             `;
         const deletePersonResult2 = await pool.query(deletePersonQuery2, [secondUserId, secondPersonId]);
         
+        // Smažu eventy z kalendáře
+        try {
+            const senderProfileId = (await pool.query(`SELECT id FROM "profile" WHERE user_id = $1;`, [userId])).rows[0].id;
+            const senderUserId = userId;
+            const receiverProfileId = (await pool.query(`SELECT id FROM "profile" WHERE user_id = $1;`, [secondUserId])).rows[0].id;
+            const receiverUserId = secondUserId;
+    
+            if (!senderProfileId || !receiverProfileId) {
+                return res.status(400).send({ success: false, message: "Sender or receiver profile not found" });
+            }
+            
+            const deleteCalendarEventsQuery = `
+                DELETE FROM "calendarEvent"
+                WHERE 
+                    (profile_id = $1 AND created_by_user_id = $2)
+                    OR
+                    (profile_id = $3 AND created_by_user_id = $4);
+            `;
+    
+            await pool.query(deleteCalendarEventsQuery, [
+                senderProfileId, receiverUserId, receiverProfileId, senderUserId
+            ]);
+        } catch (error) {
+            console.error("Error deleting calendar events:", error);
+            return res.status(500).send({ success: false, message: error.message });
+        }
         
         res.send({success: true, message: "Person '"+ personId +"' deleted successfully"});
 
