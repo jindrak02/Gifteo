@@ -95,11 +95,12 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
     const parsedInterests = JSON.parse(interests);
     const { id, name, photo_url, bio, birthdate } = parsedProfile;
 
+    console.log('birthdate:', birthdate);
+    
+
     let imageUrl = parsedProfile.photo_url; // Pokud není nový soubor, použiju starý
 
-    // console.log(parsedProfile);
-    // console.log(parsedInterests);
-    
+    // #region nahrání souboru na Cloudinary
     if (req.file) {
       const fileType = await fileTypeFromBuffer(req.file.buffer);
       if (!fileType || !["image/jpeg", "image/png", "image/gif", "image/webp"].includes(fileType.mime)) {
@@ -120,6 +121,11 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
       imageUrl = result.secure_url;
       //console.log(result);
     }
+    // #endregion
+
+    const currentProfileQuery = 'SELECT * FROM "profile" WHERE user_id = $1;';
+    const currentProfileResult = await pool.query(currentProfileQuery, [userId]);
+    const currentProfile = currentProfileResult.rows[0];
 
     const updateProfileQuery = 'UPDATE "profile" SET name = $1, photo_url = $2, bio = $3, birthdate = $4 WHERE user_id = $5;';
     await pool.query(updateProfileQuery,[name, imageUrl, bio, birthdate, userId]);
@@ -130,6 +136,62 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
     for (const interest of parsedInterests) {
       const insertProfileInterestQuery = 'INSERT INTO "profileInterest" (profile_id, interest_id) VALUES ($1, $2);';
       await pool.query(insertProfileInterestQuery,[id, interest]);
+    }
+
+    // Pokud si uživatel změní datum narození, aktualizují se příslušné události všem blízkým osobám
+    if (currentProfile.birthdate !== birthdate) {
+
+      const getBirthdayString = (birthdate) => {
+        const birthdayDate = new Date(birthdate);
+        const birthdayMonth = birthdayDate.getMonth() + 1;
+        const birthdayDay = birthdayDate.getDate();
+        const birthdayYear = new Date().getFullYear();
+        const birthdayDateString = `${birthdayYear}-${birthdayMonth}-${birthdayDay}`;
+
+        return birthdayDateString;
+      }
+
+      try{
+
+        await pool.query('BEGIN');
+
+        const { rows: connectedUsers } = await pool.query(`
+          SELECT DISTINCT "user_id"
+          FROM "userPerson"
+          WHERE "person_id" = (
+            SELECT "id" FROM "person" WHERE "profile_id" = $1
+          )
+        `, [currentProfile.id]);
+
+        // Smázneme staré události narozenin
+        await pool.query(`
+          DELETE FROM "calendarEvent"
+          WHERE "profile_id" = $1 AND "automatic_event" = 'birthday'
+        `, [currentProfile.id]);
+
+        // Pro každého uživatele, který je spojený s profilem, vytvoříme událost
+        if (birthdate !== null) {
+          for (const user of connectedUsers) {
+            const birthdayDateString = getBirthdayString(birthdate);
+            const insertEventQuery = `
+              INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name", "date", "automatic_event")
+              VALUES ($1, $2, $3, $4, 'birthday')
+            `;
+            await pool.query(insertEventQuery,
+              [currentProfile.id,
+                user.user_id,
+                `${currentProfile.name.split(' ')[0]}´s birthday`,
+                birthdayDateString]
+            );
+          }
+        }
+
+        await pool.query('COMMIT');
+
+      } catch (error) {
+        await pool.query('ROLLBACK');
+        console.log('Chyba při aktualizaci události v kalendáři:', error);
+      }
     }
 
     res.json({ success: true });

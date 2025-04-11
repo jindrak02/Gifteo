@@ -1,5 +1,6 @@
 CREATE TYPE visibility_type AS ENUM ('private', 'public', 'shared');
 CREATE TYPE invitation_status AS ENUM ('pending', 'accepted', 'rejected');
+CREATE TYPE automatic_event_type AS ENUM ('birthday', 'nameday', 'other');
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 --------------------------------------------------
@@ -114,6 +115,7 @@ CREATE TABLE "calendarEvent" (
   "created_by_user_id" UUID REFERENCES "user"("id") ON DELETE CASCADE,
   "name" varchar NOT NULL,
   "date" date NOT NULL,
+  "automatic_event" automatic_event_type DEFAULT null,
   "created_at" timestamp DEFAULT (now())
 );
 

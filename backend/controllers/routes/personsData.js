@@ -479,11 +479,11 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
                 try {
                     const senderBirthdayDateString = getBirthdayString(senderBirthdate);
                     const addBirthdayQuerySender = `
-                        INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name",  "date")
-                        VALUES ($1, $2, $3, $4)
+                        INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name",  "date", "automatic_event")
+                        VALUES ($1, $2, $3, $4, 'birthday')
                         RETURNING *;
                     `;
-                    await pool.query(addBirthdayQuerySender, [senderProfileId, receiverUserId, `${senderName}´s Birthday`, senderBirthdayDateString]);   
+                    await pool.query(addBirthdayQuerySender, [senderProfileId, receiverUserId, `${senderName.split(' ')[0]}´s Birthday`, senderBirthdayDateString]);   
                 } catch (error) {
                     console.error("Error parsing sender's birthday:", error);
                 }
@@ -493,11 +493,11 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
                 try {
                     const receiverBirthdayDateString = getBirthdayString(receiverBirthdate);
                     const addBirthdayQueryReceiver = `
-                        INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name",  "date")
-                        VALUES ($1, $2, $3, $4)
+                        INSERT INTO "calendarEvent" ("profile_id", "created_by_user_id", "name",  "date", "automatic_event")
+                        VALUES ($1, $2, $3, $4, 'birthday')
                         RETURNING *;
                     `;
-                    await pool.query(addBirthdayQueryReceiver, [receiverProfileId, senderUserId, `${receiverName}´s Birthday`, receiverBirthdayDateString]);   
+                    await pool.query(addBirthdayQueryReceiver, [receiverProfileId, senderUserId, `${receiverName.split(' ')[0]}´s Birthday`, receiverBirthdayDateString]);   
                 } catch (error) {
                     console.error("Error parsing receiver's birthday:", error);
                 }
