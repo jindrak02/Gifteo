@@ -1,5 +1,5 @@
-import { checkEvents } from "../../cron/calendarNotifier.js"
-import { checkGlobalEvents } from "../../cron/calendarNotifier.js";
+import { checkEvents } from "../../cron/scheduler.js"
+import { checkGlobalEvents } from "../../cron/scheduler.js";
 
 (async () => {
     await checkEvents();

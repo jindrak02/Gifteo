@@ -10,7 +10,7 @@ import hubRouter from './controllers/routes/wishlistHubData.js';
 import customWishlistRouter from './controllers/routes/customWishlists.js';
 import calendarRouter from './controllers/routes/calendar.js';
 import cookieParser from 'cookie-parser';
-import './cron/calendarNotifier.js';
+import './cron/scheduler.js';
 
 dotenv.config();
 
