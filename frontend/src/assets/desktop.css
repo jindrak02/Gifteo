@@ -1,0 +1,93 @@
+@media (min-width: 1200px) {
+
+  .profile-container {
+    max-width: 80%;
+    padding: 1.5rem 0 0 0 !important;
+  }
+
+  /* .wishlists-container{
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .wishlist-card{
+    width: 30%;
+    margin: 0 1%;
+  } */
+
+  .desktop-split-view {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .desktop-split-view-left {
+    width: 50%;
+    padding: 0px 10px;
+  }
+
+  .desktop-split-view-right {
+    width: 50%;
+    padding: 0px 10px;
+  }
+
+  .tags {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tags .badge {
+    width: fit-content;
+    margin: 5px;
+  }
+
+  .profile-wishlists {
+    height: 100px;
+  }
+
+  .profile-header-first{
+    height: 100px;
+  }
+
+  .no-mb-desktop{
+    margin-bottom: 0px;
+  }
+
+
+  /* Navigation panel styles for desktop */
+  #navbar-panel {
+    background-color: #f5f5f5;
+    position: fixed;
+    top: 0;
+    bottom: auto;
+    max-width: 100%;
+    border-top: none;
+    border-bottom: #8F84F2 solid 2px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  #nav-panel{
+    max-width: 80%;
+  }
+
+  /* Add padding to body to prevent content from being hidden under the navbar */
+  body {
+    padding-top: 50px;
+  }
+
+  .desktop-menu-title {
+    display: block;
+    margin: 0px 10px 0px 10px;
+  }
+
+  .nav-btn-custom {
+    display: flex;
+    border: none;
+    justify-content: center;
+    align-items: center;
+  }
+}
+

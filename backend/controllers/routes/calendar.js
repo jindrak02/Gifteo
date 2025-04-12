@@ -105,8 +105,6 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
         , {});
 
         const events = Object.values(eventsMap);
-        console.log('Upcoming events:', events);
-        
 
         res.status(200).json({ success: true, events, countryCode });
 

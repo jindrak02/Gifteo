@@ -529,10 +529,7 @@ const Profile = () => {
     <>
       <div className="profile-container container p-4 rounded">
         <div className="profile-welcome">
-          <button
-            className="btn btn-service logout-btn"
-            onClick={handleLogOut}
-          >
+          <button className="btn btn-service logout-btn" onClick={handleLogOut}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -556,77 +553,93 @@ const Profile = () => {
 
         <hr className="my-4" />
 
-        <div className="profile-header my-4">
-          <div className="profile-header-first d-flex">
-            <img
-              src={profileData?.photo_url || "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg"}
-              onError={(e) => {
-                e.currentTarget.src =
-                  "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
-              }}
-              alt="Profile"
-              className="profile-picture rounded-circle me-3 shadow "
-            />
-            <button
-              className="btn btn-service btn-primary"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit profile
-            </button>
+        <div className="desktop-split-view">
+
+          <div className="desktop-split-view-left">
+            <div className="profile-header my-4">
+              <div className="profile-header-first d-flex">
+                <img
+                  src={
+                    profileData?.photo_url ||
+                    "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg"
+                  }
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
+                  }}
+                  alt="Profile"
+                  className="profile-picture rounded-circle me-3 shadow "
+                />
+                <button
+                  className="btn btn-service btn-primary"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit profile
+                </button>
+              </div>
+
+              <div className="flex-grow-1">
+                <h3 className="mb-0">{profileData?.name}</h3>
+              </div>
+            </div>
+
+            <div className="tags my-4">
+              {profileInterests && profileInterests.length > 0 ? (
+                profileInterests.map((interest: any, index: number) => (
+                  <span key={index} className="badge bg-secondary me-2">
+                    {interest.name}
+                  </span>
+                ))
+              ) : (
+                <span className="badge bg-secondary me-2">
+                  There are no interests yet 😢
+                </span>
+              )}
+
+              {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
+            </div>
+
+            <div className="bio my-4 alert alert-secondary">
+              <p>{profileData?.bio}</p>
+              <p>
+                <strong>Birthday: </strong>{" "}
+                {profileData?.birthdate?.toLocaleDateString()}
+              </p>
+            </div>
           </div>
 
-          <div className="flex-grow-1">
-            <h3 className="mb-0">{profileData?.name}</h3>
-          </div>
-        </div>
+          <div className="desktop-split-view-right">
+            <div className="my-4 my-wishlists-wrapper">
+              <div className="profile-wishlists my-4">
+                <h4 className="mt-4 no-mb-desktop">My wishlists</h4>
+                <button
+                  className="btn btn-service btn-primary"
+                  onClick={() => setIsAddingWishlist(true)}
+                >
+                  Add wishlist
+                </button>
+              </div>
 
-        <div className="tags my-4">
-          {profileInterests && profileInterests.length > 0 ? (
-            profileInterests.map((interest: any, index: number) => (
-              <span key={index} className="badge bg-secondary me-2">
-                {interest.name}
-              </span>
-            ))
-          ) : (
-            <span className="badge bg-secondary me-2">
-              There are no interests yet 😢
-            </span>
-          )}
-
-          {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
-        </div>
-
-        <div className="bio my-4 alert alert-secondary">
-          <p>{profileData?.bio}</p>
-          <p>
-            <strong>Birthday: </strong>{" "}
-            {profileData?.birthdate?.toLocaleDateString()}
-          </p>
-        </div>
-
-        <div className="my-4 my-wishlists-wrapper">
-          <div className="profile-wishlists my-4">
-            <h4 className="mt-4">My wishlists</h4>
-            <button
-              className="btn btn-service btn-primary"
-              onClick={() => setIsAddingWishlist(true)}
-            >
-              Add wishlist
-            </button>
+              <div className="wishlists-container my-4">
+                {wishlists.length === 0 && (
+                  <div className="alert alert-secondary">
+                    You have no wishlists yet. Create one! 🎉
+                  </div>
+                )}
+                {wishlists.map((wishlist) => (
+                  <WishlistThumbnail
+                    showButtons={true}
+                    key={wishlist.id}
+                    title={wishlist.name}
+                    imageUrls={wishlist.items.map((item: any) => item.photo_url)}
+                    onDelete={() => handleDeleteWishlist(wishlist.id)}
+                    onEdit={() => setIsEditingWishlist(wishlist.id)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="wishlists-container my-4">
-            {wishlists.map((wishlist) => (
-              <WishlistThumbnail
-                showButtons={true}
-                key={wishlist.id}
-                title={wishlist.name}
-                imageUrls={wishlist.items.map((item: any) => item.photo_url)}
-                onDelete={() => handleDeleteWishlist(wishlist.id)}
-                onEdit={() => setIsEditingWishlist(wishlist.id)}
-              />
-            ))}
-          </div>
         </div>
       </div>
 

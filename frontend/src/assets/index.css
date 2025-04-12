@@ -249,15 +249,25 @@ button.text-red-500 {
   margin: auto; /* Center the navbar-panel */
   border-top-left-radius: 15%;
   border-top-right-radius: 15%;
-  border-top: #6c757d solid 1px;
+  border-top: #8F84F2 solid 2px;
+}
+
+.desktop-menu-title {
+  display: none;
 }
 
 .nav-btn-custom {
   border: none;
+  --bs-btn-color: #6c757d
+}
+
+.nav-btn-custom:hover {
+  background-color: #8F84F2;
+  color: white;
 }
 
 .active-link {
-  background-color: #6c757d;
+  background-color: #8F84F2;
   color: white;
   border-radius: 10px;
 }
@@ -513,12 +523,19 @@ button.text-red-500 {
   overflow: hidden;
 }
 
+.notification-container {
+  position: relative;
+  display: inline-block;
+}
+
 .new-invitation-icon {
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
   background-color: #FF0000;
   border-radius: 50%;
-  float: right;
+  position: absolute;
+  top: -3px;
+  right: -5px;
 }
 
 .invitations-container {

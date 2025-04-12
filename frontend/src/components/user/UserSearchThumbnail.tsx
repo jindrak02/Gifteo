@@ -24,7 +24,7 @@ const UserSearchThumbnail: React.FC<UserSearchThumbnailProps> = ({ name, profile
       )}
       
       {connectionStatus === null && (
-      <button className="btn-service rounded btn btn-primary" onClick={onInvite}>Invite</button>
+      <button className="btn-service rounded btn btn-primary" onClick={onInvite}>Connect</button>
       )}
     </div>
   );
