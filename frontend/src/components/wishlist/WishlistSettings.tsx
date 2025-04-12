@@ -224,7 +224,7 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
                 )}
 
                 <button
-                className="btn btn-service w-100 mt-2"
+                className="btn btn-service mt-2"
                 onClick={handleSave}
                 >
                     Save Settings

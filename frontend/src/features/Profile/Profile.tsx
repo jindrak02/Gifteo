@@ -695,6 +695,7 @@ const Profile = () => {
                     imageUrls={wishlist.items.map((item: any) => item.photo_url)}
                     onDelete={() => handleDeleteWishlist(wishlist.id)}
                     onEdit={() => setIsEditingWishlist(wishlist.id)}
+                    onClick={() => {setIsEditingWishlist(wishlist.id)}}
                   />
                 ))}
               </div>

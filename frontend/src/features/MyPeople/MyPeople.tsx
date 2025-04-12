@@ -223,15 +223,17 @@ const MyPeople = () => {
             </div>
           )}
 
-          {persons.map((person) => (
-            <PersonThumbnail
-              key={person.person_id}
-              imageUrl={person.photo_url}
-              name={person.name}
-              wishlists={person.wishlists.map((wishlist) => wishlist.name)}
-              onDetail={() => handleDetail(person.person_id)}
-            />
-          ))}
+          <div className="persons-container">
+            {persons.map((person) => (
+              <PersonThumbnail
+                key={person.person_id}
+                imageUrl={person.photo_url}
+                name={person.name}
+                wishlists={person.wishlists.map((wishlist) => wishlist.name)}
+                onDetail={() => handleDetail(person.person_id)}
+              />
+            ))}
+          </div>
 
           <div>
             <button

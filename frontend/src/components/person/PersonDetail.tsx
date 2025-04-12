@@ -213,91 +213,96 @@ const PersonDetail = function (props: PersonDetailProps) {
 
           <hr className="my-4" />
 
-          <div className="profile-container container rounded">
-            <div className="profile-header my-4">
-              <div className="profile-header-first d-flex">
-                <img
-                  src={personData?.photo_url}
-                  alt="Profile"
-                  className="profile-picture rounded-circle me-3 shadow "
-                />
+          <div className="desktop-split-view">
+            <div className="desktop-split-view-left">
+              <div className="profile-header my-4">
+                <div className="profile-header-first d-flex">
+                  <img
+                    src={personData?.photo_url}
+                    alt="Profile"
+                    className="profile-picture rounded-circle me-3 shadow "
+                  />
+                </div>
+
+                <div className="flex-grow-1 flex justify-between">
+                  <h3 className="mb-0">{personData?.name}</h3>
+                  <button className="btn btn-secondary btn-sm" onClick={() => handleDelete(props.person.person_id, props.person.user_id)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-x-fill" viewBox="0 0 16 16">
+                      <path fillRule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              <div className="flex-grow-1 flex justify-between">
-                <h3 className="mb-0">{personData?.name}</h3>
-                <button className="btn btn-secondary btn-sm" onClick={() => handleDelete(props.person.person_id, props.person.user_id)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-x-fill" viewBox="0 0 16 16">
-                    <path fillRule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708"/>
-                  </svg>
-                </button>
+              <div className="tags my-4">
+                {personData?.interests.map((interest) => (
+                  <span className="badge bg-secondary me-2" key={interest}>
+                    {interest}
+                  </span>
+                ))}
+
+                {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
               </div>
-            </div>
 
-            <div className="tags my-4">
-              {personData?.interests.map((interest) => (
-                <span className="badge bg-secondary me-2" key={interest}>
-                  {interest}
-                </span>
-              ))}
+              <div className="bio my-4 alert alert-secondary">
+                <p>{personData?.bio}</p>
+                <p>
+                  <strong>Birthday: </strong>
+                  {personData?.birthdate
+                    ? new Date(personData.birthdate).toLocaleDateString()
+                    : "N/A"}
+                </p>
+              </div>
 
-              {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
-            </div>
-
-            <div className="bio my-4 alert alert-secondary">
-              <p>{personData?.bio}</p>
-              <p>
-                <strong>Birthday: </strong>
-                {personData?.birthdate
-                  ? new Date(personData.birthdate).toLocaleDateString()
-                  : "N/A"}
-              </p>
-            </div>
-
-            <div className="events my-4 alert alert-secondary">
-              <h5 className="mb-3">Events</h5>
-              {events.length > 0 ? (
-                <div className="event-list">
-                  {events.map((event, index) => (
-                    <div className="event-item mb-2 p-2 bg-white rounded shadow-sm" key={index}>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span className="event-name fw-bold">{event.eventName}</span>
-                        <span className="event-date badge bg-purple">{formatDate(event.eventDate, props.person.country_code)}</span>
+              <div className="events my-4 alert alert-secondary">
+                <h5 className="mb-3">Events</h5>
+                {events.length > 0 ? (
+                  <div className="event-list">
+                    {events.map((event, index) => (
+                      <div className="event-item mb-2 p-2 bg-white rounded shadow-sm" key={index}>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="event-name fw-bold">{event.eventName}</span>
+                          <span className="event-date badge bg-purple">{formatDate(event.eventDate, props.person.country_code)}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="alert alert-light">
-                  You don't have any events for this person yet.
-                </p>
-              )}
+                    ))}
+                  </div>
+                ) : (
+                  <p className="alert alert-light">
+                    You don't have any events for this person yet.
+                  </p>
+                )}
+              </div>
             </div>
+              
+            <div className="desktop-split-view-right">
+              <div className="my-4 my-wishlists-wrapper">
 
-            <div className="my-4 my-wishlists-wrapper">
-
-              {personData?.wishlists && personData.wishlists.length > 0 ? (
-                <div>
-                  {personData.wishlists.map((wishlist) => (
-                    <div
-                      className="wishlists-container my-4"
-                      key={wishlist.wishlist_id}
-                      onClick={() => setShowWishlistDetail(wishlist.wishlist_id)}
-                    >
-                      <WishlistThumbnail
-                        showButtons={false}
+                {personData?.wishlists && personData.wishlists.length > 0 ? (
+                  <div>
+                    {personData.wishlists.map((wishlist) => (
+                      <div
+                        className="wishlists-container my-4"
                         key={wishlist.wishlist_id}
-                        title={wishlist.name}
-                        imageUrls={wishlist.items}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="alert alert-light">
-                  This person doesn't have any wishlists yet.
-                </p>
-              )}
+                        onClick={() => setShowWishlistDetail(wishlist.wishlist_id)}
+                      >
+                        <WishlistThumbnail
+                          showButtons={false}
+                          key={wishlist.wishlist_id}
+                          title={wishlist.name}
+                          imageUrls={wishlist.items}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="alert alert-light">
+                    This person doesn't have any wishlists yet.
+                  </p>
+                )}
+              </div>
             </div>
+
           </div>
         </div>
 

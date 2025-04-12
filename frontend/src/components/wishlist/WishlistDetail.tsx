@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
+import { useMediaQuery } from 'react-responsive';
 
 type WishlistDetailProps = {
     wishlistId: string;
@@ -20,6 +21,7 @@ const WishlistDetail = (props: WishlistDetailProps) => {
     const [showSpinner, setShowSpinner] = useState(false);
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(null);
     const [showItemDetails, setShowItemDetails] = useState <number | null>(null);
+    const isDesktop = useMediaQuery({ minWidth: 1200 });
 
     // Načtení dat wishlistu
     useEffect(() => {
@@ -55,23 +57,36 @@ const WishlistDetail = (props: WishlistDetailProps) => {
 
     return (
         <>
-            <div>
-                <h3 className="my-4">{wishlistItems != null ? wishlistItems[0].wishlist_name : ""}</h3>
+            <h3 className="my-4">{wishlistItems != null ? wishlistItems[0].wishlist_name : ""}</h3>
+            <div className="wishlist-items-desktop">
 
                 {wishlistItems?.map((item, index) => (
-                    <div key={index}>
+                    <div className="wishlist-item-container" key={index}>
                         <div className="wishlist-item">
                             <img src={item.photo_url} alt={item.name} className="wishlist-thumbnail" />
                             <div className="wishlist-item-details">
                                 <div className="wishlist-item-name">{item.name}</div>
                                 {/* <div className="wishlist-item-price">{item.price} {item.currency}</div> */}
                                 <a href={item.url} className="wishlist-item-url" target="_blank" rel="noopener noreferrer">Link to buy</a>
+                                
+                                {isDesktop && (
+                                    <div className="mt-2">
+                                        <b>Description: </b>
+                                        <p>{item.description}</p>
+                                        <b>Price: </b>
+                                        <p>{item.price} {item.currency}</p>
+                                    </div>
+                                )}
                             </div>
-                            <button className="btn btn-light btn-sm" onClick={() => setShowItemDetails(showItemDetails === index ? null : index)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
-                                    <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
-                                </svg>
-                            </button>
+                            
+                            {!isDesktop && (
+                                <button className="btn btn-light btn-sm" onClick={() => setShowItemDetails(showItemDetails === index ? null : index)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
+                                        <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                </button>
+                            )}
+
                         </div>
                         <div>
                             {showItemDetails === index && (
