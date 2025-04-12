@@ -313,7 +313,7 @@ button.text-red-500 {
 }
 
 .login-container {
-  animation: slide-up 2s ease-out;
+  animation: slide-up 1s ease-out;
 }
 
 @keyframes slide-up {

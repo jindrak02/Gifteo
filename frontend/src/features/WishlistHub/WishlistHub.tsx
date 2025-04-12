@@ -5,6 +5,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import PersonThumbnail from "./components/PersonThumbnail";
 import PersonDetail from "./components/PersonDetail";
 import UpperPanel from "../../components/ui/UpperPanel";
+import { useMediaQuery } from 'react-responsive';
 
 interface Person {
     user_id: string;
@@ -31,6 +32,7 @@ const WishlistHub = () => {
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [isViewingInvitations, setIsViewingInvitations] = useState<boolean>(false);
     const location = useLocation();
+    const isDesktop = useMediaQuery({ minWidth: 1200 });
 
     useEffect(() => {
         setIsViewingPerson(null);
@@ -106,25 +108,13 @@ const WishlistHub = () => {
     return (
         <>
             <div className="profile-container p-4">
-                {/* <div className="profile-welcome">
-                    <button className="btn-service btn btn-primary rounded" onClick={() => setIsViewingInvitations(true)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-raised-hand" viewBox="0 0 16 16">
-                            <path d="M6 6.207v9.043a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H6.236a1 1 0 0 1-.447-.106l-.33-.165A.83.83 0 0 1 5 2.488V.75a.75.75 0 0 0-1.5 0v2.083c0 .715.404 1.37 1.044 1.689L5.5 5c.32.32.5.754.5 1.207"/>
-                            <path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                        </svg>
-                        {invitations.length != 0 ? <div className="new-invitation-icon"></div> : ''}
-                    </button>
-                    <h2 className="my-2">Gift For</h2>
-                </div>
-
-                <hr className="my-4" /> */}
                 <UpperPanel
                     name="Gift For"
                 />
 
                 <div>
-                    <div>
-                        <p className="text-center">Choose who do you want to gift</p>
+                    <p className="text-center">Choose who do you want to gift</p>
+                    <div className="person-list-container">
                         {persons.length === 0 && (
                             <div className="alert alert-light" role="alert">
                                 You don't have any people yet. Add them to your profile to start gifting.

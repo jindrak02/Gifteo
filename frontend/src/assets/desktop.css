@@ -304,4 +304,22 @@
         margin: 15px 0px 0px 0px;
     }
 
+    /* Wishlist hub section */
+    
+    .person-list-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .wishlist-card-wrapper{
+        width: 45%;
+    }
+
+    .wishlists-wishlist-hub-container{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
 }

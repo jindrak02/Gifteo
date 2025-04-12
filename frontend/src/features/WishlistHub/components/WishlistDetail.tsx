@@ -3,6 +3,7 @@ import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
 import WishlistComments from "./WishlistComments";
+import { useMediaQuery } from 'react-responsive';
 
 interface WishlistItem {
   id: string;
@@ -37,6 +38,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
     const [showSpinner, setShowSpinner] = useState(false);
     const [showItemDetails, setShowItemDetails] = useState<number | null>(null);
     const [isViewingComments, setIsViewingComments] = useState(false);
+    const isDesktop = useMediaQuery({ minWidth: 1200 });
 
     const handleCheckboxChange = async (item: WishlistItem) => {
 
@@ -163,125 +165,143 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
 
           <hr className="my-4" />
 
-          <div className="wishlist-copy-detail">
-            <div>
-              <div className="flex justify-between">
-                <h3 className="my-4">{wishlist.name}</h3>
-                <button className="btn btn-service" onClick={() => setIsViewingComments(true)}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    fill="currentColor"
-                    className="bi bi-chat mx-1"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105" />
-                  </svg>
-                  Comments
-                </button>
-              </div>
+          <div className="desktop-split-view">
+            <div className="wishlist-copy-detail desktop-split-view-left">
+              <div>
+                <div className="flex justify-between">
+                  <h3 className="my-4">{wishlist.name}</h3>
 
-              {wishlistItems?.map((item, index) => (
-                <div key={index} className="my-4">
-                  {item.deleted ? (<p className="inactive-wishlist-alert m-0">This item is no longer active</p>) : null}
-                  
-                <div
-                  className={[
-                    "wishlist-item my-0",
-                    item.checkedOffBy != null ? "wishlist-item-checked" : "",
-                    item.deleted ? "wishlist-item-disabled" : ""
-                  ].filter(Boolean).join(" ")}
-                  >
-                    <img
-                      src={item.photo_url}
-                      alt={item.name}
-                      className="wishlist-thumbnail"
-                    />
-                    <div className="wishlist-item-details mx-3">
-                      <div className="wishlist-item-name">{item.name}</div>
-                      
-                      <a
-                        href={item.deleted ? undefined : item.url}
-                        className="wishlist-item-url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Link to buy
-                      </a>
-                    </div>
-
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={item.checkedOffBy != null}
-                        onChange={item.deleted ? undefined : () => handleCheckboxChange(item)}
-                        disabled={item.deleted}
-                        id={`checkbox-${item.id}`}
-                      />
-                    </div>
-
-                    <button
-                      className="btn btn-light btn-sm"
-                      onClick={() => setShowItemDetails(showItemDetails === index ? null : index)}
-                      >
+                  {!isDesktop && (
+                    <button className="btn btn-service" onClick={() => setIsViewingComments(true)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
+                        width="12"
+                        height="12"
                         fill="currentColor"
-                        className="bi bi-chevron-down"
+                        className="bi bi-chat mx-1"
                         viewBox="0 0 16 16"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
-                        />
+                        <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105" />
                       </svg>
+                      Comments
                     </button>
+                  )}
 
-                    {item.checkedOffBy != null ? (
-                        <img
-                          className="check-off-img rounded"
-                          src={item.checkedOffByPhoto || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2281862025.jpg"}
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
-                          }}
-                          alt="img"
+                </div>
+
+                {wishlistItems?.map((item, index) => (
+                  <div key={index} className="my-4">
+                    {item.deleted ? (<p className="inactive-wishlist-alert m-0">This item is no longer active</p>) : null}
+                    
+                  <div
+                    className={[
+                      "wishlist-item my-0",
+                      item.checkedOffBy != null ? "wishlist-item-checked" : "",
+                      item.deleted ? "wishlist-item-disabled" : ""
+                    ].filter(Boolean).join(" ")}
+                    >
+                      <img
+                        src={item.photo_url}
+                        alt={item.name}
+                        className="wishlist-thumbnail"
+                      />
+                      <div className="wishlist-item-details mx-3">
+                        <div className="wishlist-item-name">{item.name}</div>
+                        
+                        <a
+                          href={item.deleted ? undefined : item.url}
+                          className="wishlist-item-url"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Link to buy
+                        </a>
+                      </div>
+
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={item.checkedOffBy != null}
+                          onChange={item.deleted ? undefined : () => handleCheckboxChange(item)}
+                          disabled={item.deleted}
+                          id={`checkbox-${item.id}`}
                         />
-                      ) : null
-                    }
-                </div>
-                {item.modifiedByOwner != null ? (
-                    <p className="modified-item-alert">
-                      ❔ This item was modified at {new Date(item.modifiedByOwner).toLocaleDateString()}
-                    </p>
-                ) : null}
+                      </div>
+
+                      <button
+                        className="btn btn-light btn-sm"
+                        onClick={() => setShowItemDetails(showItemDetails === index ? null : index)}
+                        >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-chevron-down"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+                          />
+                        </svg>
+                      </button>
+
+                      {item.checkedOffBy != null ? (
+                          <img
+                            className="check-off-img rounded"
+                            src={item.checkedOffByPhoto || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2281862025.jpg"}
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
+                            }}
+                            alt="img"
+                          />
+                        ) : null
+                      }
+                  </div>
+                  {item.modifiedByOwner != null ? (
+                      <p className="modified-item-alert">
+                        ❔ This item was modified at {new Date(item.modifiedByOwner).toLocaleDateString()}
+                      </p>
+                  ) : null}
 
 
-                <div className="wishlist-item-details-wrapper">
-                    {showItemDetails === index && (
-                        <div className="wishlist-item-details-expanded mb-4">
-                            {item.checkedOffBy != null ? (
-                                <>
-                                  <b>Checked off by: </b>
-                                  <p>{item.checkedOffByName}</p>
-                                </>
-                            ) : null}
-                            <b>Description: </b>
-                            <p>{item.description}</p>
-                            <b>Price: </b>
-                            <p>{item.price} {item.price_currency}</p>
-                        </div>
-                    )}
-                </div>
-                </ div>
+                  <div className="wishlist-item-details-wrapper">
+                      {showItemDetails === index && (
+                          <div className="wishlist-item-details-expanded mb-4">
+                              {item.checkedOffBy != null ? (
+                                  <>
+                                    <b>Checked off by: </b>
+                                    <p>{item.checkedOffByName}</p>
+                                  </>
+                              ) : null}
+                              <b>Description: </b>
+                              <p>{item.description}</p>
+                              <b>Price: </b>
+                              <p>{item.price} {item.price_currency}</p>
+                          </div>
+                      )}
+                  </div>
+                  </ div>
 
-              ))}
+                ))}
+              </div>
             </div>
+
+            {isDesktop && (
+              <div className="desktop-split-view-right">
+                <WishlistComments
+                  wishlistId={wishlist.id}
+                  wishlistName={wishlist.name}
+                  onClickBack={() => setIsViewingComments(false)}
+                />
+            </div>
+            )}
+
           </div>
+
         </div>
 
         <LoadingSpinner className={showSpinner ? "" : "hidden"} />

@@ -4,6 +4,7 @@ import { fetchWithAuth } from '../../../utils/fetchWithAuth';
 import Swal from 'sweetalert2';
 import UpperPanel from '../../../components/ui/UpperPanel';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
+import { useMediaQuery } from 'react-responsive';
 
 interface Comment {
   id: string;
@@ -27,6 +28,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
     const [newComment, setNewComment] = useState('');
     const [showSpinner, setShowSpinner] = useState(false);
     const [showCommentOptions, setShowCommentOptions] = useState<string>('');
+    const isDesktop = useMediaQuery({ minWidth: 1200 });
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -137,12 +139,80 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
         );
     }
     
+    if (isDesktop) {
+      return (
+      <>
+        <div className="wishlist-comments-container mt-4">
+          <h4>Comments for {wishlistName}</h4>
+
+          <div className="add-comment-form my-4">
+            <form onSubmit={handleSubmit}>
+              <div className="form-group mb-3">
+                <textarea
+                  className="form-control"
+                  placeholder="Add a comment..."
+                  rows={3}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  maxLength={500}
+                ></textarea>
+              </div>
+              <button type="submit" className="btn btn-primary">
+                Post Comment
+              </button>
+            </form>
+          </div>
+
+          <div className="comments-list mb-4">
+            {comments.map((comment) => (
+              <div key={comment.id} className="comment-item card mb-2 position-relative">
+                <div className="card-body">
+                  <div className="d-flex align-items-center mb-2">
+                    <img
+                      src={comment.authorImg}
+                      alt={comment.author}
+                      className="profile-picture-thumbnail-sm rounded-circle me-2"
+                    />
+                    <div>
+                      <h6 className="mb-0">{comment.author}</h6>
+                      <small className="text-muted">
+                        {formatDate(comment.timestamp)}
+                      </small>
+                    </div>
+                  </div>
+                  <p className="card-text">{comment.text}</p>
+                </div>
+
+                {currentUserId === comment.authorId && (
+                    <button
+                        className="comment-action-btn position-absolute top-0 end-0 m-2 btn btn-sm bg-transparent border-0"
+                        onClick={() => setShowCommentOptions(prev => prev === comment.id ? '' : comment.id)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                        </svg>
+                    </button>
+                )}
+                {showCommentOptions === comment.id && currentUserId === comment.authorId && (
+                    <div className="comment-options position-absolute top-50 end-0 bg-white shadow-sm rounded p-2">
+                        <button className="btn btn-link text-danger" onClick={() => handleDelete(comment.id)}>Delete</button>
+                    </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        <LoadingSpinner className={showSpinner ? "" : "hidden"} />
+      </> 
+      );
+    }
+
     return (
       <div className="profile-container p-4">
         <UpperPanel
           name="Wishlist Comments"
           onClickBack={() => onClickBack()}
         />
+
         <div className="wishlist-comments-container mt-4">
           <h4>Comments for {wishlistName}</h4>
 

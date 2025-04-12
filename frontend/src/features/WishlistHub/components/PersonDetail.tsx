@@ -121,7 +121,7 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
               <h4 className="mx-2">{name.split(" ")[0]}'s Wishlists</h4>
             </div>
 
-            <div className="wishlists-container my-4">
+            <div className="wishlists-wishlist-hub-container my-4">
               {wishlists.length === 0 ? (
                 <div className="text-center p-4 bg-gray-100 rounded-lg">
                   {name.split(" ")[0]} doesn't have any wishlists yet.
@@ -129,8 +129,9 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
               ) : (
                 wishlists.map((wishlist) => (
                     <div
-                    onClick={wishlist.deleted ? undefined : () => setIsViewingWishlist(wishlist)}
-                    key={wishlist.id}
+                      className="wishlist-card-wrapper"
+                      onClick={wishlist.deleted ? undefined : () => setIsViewingWishlist(wishlist)}
+                      key={wishlist.id}
                     >
                       {wishlist.deleted ? (
                       <p className="my-0 text-center inactive-wishlist-alert">
