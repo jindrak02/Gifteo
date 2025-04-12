@@ -237,12 +237,12 @@ const Calendar = () => {
                 <LoadingSpinner className={showSpinner ? "" : "hidden"} />
 
                 {events.length > 0 ? (
-                    <div className="mt-4">
+                    <div className="mt-4 calendar-events-container">
                         {events.map((event) => (
                             <div
                                 key={event.eventId}
                                 ref={eventRefs.current[event.eventId]}
-                                className={newEventId === event.eventId ? "highlight-new-event" : ""}
+                                className={newEventId === event.eventId ? "highlight-new-event calendar-event" : "calendar-event"}
                             >
                                     <EventThumbnail
                                         countryCode={countryCode}
