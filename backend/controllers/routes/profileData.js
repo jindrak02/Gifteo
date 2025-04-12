@@ -31,7 +31,7 @@ router.get("/profile", authenticateUser, async (req, res) => {
   }
 
   try {
-    const profileQuery = 'SELECT * FROM "profile" profile WHERE profile.user_id = $1;';
+    const profileQuery = 'SELECT * FROM "profile" profile LEFT JOIN "user" u ON profile.user_id = u.id WHERE profile.user_id = $1;';
     const profileQueryResult = await pool.query(profileQuery,[userId]);
 
     console.log('Profil uživatele:', profileQueryResult.rows[0]);

@@ -1,93 +1,250 @@
 @media (min-width: 1200px) {
 
-  .profile-container {
-    max-width: 80%;
-    padding: 1.5rem 0 0 0 !important;
-  }
+    html {
+        font-size: 16px;
+    }
 
-  /* .wishlists-container{
-    display: flex;
-    flex-wrap: wrap;
-  }
+    /* Typografie pro desktop */
+    h1 {
+        font-size: 2.5rem;
+    }
 
-  .wishlist-card{
-    width: 30%;
-    margin: 0 1%;
-  } */
+    h2 {
+        font-size: 2rem;
+    }
 
-  .desktop-split-view {
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .desktop-split-view-left {
-    width: 50%;
-    padding: 0px 10px;
-  }
+    h3 {
+        font-size: 1.7rem;
+    }
 
-  .desktop-split-view-right {
-    width: 50%;
-    padding: 0px 10px;
-  }
+    h4 {
+        font-size: 1.7rem;
+    }
 
-  .tags {
-    display: flex;
-    flex-direction: column;
-  }
+    p, li, input, textarea, button {
+        font-size: 1rem;
+    }
 
-  .tags .badge {
-    width: fit-content;
-    margin: 5px;
-  }
+    .small-text {
+        font-size: 0.875rem;
+    }
 
-  .profile-wishlists {
-    height: 100px;
-  }
+    /* Obecný layout */
 
-  .profile-header-first{
-    height: 100px;
-  }
+    .profile-container {
+        max-width: 80%;
+        padding: 1.5rem 0 0 0 !important;
+        padding-top: 80px !important;
+    }
 
-  .no-mb-desktop{
-    margin-bottom: 0px;
-  }
+    .desktop-split-view {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .desktop-split-view-left {
+        width: 50%;
+        padding: 0px 10px;
+    }
+
+    .desktop-split-view-right {
+        width: 50%;
+        padding: 0px 10px;
+    }
+
+    .tags {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tags .badge {
+        width: fit-content;
+        margin: 5px;
+    }
+
+    .profile-wishlists {
+        height: 100px;
+    }
+
+    .profile-header-first {
+        height: 100px;
+    }
+
+    .no-mb-desktop {
+        margin-bottom: 0px;
+    }
 
 
-  /* Navigation panel styles for desktop */
-  #navbar-panel {
-    background-color: #f5f5f5;
-    position: fixed;
-    top: 0;
-    bottom: auto;
-    max-width: 100%;
-    border-top: none;
-    border-bottom: #8F84F2 solid 2px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+    /* Navigation panel styles for desktop */
+    #navbar-panel {
+        background-color: #f5f5f5;
+        position: fixed;
+        top: 0;
+        bottom: auto;
+        max-width: 100%;
+        border-top: none;
+        border-bottom: #8F84F2 solid 2px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-  #nav-panel{
-    max-width: 80%;
-  }
+    #nav-panel {
+        max-width: 80%;
+        justify-content: space-between;
+        padding: 0px;
+    }
 
-  /* Add padding to body to prevent content from being hidden under the navbar */
-  body {
-    padding-top: 50px;
-  }
+    .new-invitation-icon {
+        top: 27px;
+    }
 
-  .desktop-menu-title {
-    display: block;
-    margin: 0px 10px 0px 10px;
-  }
+    .desktop-nav-links {
+        width: 70%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-  .nav-btn-custom {
-    display: flex;
-    border: none;
-    justify-content: center;
-    align-items: center;
-  }
+    .desktop-menu-title {
+        display: block;
+        margin: 0px 10px 0px 10px;
+        font-size: 1rem;
+    }
+
+    .nav-btn-custom {
+        display: flex;
+        border: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-btn-custom svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Wishlists */
+
+    .wishlist-thumbnail-large {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    /* Wishlist Edit Form */
+    .edit-wishlist-form {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+
+    .edit-wishlist-form .btn-service {
+        padding: 8px 16px;
+        font-size: 1rem;
+    }
+
+    .wishlist-item-wrapper {
+        display: grid;
+        grid-template-columns: 250px 1fr 50px;
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        gap: 20px;
+        width: 80%;
+    }
+
+    .wishlist-thumbnail {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    .wishlist-item-wrapper .flex-col {
+        margin-bottom: 12px;
+    }
+
+    .wishlist-item-wrapper input,
+    .wishlist-item-wrapper textarea,
+    .wishlist-item-wrapper select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out;
+    }
+
+    .wishlist-item-wrapper input:focus,
+    .wishlist-item-wrapper textarea:focus,
+    .wishlist-item-wrapper select:focus {
+        border-color: #8F84F2;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(143, 132, 242, 0.25);
+    }
+
+    .wishlist-item-wrapper label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .wishlist-settings-form {
+        width: 70%;
+    }
+
+    .wishlist-settings-form-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .list-group-item {
+        width: 50%;
+    }
+
+    /* Profile components styling */
+    .bio p {
+        margin-bottom: 20px;
+    }
+
+    .profile-tags-and-info {
+        display: flex;
+        gap: 40px;
+    }
+
+    .profile-edit-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Profile info two-column layout and divider */
+    .profile-info {
+        gap: 15px;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .profile-info-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+    }
+
+    .profile-info-item svg {
+        margin-right: 10px;
+        color: #8F84F2;
+    }
+
+    .profile-info-item p {
+        margin: 0;
+    }
+
 }
-

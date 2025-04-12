@@ -169,10 +169,10 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
           onClickBack={() => props.onClickBack()}
         />
 
-        <div>
+        <div className="wishlist-settings-form-wrapper">
           <h2 className="text-center">{props.wishlistName}</h2>
 
-          <div className="mt-4">
+          <div className="mt-4 wishlist-settings-form">
                 <div className="card p-3 mb-3">
                     <div className="d-flex justify-content-between align-items-center">
                         <div>

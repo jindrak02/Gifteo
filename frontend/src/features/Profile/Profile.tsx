@@ -5,7 +5,9 @@ import WishlistThumbnail from "../../components/wishlist/WishlistThumbnail";
 import Swal from "sweetalert2";
 import WishlistEditForm from "../../components/wishlist/WishlistEditForm";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import { fetchWithAuth } from "../../utils/fetchWithAuth"; // Import the fetch wrapper
+import { fetchWithAuth } from "../../utils/fetchWithAuth";
+import { useMediaQuery } from 'react-responsive';
+import UpperPanel from "../../components/ui/UpperPanel";
 
 type ProfileData = {
   id: string;
@@ -13,6 +15,8 @@ type ProfileData = {
   photo_url: string;
   bio: string;
   birthdate: Date;
+  email: string;
+  created_at: Date;
 };
 
 type Interest = {
@@ -31,6 +35,7 @@ const Profile = () => {
   const [wishlists, setWishlists] = useState<Array<any>>([]);
   const [isEditingWishlist, setIsEditingWishlist] = useState<string | null>(null);
   const location = useLocation();
+  const isDesktop = useMediaQuery({ minWidth: 1200 });
 
   useEffect(() => {
     setIsEditingWishlist(null);
@@ -55,7 +60,9 @@ const Profile = () => {
           }
 
           const data = await res.json();
-          data.birthdate = new Date(data.birthdate); // Převést birthdate na instanci Date
+          
+          data.birthdate = new Date(data.birthdate);
+          data.created_at = new Date(data.created_at);
           setProfileData(data);
         };
 
@@ -353,116 +360,118 @@ const Profile = () => {
     
     return (
       <div className="profile-container container p-4 rounded">
-        <h2>Edit Profile</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target as HTMLFormElement);
-            const updatedProfileData: ProfileData = {
-              id: profileData!.id,
-              name: formData.get("name") as string,
-              photo_url: profileData!.photo_url, // Keep the existing photo_url
-              bio: formData.get("bio") as string,
-              birthdate: new Date(formData.get("birthdate") as string),
-            };
-            const file = formData.get("photo") as File;
-            handleSaveProfile(updatedProfileData, selectedInterests, file);
-            //console.log(updatedProfileData);
-            //console.log(selectedInterests.map((interest) => interest.id));
-          }}
-        >
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">
-              Name
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              name="name"
-              defaultValue={profileData?.name}
-              required
-              minLength={2}
-              maxLength={50}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="photo" className="form-label">
-              Photo
-            </label>
-            <input
-              type="file"
-              className="form-control"
-              id="photo"
-              name="photo"
-              accept="image/*"
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="bio" className="form-label">
-              Bio
-            </label>
-            <textarea
-              className="form-control"
-              id="bio"
-              name="bio"
-              defaultValue={profileData?.bio}
-              required
-              minLength={10}
-              maxLength={500}
-            ></textarea>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="birthdate" className="form-label">
-              Birthdate
-            </label>
-            <input
-              type="date"
-              className="form-control"
-              id="birthdate"
-              name="birthdate"
-              defaultValue={formattedBirthDate}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="interests" className="form-label">
-              Interests
-            </label>
-            <Select
-              isMulti
-              options={availableInterests.map((i) => ({
-                value: i.name,
-                label: i.name,
-                id: i.id,
-              }))}
-              defaultValue={profileInterests?.map((i) => ({
-                value: i.name,
-                label: i.name,
-                id: i.id,
-              }))}
-              placeholder="Select your interests..."
-              onChange={(selectedOptions) =>
-                setSelectedInterests(
-                  selectedOptions as Array<{
-                    value: string;
-                    label: string;
-                    id: string;
-                  }>
-                )
-              }
-            />
-          </div>
-          <button type="submit" className="btn btn-service btn-primary">
-            Save
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary mx-2"
-            onClick={() => setIsEditing(false)}
+        <div className="profile-edit-form">
+          <h2>Edit Profile</h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const updatedProfileData: any = {
+                id: profileData!.id,
+                name: formData.get("name") as string,
+                photo_url: profileData!.photo_url, // Keep the existing photo_url
+                bio: formData.get("bio") as string,
+                birthdate: new Date(formData.get("birthdate") as string),
+              };
+              const file = formData.get("photo") as File;
+              handleSaveProfile(updatedProfileData, selectedInterests, file);
+              //console.log(updatedProfileData);
+              //console.log(selectedInterests.map((interest) => interest.id));
+            }}
           >
-            Cancel
-          </button>
-        </form>
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">
+                Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                name="name"
+                defaultValue={profileData?.name}
+                required
+                minLength={2}
+                maxLength={50}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="photo" className="form-label">
+                Photo
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                id="photo"
+                name="photo"
+                accept="image/*"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="bio" className="form-label">
+                Bio
+              </label>
+              <textarea
+                className="form-control"
+                id="bio"
+                name="bio"
+                defaultValue={profileData?.bio}
+                required
+                minLength={10}
+                maxLength={500}
+              ></textarea>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="birthdate" className="form-label">
+                Birthdate
+              </label>
+              <input
+                type="date"
+                className="form-control"
+                id="birthdate"
+                name="birthdate"
+                defaultValue={formattedBirthDate}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="interests" className="form-label">
+                Interests
+              </label>
+              <Select
+                isMulti
+                options={availableInterests.map((i) => ({
+                  value: i.name,
+                  label: i.name,
+                  id: i.id,
+                }))}
+                defaultValue={profileInterests?.map((i) => ({
+                  value: i.name,
+                  label: i.name,
+                  id: i.id,
+                }))}
+                placeholder="Select your interests..."
+                onChange={(selectedOptions) =>
+                  setSelectedInterests(
+                    selectedOptions as Array<{
+                      value: string;
+                      label: string;
+                      id: string;
+                    }>
+                  )
+                }
+              />
+            </div>
+            <button type="submit" className="btn btn-service btn-primary">
+              Save
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary mx-2"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
         <LoadingSpinner className={showSpinner ? "" : "hidden"} />
       </div>
     );
@@ -528,30 +537,39 @@ const Profile = () => {
   return (
     <>
       <div className="profile-container container p-4 rounded">
-        <div className="profile-welcome">
-          <button className="btn btn-service logout-btn" onClick={handleLogOut}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-box-arrow-right"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"
-              />
-              <path
-                fillRule="evenodd"
-                d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"
-              />
-            </svg>
-          </button>
-          <h2 className="my-2">Hi, {profileData?.name?.split(" ")[0]}</h2>
-        </div>
 
-        <hr className="my-4" />
+        {!isDesktop ? (
+          <>
+            <div className="profile-welcome">
+              <button className="btn btn-service logout-btn" onClick={handleLogOut}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  className="bi bi-box-arrow-right"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"
+                  />
+                </svg>
+              </button>
+              <h2 className="my-2">Hi, {profileData?.name?.split(" ")[0]}</h2>
+            </div>
+
+            <hr className="my-4" />
+          </>
+        ) : (
+          <UpperPanel
+            name={"Hi, " + profileData?.name?.split(" ")[0] + "!"}
+          />
+        )}
 
         <div className="desktop-split-view">
 
@@ -583,24 +601,67 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="tags my-4">
-              {profileInterests && profileInterests.length > 0 ? (
-                profileInterests.map((interest: any, index: number) => (
-                  <span key={index} className="badge bg-secondary me-2">
-                    {interest.name}
+            {isDesktop ? (
+                <div className="profile-tags-and-info">
+                  <div className="tags my-4">
+                    {profileInterests && profileInterests.length > 0 ? (
+                      profileInterests.map((interest: any, index: number) => (
+                        <span key={index} className="badge bg-secondary me-2">
+                          {interest.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="badge bg-secondary me-2">
+                        There are no interests yet 😢
+                      </span>
+                    )}
+                  </div>
+                  <div className="profile-info">
+                    <div className="profile-info-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-gift" viewBox="0 0 16 16">
+                        <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506V2.5zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43a.522.522 0 0 0 .023.07zM9 3h2.932a.56.56 0 0 0 .023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0V3zM1 4v2h6V4H1zm8 0v2h6V4H9zm5 3H9v8h4.5a.5.5 0 0 0 .5-.5V7zm-7 8V7H2v7.5a.5.5 0 0 0 .5.5H7z"/>
+                      </svg>
+                      <p>Wishlists: {wishlists.length}</p>
+                    </div>
+                    <div className="profile-info-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                      </svg>
+                      <p>Email: {profileData?.email}</p>
+                    </div>
+                    <div className="profile-info-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-calendar-check" viewBox="0 0 16 16">
+                        <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                      </svg>
+                      <p>Joined: {profileData?.created_at?.toLocaleDateString()}</p>
+                    </div>
+                    <div className="profile-info-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-cake2" viewBox="0 0 16 16">
+                        <path d="m3.494.013-.595.79A.747.747 0 0 0 3 1.814v2.683c-.149.034-.293.077-.427.129A4.03 4.03 0 0 0 1.348 5.5H.5a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-.651a4.03 4.03 0 0 0-1.225-.871c-.134-.052-.278-.095-.427-.129V1.814A.747.747 0 0 0 13.1.803l-.595-.79A.751.751 0 0 0 11.9 0h-1.3a.751.751 0 0 0-.6.013A.752.752 0 0 0 9.4 0h-1.3a.751.751 0 0 0-.6.013A.752.752 0 0 0 6.9 0H5.6a.751.751 0 0 0-.6.013zM4.5 5.5c.128 0 .256.016.384.033.13.017.259.053.384.1.125.047.24.112.34.184.102.073.186.167.247.273l.922 1.198.922-1.198a.75.75 0 0 1 .247-.273c.1-.072.215-.137.34-.184.125-.047.255-.083.384-.1.128-.017.256-.033.384-.033a2.53 2.53 0 0 1 1.25.328c.383.193.692.474.886.83.194.356.308.762.308 1.342v5.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V8c0-.58.114-.986.308-1.342.194-.356.503-.637.886-.83.383-.193.802-.328 1.25-.328zm8.5 0c.128 0 .256.016.384.033.13.017.259.053.384.1.125.047.24.112.34.184.102.073.186.167.247.273l.922 1.198.922-1.198a.75.75 0 0 1 .247-.273c.1-.072.215-.137.34-.184.125-.047.255-.083.384-.1.128-.017.256-.033.384-.033.447 0 .867.135 1.25.328.383.193.692.474.886.83.194.356.308.762.308 1.342v5.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V8c0-.58.114-.986.308-1.342.194-.356.503-.637.886-.83.383-.193.802-.328 1.25-.328zM1 14V6.5h.551a.5.5 0 0 1-.109.343l-.892 1.159a.5.5 0 0 0-.05.545.5.5 0 0 0 .445.255h7.11a.5.5 0 0 0 .445-.255.5.5 0 0 0-.05-.545l-.892-1.159a.5.5 0 0 1-.109-.343h1.3a.5.5 0 0 1-.108.343l-.893 1.159a.5.5 0 0 0-.05.546.5.5 0 0 0 .445.254h7.11a.5.5 0 0 0 .445-.254.5.5 0 0 0-.05-.546l-.893-1.159a.5.5 0 0 1-.107-.343h.55V14H1z"/>
+                      </svg>
+                      <p>Birthday: {profileData?.birthdate?.toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+            ) : (
+              <div className="tags my-4">
+                {profileInterests && profileInterests.length > 0 ? (
+                  profileInterests.map((interest: any, index: number) => (
+                    <span key={index} className="badge bg-secondary me-2">
+                      {interest.name}
+                    </span>
+                  ))
+                ) : (
+                  <span className="badge bg-secondary me-2">
+                    There are no interests yet 😢
                   </span>
-                ))
-              ) : (
-                <span className="badge bg-secondary me-2">
-                  There are no interests yet 😢
-                </span>
-              )}
-
-              {/* <span className="badge bg-secondary me-2">🐎 Horse riding</span> */}
+                )}
             </div>
+            )}
 
             <div className="bio my-4 alert alert-secondary">
-              <p>{profileData?.bio}</p>
+              <p> <strong>About me: </strong>{profileData?.bio}</p>
               <p>
                 <strong>Birthday: </strong>{" "}
                 {profileData?.birthdate?.toLocaleDateString()}
