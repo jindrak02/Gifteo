@@ -293,7 +293,7 @@ button.text-red-500 {
 
 /* Login Page Styles */
 .login{
-  background-image: url('../public/images/login-bg.png');
+  background-image: url('images/login-bg.png');
   width: 100%;
   background-size: cover;
   background-position: center;
@@ -748,6 +748,7 @@ button.text-red-500 {
   background-color: #e7e3e3;
   padding: 10px;
   border-radius: 10px;
+  margin-top: 30px;
 }
 
 .bg-purple {
