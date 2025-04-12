@@ -64,6 +64,8 @@
 
     .profile-wishlists {
         height: 100px;
+        justify-content: flex-start;
+        gap: 20px;
     }
 
     .profile-header-first {
@@ -162,11 +164,6 @@
 
     .new-user{
         width: 50%;
-    }
-
-    .user-search-list{
-        display: flex;
-        flex-wrap: wrap;
     }
 
     .user-thumbnail{

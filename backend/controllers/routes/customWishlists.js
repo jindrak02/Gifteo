@@ -84,7 +84,7 @@ router.get("/", authenticateUser, async (req, res) => {
                 wishlistsMap[row.id] = {
                     id: row.id,
                     name: row.name,
-                    forProfile: row.profile_id,
+                    forProfile: row.profile_id || null,
                     deleted: row.deleted,
                     items: [],
                     ownerName: row.ownerName,
@@ -138,9 +138,6 @@ router.post("/", authenticateUser, async (req, res) => {
     if (!name) {
         return res.status(400).json({ success: false, message: "Name is required" });
     }
-    if (!forProfile) {
-        return res.status(400).json({ success: false, message: "Profile is required" });
-    }
 
     try {
 
@@ -163,7 +160,7 @@ router.post("/", authenticateUser, async (req, res) => {
             RETURNING *;
         `;
 
-        const result = await pool.query(insertQuery, [forProfile, name, userId]);
+        const result = await pool.query(insertQuery, [forProfile || null, name, userId]);
         const newWishlistId = result.rows[0].id;
 
         res.status(201).json({

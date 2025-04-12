@@ -17,7 +17,7 @@ const router = express.Router();
 router.use(cookieParser());
 router.use(express.json());
 
-// GET /api/calendar/events/upcoming, vrátí všechny nadcházející události v následujícíh 365 dnech pro uživatele
+// GET /api/calendar/events/upcoming, vrátí všechny nadcházející události pro uživatele
 router.get("/events/upcoming", authenticateUser, async (req, res) => {
     const userId = req.cookies.session_token;
     
@@ -53,7 +53,6 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
             LEFT JOIN "calendarEventNotification" cen ON ce.id = cen.event_id
 
             WHERE created_by_user_id = $1
-            AND date BETWEEN $2 AND $3
 
             UNION ALL
 
@@ -70,15 +69,13 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
             
             FROM "globalEvent"
 
-            WHERE country_code IN ($4)
-            AND (
-                (day IS NOT NULL AND make_date(EXTRACT(YEAR FROM $2::date)::int, month, day) BETWEEN $2 AND $3)
-            )
+            WHERE country_code IN ($3)
+            AND day IS NOT NULL
 
             ORDER BY 4 ASC;
         `;
 
-        const eventsResult = await pool.query(eventsQuery, [userId, today, endDate, countryCode]);
+        const eventsResult = await pool.query(eventsQuery, [userId, today, countryCode]);
         const rawRows = eventsResult.rows;
 
         const eventsMap = rawRows.reduce((acc, row) => {

@@ -31,7 +31,16 @@ router.get("/profile", authenticateUser, async (req, res) => {
   }
 
   try {
-    const profileQuery = 'SELECT * FROM "profile" profile LEFT JOIN "user" u ON profile.user_id = u.id WHERE profile.user_id = $1;';
+    const profileQuery = `
+      SELECT profile.*,
+        (SELECT email FROM "user" WHERE id = profile.user_id) AS email,
+        (SELECT created_at FROM "user" WHERE id = profile.user_id) AS created_at
+
+      FROM "profile" profile
+
+      WHERE profile.user_id = $1;
+    `;
+    
     const profileQueryResult = await pool.query(profileQuery,[userId]);
 
     console.log('Profil uživatele:', profileQueryResult.rows[0]);
@@ -227,6 +236,7 @@ router.post("/addWishlist", authenticateUser, async (req, res) => {
     res.json({ success: true, wishlist: insertWishlistQueryResult.rows[0] });
 
   } catch (error) {
+    console.log('Chyba při vytváření wishlistu:', error);
     res.status(500).send({ success: false, message: error.message });
   }
 });

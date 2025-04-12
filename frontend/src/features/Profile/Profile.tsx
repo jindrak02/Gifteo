@@ -222,25 +222,39 @@ const Profile = () => {
   };
   
   const handleAddWishlist = async (wishlistName: string) => {
-    const res = await fetchWithAuth("profileData/addWishlist", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const res = await fetchWithAuth("profileData/addWishlist", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: wishlistName,
+          profileId: profileData?.id,
+        })
+      });
+  
+      console.log('Sending data to server...');
+      console.log(JSON.stringify({
         name: wishlistName,
         profileId: profileData?.id,
-      }),
-    });
-
-    const data = await res.json();
-    if (data.success) {
-      console.log("Wishlist added successfully.");
-      setIsAddingWishlist(false);
-
-      // TODO: reload or update the wishlists
+      }));
+      
+  
+      const data = await res.json();
+      if (data.success) {
+        console.log("Wishlist added successfully.");
+        setIsAddingWishlist(false);
+  
+        // TODO: reload or update the wishlists
+      } else {
+        console.error("Error adding wishlist:", data.message);
+      }
+    } catch (error) {
+      console.error("Error adding wishlist:", error);
     }
+    
   };
   
   const handleDeleteWishlist = async (wishlistId: string) => {
