@@ -11,7 +11,7 @@ interface User {
     photo_url: string;
 }
 
-const WishlistSettings = function (props: { onClickBack: () => void; wishlistId: string; wishlistName: string; wishlistForProfile?: string; }) {
+const WishlistSettings = function (props: { onClickBack: () => void; wishlistId: string; wishlistName: string; wishlistForProfile?: string; isCustom?: boolean; }) {
     const [isPublic, setIsPublic] = useState(true);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -77,8 +77,8 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
     }, [props.wishlistId]);
 
     const handleVisibilityToggle = () => {
-        // Zobrazíme varování pouze pokud z private wishlistu děláme public a zároveň je wishlist určen pro konkrétní osobu (props.wishlistForProfile)
-        if (!isPublic && props.wishlistForProfile) {
+        // Zobrazíme varování pouze pokud z private wishlistu děláme public a zároveň je wishlist custom
+        if (!isPublic && props.isCustom) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Warning',

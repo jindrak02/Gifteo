@@ -1,13 +1,15 @@
 interface WishlistThumbnailProps {
   title: string;
   imageUrls: string[];
-  showButtons: boolean; 
+  showButtons: boolean;
+  forProfileName?: string;
+  forProfilePhotoUrl?: string;
   onDelete?: () => void;
   onEdit?: () => void;
   onClick?: () => void;
 }
 
-const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, onClick }: WishlistThumbnailProps) => {
+const WishlistThumbnail = ({ title, imageUrls, showButtons, forProfileName, forProfilePhotoUrl, onDelete, onEdit, onClick }: WishlistThumbnailProps) => {
   return (
     <div className="wishlist-card p-3 rounded shadow-sm mb-4">
       <div className="d-flex justify-content-between align-items-center mb-2">
@@ -64,6 +66,25 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, onDelete, onEdit, on
           ))}
         </div>
       </div>
+
+      {forProfileName && (
+        <div>
+          <div className="flex mt-2">
+            {forProfilePhotoUrl && (
+              <img
+                src={forProfilePhotoUrl}
+                alt="Profile"
+                className="rounded-circle me-2"
+                style={{ width: '30px', height: '30px' }}
+              />
+            )}
+            <div className="text-muted">
+              For: {forProfileName}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

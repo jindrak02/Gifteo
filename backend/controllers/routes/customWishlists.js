@@ -32,6 +32,8 @@ router.get("/", authenticateUser, async (req, res) => {
                 w.id,
                 w."name",
                 w.profile_id,
+                pf.name AS for_profile_name,
+                pf.photo_url AS for_profile_photo_url,
                 w.deleted,
                 wi.id AS item_id,
                 wi."name" AS item_name,
@@ -60,6 +62,7 @@ router.get("/", authenticateUser, async (req, res) => {
             LEFT JOIN "wishlistSharedWith" ws ON w.id = ws.wishlist_id AND ws.shared_with_user_id = $1
             LEFT JOIN profile p ON p.user_id = w.created_by_user_id
             LEFT JOIN profile cb_profile ON cb_profile.user_id = wi.checked_off_by_user_id
+            LEFT JOIN profile pf ON pf.id = w.profile_id
 
             WHERE w.is_custom = true
             AND w.deleted = false
@@ -93,6 +96,8 @@ router.get("/", authenticateUser, async (req, res) => {
                     id: row.id,
                     name: row.name,
                     forProfile: row.profile_id || null,
+                    forProfileName: row.for_profile_name || null,
+                    forProfilePhotoUrl: row.for_profile_photo_url || null,
                     deleted: row.deleted,
                     items: [],
                     ownerName: row.ownerName,

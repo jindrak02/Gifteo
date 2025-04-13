@@ -13,6 +13,8 @@ interface CustomWishlist {
     id: string;
     name: string;
     forProfile: string;
+    forProfileName: string;
+    forProfilePhotoUrl: string;
     items: Item[];
     ownerName: string;
     ownerPhotoUrl: string;
@@ -211,6 +213,7 @@ const MyIdeas = () => {
                 items={customWishlists.find(wishlist => wishlist.id === isEditingWishlist)?.items || []}
                 name={customWishlists.find(wishlist => wishlist.id === isEditingWishlist)?.name || ""}
                 forProfile={customWishlists.find(wishlist => wishlist.id === isEditingWishlist)?.forProfile || ""}
+                isCustom={true}
                 onSubmit={(items) => handleSaveWishlist(isEditingWishlist, items)}
             />
         )
@@ -279,6 +282,8 @@ const MyIdeas = () => {
                                             title={wishlist.name}
                                             imageUrls={wishlist.items.map((item) => item.photo_url)}
                                             showButtons={true}
+                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : "Not specified"}
+                                            forProfilePhotoUrl={wishlist.forProfilePhotoUrl}
                                             onDelete={() => handleDeleteWishlist(wishlist.id)}
                                             onEdit={() => setIsEditingWishlist(wishlist.id)}
                                             onClick={() => setIsViewingWishlist(wishlist.id)}
@@ -323,6 +328,8 @@ const MyIdeas = () => {
                                             title={wishlist.name}
                                             imageUrls={wishlist.items.map((item) => item.photo_url)}
                                             showButtons={false}
+                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : "Not specified"}
+                                            forProfilePhotoUrl={wishlist.forProfilePhotoUrl}
                                             onClick={() => setIsViewingWishlist(wishlist.id)}
                                         />
                                     </div>
