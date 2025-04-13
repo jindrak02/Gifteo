@@ -102,10 +102,7 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
     const { profile, interests } = req.body;
     const parsedProfile = JSON.parse(profile);
     const parsedInterests = JSON.parse(interests);
-    const { id, name, photo_url, bio, birthdate } = parsedProfile;
-
-    console.log('birthdate:', birthdate);
-    
+    let { id, name, photo_url, bio, birthdate } = parsedProfile;
 
     let imageUrl = parsedProfile.photo_url; // Pokud není nový soubor, použiju starý
 
@@ -136,6 +133,12 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
     const currentProfileResult = await pool.query(currentProfileQuery, [userId]);
     const currentProfile = currentProfileResult.rows[0];
 
+    if (birthdate === null || birthdate === undefined || 
+        (typeof birthdate === 'string' && birthdate.trim() === '') ||
+        (birthdate && new Date(birthdate).toString() === 'Invalid Date')) {
+      birthdate = null;
+    }
+
     const updateProfileQuery = 'UPDATE "profile" SET name = $1, photo_url = $2, bio = $3, birthdate = $4 WHERE user_id = $5;';
     await pool.query(updateProfileQuery,[name, imageUrl, bio, birthdate, userId]);
 
@@ -148,7 +151,7 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
     }
 
     // Pokud si uživatel změní datum narození, aktualizují se příslušné události všem blízkým osobám
-    if (currentProfile.birthdate !== birthdate) {
+    if (currentProfile.birthdate !== birthdate && birthdate !== null) {
 
       const getBirthdayString = (birthdate) => {
         const birthdayDate = new Date(birthdate);

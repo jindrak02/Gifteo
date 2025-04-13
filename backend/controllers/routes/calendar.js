@@ -53,6 +53,7 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
             LEFT JOIN "calendarEventNotification" cen ON ce.id = cen.event_id
 
             WHERE created_by_user_id = $1
+             AND ce.date >= CURRENT_DATE
 
             UNION ALL
 
@@ -70,7 +71,8 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
             FROM "globalEvent"
 
             WHERE country_code IN ($3)
-            AND day IS NOT NULL
+             AND day IS NOT NULL
+             AND make_date(EXTRACT(YEAR FROM $2::date)::int, month, day) >= CURRENT_DATE
 
             ORDER BY 4 ASC;
         `;

@@ -61,7 +61,7 @@ const Profile = () => {
 
           const data = await res.json();
           
-          data.birthdate = new Date(data.birthdate);
+          data.birthdate != null ? data.birthdate = new Date(data.birthdate) : null;
           data.created_at = new Date(data.created_at);
           setProfileData(data);
         };
@@ -199,6 +199,9 @@ const Profile = () => {
     }
   
     try {
+      console.log('Sending data to server...');
+      console.log(JSON.stringify(updatedProfileData));
+      
       const res = await fetchWithAuth("profileData/updateProfile", {
         method: "PUT",
         credentials: "include", // Posílání cookies
@@ -364,7 +367,7 @@ const Profile = () => {
 
     let formattedBirthDate = "";
 
-    if (profileData?.birthdate) {
+    if (profileData?.birthdate && !isNaN(profileData.birthdate.getTime())) {
       const year = profileData!.birthdate.getFullYear();
       const month = String(profileData!.birthdate.getMonth() + 1).padStart(2,"0");
       const day = String(profileData!.birthdate.getDate()).padStart(2, "0");
@@ -380,12 +383,14 @@ const Profile = () => {
             onSubmit={(e) => {
               e.preventDefault();
               const formData = new FormData(e.target as HTMLFormElement);
+              const birthDateValue = formData.get("birthdate") as string;
+
               const updatedProfileData: any = {
                 id: profileData!.id,
                 name: formData.get("name") as string,
                 photo_url: profileData!.photo_url, // Keep the existing photo_url
                 bio: formData.get("bio") as string,
-                birthdate: new Date(formData.get("birthdate") as string),
+                birthdate: birthDateValue && birthDateValue.trim() !== "" ? new Date(birthDateValue) : null,
               };
               const file = formData.get("photo") as File;
               handleSaveProfile(updatedProfileData, selectedInterests, file);
