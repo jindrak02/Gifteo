@@ -1,0 +1,24 @@
+{
+    "app": {
+      "title": "Gifteo"
+    },
+    "navigation": {
+      "myProfile": "Můj Profil",
+      "myPeople": "Moji Blízcí",
+      "myIdeas": "Moje Nápady",
+      "giftFor": "Obdaruj",
+      "myCalendar": "Můj Kalendář"
+    },
+    "profile": {
+      "hi": "Ahoj, {{name}}!",
+      "edit": "Upravit profil",
+      "bio": "Bio",
+      "birthday": "Narozeniny",
+      "interests": "Zájmy",
+      "noInterests": "Zatím zde nejsou žádné zájmy 😢",
+      "aboutMe": "O mně",
+      "wishlists": "Moje seznamy přání",
+      "addWishlist": "Přidat seznam přání",
+      "noWishlists": "Zatím nemáte žádné seznamy přání. Vytvořte si ho! 🎉"
+    }
+}

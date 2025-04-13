@@ -1,0 +1,66 @@
+{
+    "app": {
+      "title": "Gifteo"
+    },
+    "navigation": {
+      "myProfile": "My Profile",
+      "myPeople": "My People",
+      "myIdeas": "My Ideas",
+      "giftFor": "Gift For",
+      "myCalendar": "My Calendar"
+    },
+    "profile": {
+      "hi": "Hi {{name}}!",
+      "edit": "Edit profile",
+      "bio": "Bio",
+      "birthday": "Birthday",
+      "interests": "Interests",
+      "noInterests": "There are no interests yet 😢",
+      "aboutMe": "About me",
+      "wishlists": "My wishlists",
+      "addWishlist": "Add wishlist",
+      "noWishlists": "You have no wishlists yet. Create one! 🎉"
+    },
+    "myPeople": {
+      "title": "My People",
+      "newInvitation": "You have {count} new invitation(s).",
+      "noPeople": "You have connected with no people yet.",
+      "clickBelow": "Click the button below to add a new person.",
+      "addPerson": "Add person"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "back": "Back",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price"
+    },
+    "wishlist": {
+      "settings": "Wishlist settings",
+      "editWishlist": "Edit wishlist",
+      "newItem": "New item",
+      "saveWishlist": "Save wishlist",
+      "fetchItemData": "Fetch item data",
+      "imageUrl": "Image URL",
+      "selectCurrency": "Select currency",
+      "removeItem": "Remove item",
+      "removeItemConfirm": "It can still be seen to some users."
+    },
+    "calendar": {
+      "title": "My calendar",
+      "upcomingEvents": "Upcoming Events",
+      "addEvent": "Add event",
+      "noEvents": "No upcoming events found."
+    },
+    "myIdeas": {
+      "title": "My Ideas",
+      "myCustomWishlists": "My custom wishlists",
+      "createNewWishlist": "Create new wishlist",
+      "noCustomWishlists": "You dont have any custom wishlists for your close ones yet.",
+      "sharedWithMe": "Custom wishlists shared with me",
+      "noSharedWishlists": "No wishlists have been shared with you yet."
+    }
+}

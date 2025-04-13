@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Select from "react-select";
@@ -8,6 +9,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import { useMediaQuery } from 'react-responsive';
 import UpperPanel from "../../components/ui/UpperPanel";
+import LanguageSwitcher from "../../components/ui/LanguageSwitcher";
 
 type ProfileData = {
   id: string;
@@ -25,6 +27,7 @@ type Interest = {
 };
 
 const Profile = () => {
+  const { t } = useTranslation();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [showSpinner, setShowSpinner] = useState(false);
   const [profileInterests, setProfileInterests] = useState<Array<Interest> | null>(null);
@@ -413,6 +416,7 @@ const Profile = () => {
                 maxLength={50}
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="photo" className="form-label">
                 Photo
@@ -425,6 +429,7 @@ const Profile = () => {
                 accept="image/*"
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="bio" className="form-label">
                 Bio
@@ -439,6 +444,7 @@ const Profile = () => {
                 maxLength={500}
               ></textarea>
             </div>
+
             <div className="mb-3">
               <label htmlFor="birthdate" className="form-label">
                 Birthdate
@@ -451,6 +457,7 @@ const Profile = () => {
                 defaultValue={formattedBirthDate}
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="interests" className="form-label">
                 Interests
@@ -479,6 +486,12 @@ const Profile = () => {
                 }
               />
             </div>
+
+            <div className="my-3 flex">
+              <p className="m-0 me-3">Preffered Language: </p>
+              <LanguageSwitcher/>
+            </div>
+            
             <button type="submit" className="btn btn-service btn-primary">
               Save
             </button>
@@ -490,6 +503,7 @@ const Profile = () => {
               Cancel
             </button>
           </form>
+
         </div>
         <LoadingSpinner className={showSpinner ? "" : "hidden"} />
       </div>
@@ -579,14 +593,14 @@ const Profile = () => {
                   />
                 </svg>
               </button>
-              <h2 className="my-2">Hi, {profileData?.name?.split(" ")[0]}</h2>
+              <h2 className="my-2">{t('profile.hi', {name: profileData?.name.split(' ')[0] })}</h2>
             </div>
 
             <hr className="my-4" />
           </>
         ) : (
           <UpperPanel
-            name={"Hi, " + profileData?.name?.split(" ")[0] + "!"}
+            name={t('profile.hi', {name: profileData?.name.split(' ')[0] })}
           />
         )}
 

@@ -5,6 +5,7 @@ import "./assets/desktop.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./store/AuthContext.tsx";
+import "./i18n.ts";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
