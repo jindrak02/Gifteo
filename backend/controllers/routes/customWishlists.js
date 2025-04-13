@@ -65,8 +65,16 @@ router.get("/", authenticateUser, async (req, res) => {
             AND w.deleted = false
             AND (
                 w.created_by_user_id = $1
-                OR w.shared_with_all_my_people = true
                 OR ws.shared_with_user_id IS NOT NULL
+                OR (
+                    w.shared_with_all_my_people = true
+                    AND EXISTS (
+                        SELECT 1
+                        FROM "userPerson" up
+                        JOIN "person" per ON up.person_id = per.id
+                        WHERE up.user_id = $1 AND per.profile_id = p.id
+                    )
+                )
             )
             AND (wi.deleted = false OR wi.id IS NULL)
 
