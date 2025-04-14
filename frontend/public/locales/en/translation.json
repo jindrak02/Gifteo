@@ -64,6 +64,39 @@
           "text": "Are you sure? This will enable the person who wishlist is for to see the wishlist.",
           "confirmButtonText": "Yes",
           "cancelButtonText": "No"
+        },
+        "declineInvitation": {
+          "title": "Decline invitation",
+          "text": "Are you sure you want to decline this invitation?",
+          "confirmButtonText": "Decline",
+          "cancelButtonText": "Cancel"
+        },
+        "acceptInvitation": {
+          "title": "Accept invitation",
+          "confirmButtonText": "Accept",
+          "cancelButtonText": "Cancel"
+        },
+        "invitationAccepted": {
+          "title": "Invitation accepted",
+          "text": "You are now connected with this person."
+        },
+        "sendInvitation": {
+          "title": "Person added",
+          "text": "Invitation sent successfully"
+        },
+        "removePerson": {
+          "title": "Remove person",
+          "text": "Do you realy want to remove this person from your persons? This will also remove all events in calendar for this person.",
+          "confirmButtonText": "Remove",
+          "cancelButtonText": "Cancel"
+        },
+        "removePersonSuccess": {
+          "title": "Person removed",
+          "text": "Your person has been removed."
+        },
+        "rejectedInvitation": {
+          "title": "Invitation rejected",
+          "text": "You have rejected the invitation."
         }
       }
     },
@@ -123,5 +156,42 @@
     },
     "login": {
       "welcome": "Welcome to Gifteo"
+    },
+    "myPeople":{
+      "title": "My People",
+      "noPeopleHeader": "You have connected with no people yet.",
+      "noPeopleText": "Click the button below to add a new person.",
+      "invitations": {
+        "yourInvitations": "Your invitations",
+        "newInvitation": "You have {{count}} new invitation(s).",
+        "noInvitations": "You don't have any pending invitations at the moment.",
+        "thoseUsersWantToConnect": "Those users wants to add you to their close persons:",
+        "invitationSend": "Sent: {{date}}"
+      },
+      "userHasNoWishlists": "This user has no wishlists yet.",
+      "addPerson": {
+        "addPersonButton": "Add person",
+        "addPersonHeader": "Add new person",
+        "ExistingGifteoUser": "Existing Gifteo user",
+        "ExistingGifteoUserDescription": "Find your friends or family members that use Gifteo and add them to your dashboard.",
+        "NonGifteoUser": "Person without Gifteo",
+        "NonGifteoUserDescription": "Friends or family doesn’t use Gifteo? Don’t worry, you can still create a profile for them.",
+        "userSearchPlaceholder": "Search for user...",
+        "userSearchStatusAccepted": "Accepted",
+        "userSearchStatusPending": "Pending",
+        "userSearchInvite": "Connect"
+      },
+      "personDetail": {
+        "personDetailHeader": "My people - {{name}}",
+        "birthday": "Birthday",
+        "events": "Events",
+        "noEvents": "You don't have any events for this person yet.",
+        "noWishlists": "This person doesn't have any wishlists yet."
+      },
+      "personWishlistDetail": {
+        "linkToBuy": "Link to buy",
+        "description": "Description",
+        "price": "Price"
+      }
     }
 }

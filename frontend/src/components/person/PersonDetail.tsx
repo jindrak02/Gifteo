@@ -5,6 +5,7 @@ import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import WishlistDetail from "../wishlist/WishlistDetail";
 import formatDate from "../../utils/formatDateToCountryCode";
+import { useTranslation } from "react-i18next";
 
 type PersonDetailProps = {
     personId: string;
@@ -42,6 +43,7 @@ interface Event {
 }
 
 const PersonDetail = function (props: PersonDetailProps) {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
     const [personData, setPersonData] = useState<PersonData | null>(null);
     const [showWishlistDetail, setShowWishlistDetail] = useState<string | null>(null);
@@ -109,13 +111,14 @@ const PersonDetail = function (props: PersonDetailProps) {
     const handleDelete = async (personId: string, userId: string) => {
           
           Swal.fire({
-            title: "Are you sure?",
-            text: "Do you realy want to remove this person from your persons? This will also remove all events in calendar for this person.",
+            title: t('app.swal.removePerson.title'),
+            text: t('app.swal.removePerson.text'),
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#8F84F2",
-            confirmButtonText: "Yes, remove",
+            confirmButtonText:  t('app.swal.removePerson.confirmButtonText'),
+            cancelButtonText: t('app.swal.removePerson.cancelButtonText'),
           }).then(async (result) => {
     
             if (result.isConfirmed) {
@@ -139,10 +142,18 @@ const PersonDetail = function (props: PersonDetailProps) {
                 props.onClickBack();
               } else {
                 console.error("Error deleting person");
-                Swal.fire("Error", "Error removing person.", "success");
+                Swal.fire({
+                  title: t('app.swal.error.title'),
+                  text: t('app.swal.error.text'),
+                  icon: "error"
+                });
               }
     
-              Swal.fire("Removed", "Your person has been removed.", "success");
+              Swal.fire({
+                title: t('app.swal.removePersonSuccess.title'),
+                text: t('app.swal.removePersonSuccess.text'),
+                icon: "success"
+              });
             } else {
               console.log(personId + " Delete canceled");
               return;
@@ -174,7 +185,9 @@ const PersonDetail = function (props: PersonDetailProps) {
                       />
                     </svg>
                   </button>
-                  <h2 className="my-2">My people - {personData?.name.split(' ')[0]}</h2>
+                  <h2 className="my-2">
+                    {t("myPeople.personDetail.personDetailHeader", { name: personData?.name.split(" ")[0] })}
+                  </h2>
                 </div>
 
                 <hr className="my-4" />
@@ -207,7 +220,7 @@ const PersonDetail = function (props: PersonDetailProps) {
               </svg>
             </button>
             <h2 className="my-2">
-              My people - {personData?.name.split(" ")[0]}
+              {t("myPeople.personDetail.personDetailHeader", { name: personData?.name.split(" ")[0] })}
             </h2>
           </div>
 
@@ -247,15 +260,15 @@ const PersonDetail = function (props: PersonDetailProps) {
               <div className="bio my-4 alert alert-secondary">
                 <p>{personData?.bio}</p>
                 <p>
-                  <strong>Birthday: </strong>
-                  {personData?.birthdate
-                    ? new Date(personData.birthdate).toLocaleDateString()
-                    : "N/A"}
+                    <strong>{t("myPeople.personDetail.birthday")}: </strong>
+                    {personData?.birthdate
+                        ? new Date(personData.birthdate).toLocaleDateString()
+                        : t("app.buttons.cancel")}
                 </p>
               </div>
 
               <div className="events my-4 alert alert-secondary">
-                <h5 className="mb-3">Events</h5>
+                <h5 className="mb-3">{t("myPeople.personDetail.events")}</h5>
                 {events.length > 0 ? (
                   <div className="event-list">
                     {events.map((event, index) => (
@@ -269,7 +282,7 @@ const PersonDetail = function (props: PersonDetailProps) {
                   </div>
                 ) : (
                   <p className="alert alert-light">
-                    You don't have any events for this person yet.
+                    {t("myPeople.personDetail.noEvents")}
                   </p>
                 )}
               </div>
@@ -297,7 +310,7 @@ const PersonDetail = function (props: PersonDetailProps) {
                   </div>
                 ) : (
                   <p className="alert alert-light">
-                    This person doesn't have any wishlists yet.
+                    {t("myPeople.personDetail.noWishlists")}
                   </p>
                 )}
               </div>

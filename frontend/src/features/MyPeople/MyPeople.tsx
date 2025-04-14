@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useInvitations } from "../../store/InvitationContext";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
+import { useTranslation } from "react-i18next";
 
 interface Person {
   user_id: string;
@@ -27,6 +28,7 @@ interface Invitation {
 }
 
 const MyPeople = () => {
+    const { t } = useTranslation();
     const [persons, setPersons] = useState<Person[]>([]);
     const [showPersonDetail, setShowPersonDetail] = useState<string | null>(null);
     const [isAddingPerson, setIsAddingPerson] = useState<boolean>(false);
@@ -78,13 +80,14 @@ const MyPeople = () => {
     
     const handleDelete = async (personId: string, userId: string) => {
       Swal.fire({
-        title: "Are you sure?",
-        text: "Do you realy want to remove this person from your persons?",
+        title: t("app.swal.removePerson.title"),
+        text: t("app.swal.removePerson.text"),
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
         cancelButtonColor: "#8F84F2",
-        confirmButtonText: "Yes, remove",
+        confirmButtonText: t("app.swal.removePerson.confirmButtonText"),
+        cancelButtonText: t("app.swal.removePerson.cancelButtonText"),
       }).then(async (result) => {
 
         if (result.isConfirmed) {
@@ -108,11 +111,15 @@ const MyPeople = () => {
             setPersons(
               persons.filter((person) => person.person_id !== personId)
             );
+            Swal.fire(
+                t("app.swal.removePersonSuccess.title"),
+                t("app.swal.removePersonSuccess.text"),
+                "success"
+            );
           } else {
             console.error("Error deleting person");
           }
 
-          Swal.fire("Deleted!", "Your person has been deleted.", "success");
         } else {
           console.log(personId + " Delete canceled");
           return;
@@ -148,7 +155,7 @@ const MyPeople = () => {
                             <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                         </svg>
                     </button>
-                    <h2 className="my-2">Add new person</h2>
+                    <h2 className="my-2">{t("myPeople.addPerson.addPersonHeader")}</h2>
                 </div>
                 
                 <hr className="my-4" />
@@ -169,7 +176,7 @@ const MyPeople = () => {
                             <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                         </svg>
                     </button>
-                    <h2 className="my-2">Your invitations</h2>
+                    <h2 className="my-2">{t("myPeople.invitations.yourInvitations")}</h2>
                 </div>
                 
                 <hr className="my-4" />
@@ -199,7 +206,7 @@ const MyPeople = () => {
                     ""
                 )}
             </div>
-            <h2 className="my-2">My People</h2>
+            <h2 className="my-2">{t("myPeople.title")}</h2>
           </div>
 
           <hr className="my-4" />
@@ -207,19 +214,15 @@ const MyPeople = () => {
           {invitations.length != 0 && (
             <div className="text-center my-4">
               <p className="text-muted">
-                You have {invitations.length} new invitation(s).
+                {t("myPeople.invitations.newInvitation", { count: invitations.length })}
               </p>
             </div>
           )}
 
           {persons.length === 0 && (
             <div className="text-center my-4">
-              <h3 className="text-muted my-4">
-                You have connected with no people yet.
-              </h3>
-              <p className="text-muted">
-                Click the button below to add a new person.
-              </p>
+              <h3 className="text-muted my-4">{t("myPeople.noPeopleHeader")}</h3>
+              <p className="text-muted">{t("myPeople.noPeopleText")}</p>
             </div>
           )}
 
@@ -240,7 +243,7 @@ const MyPeople = () => {
               className="add-person-btn btn-primary btn btn-service"
               onClick={() => setIsAddingPerson(true)}
             >
-              Add person
+              {t("myPeople.addPerson.addPersonButton")}
             </button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from "react-i18next";
 
 interface PersonThumbnailProps {
     personId?: string;
@@ -10,6 +11,8 @@ interface PersonThumbnailProps {
 }
 
 const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDetail }: PersonThumbnailProps) => {
+    const { t } = useTranslation();
+
     return (
       <div className="person-thumbnail my-4">
 
@@ -43,7 +46,7 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
           <ul className="person-thumbnail-wishlists">
             {wishlists.length > 0 ? (wishlists.map((wishlist, index) => (
               <li key={index}>{wishlist}</li>
-            ))) : (<p>This user has no wishlists yet 🥲</p>)}
+            ))) : (<p>{t("myPeople.userHasNoWishlists")}</p>)}
           </ul>
         </div>
 

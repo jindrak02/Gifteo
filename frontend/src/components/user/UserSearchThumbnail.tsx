@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 
 interface UserSearchThumbnailProps {
   name: string;
@@ -8,6 +9,8 @@ interface UserSearchThumbnailProps {
 }
 
 const UserSearchThumbnail: React.FC<UserSearchThumbnailProps> = ({ name, profilePicture, onInvite, connectionStatus }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="user-thumbnail">
       <div className="user-thumbnail-content">
@@ -16,15 +19,15 @@ const UserSearchThumbnail: React.FC<UserSearchThumbnailProps> = ({ name, profile
       </div>
 
       {connectionStatus === 'pending' && (
-        <span className="badge text-bg-secondary">Pending</span>
+        <span className="badge text-bg-secondary">{t('myPeople.addPerson.userSearchStatusPending')}</span>
       )}
 
       {connectionStatus === 'accepted' && (
-        <span className="badge text-bg-secondary">Accepted</span>
+        <span className="badge text-bg-secondary">{t('myPeople.addPerson.userSearchStatusAccepted')}</span>
       )}
       
       {connectionStatus === null && (
-      <button className="btn-service rounded btn btn-primary" onClick={onInvite}>Connect</button>
+      <button className="btn-service rounded btn btn-primary" onClick={onInvite}>{t('myPeople.addPerson.userSearchInvite')}</button>
       )}
     </div>
   );

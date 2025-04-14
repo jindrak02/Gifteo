@@ -3,6 +3,7 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import UserSearchThumbnail from "../../../components/user/UserSearchThumbnail";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 interface User{
     person_id: string;
@@ -16,6 +17,7 @@ const UserSearch = () => {
     const [query, setQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
     const [showSpinner, setShowSpinner] = useState<boolean>(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!query) {
@@ -81,8 +83,8 @@ const UserSearch = () => {
             if (data.success) {
                 Swal.fire({
                     icon: "success",
-                    title: "Person added",
-                    text: "Invitation sent successfully",
+                    title: t('app.swal.sendInvitation.title'),
+                    text: t('app.swal.sendInvitation.text'),
                 });
 
                 setQuery("");
@@ -112,7 +114,7 @@ const UserSearch = () => {
             <div className="user-search">
                 <input className="user-search-input"
                     type="text"
-                    placeholder="Search for user..."
+                    placeholder={t("myPeople.addPerson.userSearchPlaceholder")}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />

@@ -1,7 +1,9 @@
 import React, {useState} from "react";
 import UserSearch from "./UserSearch";
+import { useTranslation } from "react-i18next";
 
 const AddPerson = () => {
+    const { t } = useTranslation();
     const [addingExistngUser, setAddingExistingUser] = useState<boolean>(false);
     const [addingNewUser, setAddingNewUser] = useState<boolean>(false);
 
@@ -26,18 +28,12 @@ const AddPerson = () => {
         <>
             <div className="add-person-container my-4">
                 <div className="person-option existing-user" onClick={handleAddExistingUser}>
-                        <h2>Existing Gifteo user</h2>
-                        <p>
-                            Find your friends or family members that use Gifteo and add them
-                            to your dashboard
-                        </p>
+                    <h2>{t("myPeople.addPerson.ExistingGifteoUser")}</h2>
+                    <p>{t("myPeople.addPerson.ExistingGifteoUserDescription")}</p>
                 </div>
                 <div className="person-option new-user" onClick={handleAddNewUser}>
-                        <h2>Person without Gifteo</h2>
-                        <p>
-                            Friends or family doesn’t use Gifteo? Don’t worry, you can still
-                            create a profile for them
-                        </p>
+                    <h2>{t("myPeople.addPerson.NonGifteoUser")}</h2>
+                    <p>{t("myPeople.addPerson.NonGifteoUserDescription")}</p>
                 </div>
             </div>
       </>

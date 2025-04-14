@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import { useMediaQuery } from 'react-responsive';
+import { useTranslation } from "react-i18next";
 
 type WishlistDetailProps = {
     wishlistId: string;
@@ -18,6 +19,7 @@ type WishlistItem = {
 };
 
 const WishlistDetail = (props: WishlistDetailProps) => {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(null);
     const [showItemDetails, setShowItemDetails] = useState <number | null>(null);
@@ -66,14 +68,15 @@ const WishlistDetail = (props: WishlistDetailProps) => {
                             <img src={item.photo_url} alt={item.name} className="wishlist-thumbnail" />
                             <div className="wishlist-item-details">
                                 <div className="wishlist-item-name">{item.name}</div>
-                                {/* <div className="wishlist-item-price">{item.price} {item.currency}</div> */}
-                                <a href={item.url} className="wishlist-item-url" target="_blank" rel="noopener noreferrer">Link to buy</a>
+                                <a href={item.url} className="wishlist-item-url" target="_blank" rel="noopener noreferrer">
+                                    {t("myPeople.personWishlistDetail.linkToBuy")}
+                                </a>
                                 
                                 {isDesktop && (
                                     <div className="mt-2">
-                                        <b>Description: </b>
+                                        <b>{t("myPeople.personWishlistDetail.description")}: </b>
                                         <p>{item.description}</p>
-                                        <b>Price: </b>
+                                        <b>{t("myPeople.personWishlistDetail.price")}: </b>
                                         <p>{item.price} {item.currency}</p>
                                     </div>
                                 )}
@@ -91,9 +94,9 @@ const WishlistDetail = (props: WishlistDetailProps) => {
                         <div>
                             {showItemDetails === index && (
                                 <div className="wishlist-item-details-expanded">
-                                    <b>Description: </b>
+                                    <b>{t("myPeople.personWishlistDetail.description")}: </b>
                                     <p>{item.description}</p>
-                                    <b>Price: </b>
+                                    <b>{t("myPeople.personWishlistDetail.price")}: </b>
                                     <p>{item.price} {item.currency}</p>
                                 </div>
                             )}
