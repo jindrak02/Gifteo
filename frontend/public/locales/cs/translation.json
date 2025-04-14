@@ -97,6 +97,16 @@
             "rejectedInvitation": {
               "title": "Pozvání zamítnuto",
               "text": "Odmítli jste pozvání."
+            },
+            "deleteComment": {
+              "title": "Smazat komentář",
+              "text": "Tuto akci nelze vrátit zpět!",
+              "confirmButtonText": "Ano, smazat!",
+              "cancelButtonText": "Zrušit"
+            },
+            "uncheckItemError": {
+              "title": "Jejda...",
+              "text": "Můžete odškrtnout pouze položky, které jste zaškrtli!"
             }
         }
     },
@@ -193,5 +203,28 @@
         "description": "Popis",
         "price": "Cena"
       }
+    },
+    "wishlistHub": {
+      "title": "Obdaruj {{name}}",
+      "wishlists": "Seznamy přání - {{name}}",
+      "comments": "Komentáře",
+      "choosePerson": "Vyberte, koho chcete obdarovat",
+      "noPeopleAlert": "Zatím nemáte žádné blízké osoby. Přidejte je do svého profilu, abyste mohli začít obdarovávat.",
+      "invitationsTitle": "Pozvánky do seznamů přání",
+      "commentsFor": "Komentáře k {{wishlistName}}",
+      "addCommentPlaceholder": "Přidat komentář...",
+      "postCommentButton": "Odeslat komentář",
+      "deleteComment": "Smazat komentář",
+      "deleteCommentConfirmation": "Tuto akci nelze vrátit zpět!",
+      "noWishlists": "{{name}} zatím nemá žádné seznamy přání.",
+      "inactiveWishlistAlert": "Tento seznam přání již není aktivní",
+      "inactiveItemAlert": "Tato položka již není aktivní",
+      "modifiedItemAlert": "❔ Tato položka byla upravena dne {{date}}",
+      "checkedOffBy": "Pořízeno: {{name}}",
+      "description": "Popis",
+      "price": "Cena: {{price}} {{currency}}",
+      "linkToBuy": "Odkaz ke koupi",
+      "participants": "Účastníci",
+      "extraParticipants": "+{{count}}"
     }
 }

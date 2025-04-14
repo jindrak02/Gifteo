@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 interface WishlistThumbnailProps {
   title: string;
   imageUrls: string[];
@@ -7,6 +9,7 @@ interface WishlistThumbnailProps {
 }
 
 const WishlistCopyThumbnail = ({ title, imageUrls, deleted, participantsPhotoUrls }: WishlistThumbnailProps) => {
+  const { t } = useTranslation();
 
   return (
     <div className={deleted ? "wishlist-thumbnail-disabled wishlist-card p-3 rounded shadow-sm mb-4" : "wishlist-card p-3 rounded shadow-sm my-4"}>
@@ -28,7 +31,7 @@ const WishlistCopyThumbnail = ({ title, imageUrls, deleted, participantsPhotoUrl
       </div>
 
       <div className="d-flex align-items-center mt-2">
-        <p className="my-0 mx-2">Participants </p>
+        <p className="my-0 mx-2">{t("wishlistHub.participants")}</p>
         <div className="flex">
           {participantsPhotoUrls.slice(0,3).map((url, index) => (
             <img
@@ -39,7 +42,7 @@ const WishlistCopyThumbnail = ({ title, imageUrls, deleted, participantsPhotoUrl
             />
           ))}
           {participantsPhotoUrls.length > 3 && (
-            <span className="extra-participants-count">+{participantsPhotoUrls.length - 3}</span>
+            <span className="extra-participants-count">{t("wishlistHub.extraParticipants", { count: participantsPhotoUrls.length - 3 })}</span>
           )}
         </div>
       </div>

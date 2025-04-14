@@ -97,6 +97,16 @@
         "rejectedInvitation": {
           "title": "Invitation rejected",
           "text": "You have rejected the invitation."
+        },
+        "deleteComment": {
+          "title": "Delete comment",
+          "text": "You won't be able to revert this!",
+          "confirmButtonText": "Yes, delete it!",
+          "cancelButtonText": "Cancel"
+        },
+        "uncheckItemError": {
+          "title": "Oops...",
+          "text": "You can only uncheck items that you have checked off!"
         }
       }
     },
@@ -193,5 +203,28 @@
         "description": "Description",
         "price": "Price"
       }
+    },
+    "wishlistHub": {
+      "title": "Gift For {{name}}",
+      "wishlists": "Wishlists - {{name}}",
+      "comments": "Comments",
+      "choosePerson": "Choose who do you want to gift",
+      "noPeopleAlert": "You don't have any people yet. Add them to your profile to start gifting.",
+      "invitationsTitle": "Invitations to wishlists",
+      "commentsFor": "Comments for {{wishlistName}}",
+      "addCommentPlaceholder": "Add a comment...",
+      "postCommentButton": "Post Comment",
+      "deleteComment": "Delete comment",
+      "deleteCommentConfirmation": "You won't be able to revert this!",
+      "noWishlists": "{{name}} doesn't have any wishlists yet.",
+      "inactiveWishlistAlert": "This wishlist is no longer active",
+      "inactiveItemAlert": "This item is no longer active",
+      "modifiedItemAlert": "❔ This item was modified at {{date}}",
+      "checkedOffBy": "Checked off by: {{name}}",
+      "description": "Description",
+      "price": "Price: {{price}} {{currency}}",
+      "linkToBuy": "Link to buy",
+      "participants": "Participants",
+      "extraParticipants": "+{{count}}"
     }
 }

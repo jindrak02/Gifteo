@@ -4,6 +4,7 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import WishlistThumbnail from "./WishlistThumbnail.tsx";
 import WishlistDetail from "./WishlistDetail.tsx";
+import { useTranslation } from "react-i18next";
 
 interface PersonDetailProps {
     user_id: string;
@@ -37,6 +38,7 @@ interface Wishlist {
 };
 
 const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailProps ) => {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
     const [wishlists, setWishlists] = useState<Wishlist[]>([]);
     const [isViewingWishlist, setIsViewingWishlist] = useState<Wishlist | null>(null);
@@ -106,7 +108,7 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
                 />
               </svg>
             </button>
-            <h2 className="my-2">Gift For {name.split(" ")[0]}</h2>
+            <h2 className="my-2">{t("wishlistHub.title", {name: name.split(" ")[0]})}</h2>
           </div>
 
           <hr className="my-4" />
@@ -118,13 +120,13 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
                 src={photo_url}
                 alt={name + "profile"}
               />
-              <h4 className="mx-2">{name.split(" ")[0]}'s Wishlists</h4>
+              <h4 className="mx-2">{t('wishlistHub.wishlists', {name: name.split(" ")[0]})}</h4>
             </div>
 
             <div className="wishlists-wishlist-hub-container my-4">
               {wishlists.length === 0 ? (
                 <div className="text-center p-4 bg-gray-100 rounded-lg">
-                  {name.split(" ")[0]} doesn't have any wishlists yet.
+                  {t("wishlistHub.noWishlists", { name: name.split(" ")[0] })}
                 </div>
               ) : (
                 wishlists.map((wishlist) => (
@@ -135,7 +137,7 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
                     >
                       {wishlist.deleted ? (
                       <p className="my-0 text-center inactive-wishlist-alert">
-                        This wishlist is no longer active
+                        {t("wishlistHub.inactiveWishlistAlert")}
                       </p>
                       ) : ("")}
 

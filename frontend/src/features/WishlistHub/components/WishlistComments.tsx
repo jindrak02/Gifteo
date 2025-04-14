@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import UpperPanel from '../../../components/ui/UpperPanel';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import { useMediaQuery } from 'react-responsive';
+import { useTranslation } from "react-i18next";
 
 interface Comment {
   id: string;
@@ -22,6 +23,7 @@ type CommentProps = {
 };
 
 const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps ) => {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const currentUserId = user?.userId;
     const [comments, setComments] = useState<Comment[]>([]);
@@ -105,13 +107,14 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
 
     const handleDelete = async (commentId: string) => {
         Swal.fire({
-            title: 'Delete comment',
-            text: "You won't be able to revert this!",
+            title: t("app.swal.deleteComment.title"),
+            text: t("app.swal.deleteComment.text"),
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#8F84F2',
             cancelButtonColor: '#cfcfcf',
-            confirmButtonText: 'Yes, delete it!',
+            confirmButtonText: t("app.swal.deleteComment.confirmButtonText"),
+            cancelButtonText: t("app.swal.deleteComment.cancelButtonText"),
         }).then(async (result) => {
             if (result.isConfirmed) {
                 setShowSpinner(true);
@@ -143,14 +146,14 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
       return (
       <>
         <div className="wishlist-comments-container mt-4">
-          <h4>Comments for {wishlistName}</h4>
+          <h4>{t("wishlistHub.commentsFor", { wishlistName })}</h4>
 
           <div className="add-comment-form my-4">
             <form onSubmit={handleSubmit}>
               <div className="form-group mb-3">
                 <textarea
                   className="form-control"
-                  placeholder="Add a comment..."
+                  placeholder={t("wishlistHub.addCommentPlaceholder")}
                   rows={3}
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
@@ -158,7 +161,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
                 ></textarea>
               </div>
               <button type="submit" className="btn btn-primary">
-                Post Comment
+                {t("wishlistHub.postCommentButton")}
               </button>
             </form>
           </div>
@@ -194,7 +197,9 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
                 )}
                 {showCommentOptions === comment.id && currentUserId === comment.authorId && (
                     <div className="comment-options position-absolute top-50 end-0 bg-white shadow-sm rounded p-2">
-                        <button className="btn btn-link text-danger" onClick={() => handleDelete(comment.id)}>Delete</button>
+                        <button className="btn btn-link text-danger" onClick={() => handleDelete(comment.id)}>
+                          {t("wishlistHub.deleteComment")}
+                        </button>
                     </div>
                 )}
               </div>
@@ -209,19 +214,19 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
     return (
       <div className="profile-container p-4">
         <UpperPanel
-          name="Wishlist Comments"
+          name={t("wishlistHub.commentsFor", { wishlistName })}
           onClickBack={() => onClickBack()}
         />
 
         <div className="wishlist-comments-container mt-4">
-          <h4>Comments for {wishlistName}</h4>
+          <h4>{t("wishlistHub.commentsFor", { wishlistName })}</h4>
 
           <div className="add-comment-form my-4">
             <form onSubmit={handleSubmit}>
               <div className="form-group mb-3">
                 <textarea
                   className="form-control"
-                  placeholder="Add a comment..."
+                  placeholder={t("wishlistHub.addCommentPlaceholder")}
                   rows={3}
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
@@ -229,7 +234,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
                 ></textarea>
               </div>
               <button type="submit" className="btn btn-primary">
-                Post Comment
+                {t("wishlistHub.postCommentButton")}
               </button>
             </form>
           </div>
@@ -265,7 +270,9 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
                 )}
                 {showCommentOptions === comment.id && currentUserId === comment.authorId && (
                     <div className="comment-options position-absolute top-50 end-0 bg-white shadow-sm rounded p-2">
-                        <button className="btn btn-link text-danger" onClick={() => handleDelete(comment.id)}>Delete</button>
+                        <button className="btn btn-link text-danger" onClick={() => handleDelete(comment.id)}>
+                          {t("wishlistHub.deleteComment")}
+                        </button>
                     </div>
                 )}
               </div>

@@ -21,7 +21,7 @@ const UpperPanel = function (props: {onClickBack?: () => void; name: string}) {
               </svg>
             </button>
           ) : null}
-          <h2 className="my-2">{props.name}</h2>
+          <h2 className="my-2 ms-2">{props.name}</h2>
         </div>
 
         <hr className="my-4" />

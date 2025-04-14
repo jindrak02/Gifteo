@@ -4,6 +4,7 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
 import WishlistComments from "./WishlistComments";
 import { useMediaQuery } from 'react-responsive';
+import { useTranslation } from "react-i18next";
 
 interface WishlistItem {
   id: string;
@@ -34,6 +35,7 @@ type WishlistCopyProps = {
 };
 
 const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopyProps) => {
+    const { t } = useTranslation();
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(wishlist.items);
     const [showSpinner, setShowSpinner] = useState(false);
     const [showItemDetails, setShowItemDetails] = useState<number | null>(null);
@@ -78,8 +80,8 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                     if (data.message === 'Item was not checked off by current user') {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
-                            text: 'You can only uncheck items that you have checked off!',
+                            title: t("app.swal.uncheckItemError.title"),
+                            text: t("app.swal.uncheckItemError.text"),
                         });    
                     }
                 }
@@ -160,7 +162,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                 />
               </svg>
             </button>
-            <h2 className="my-2">Gift For {personName.split(" ")[0]}</h2>
+            <h2 className="my-2">{t("wishlistHub.title", {name: personName.split(" ")[0]})}</h2>
           </div>
 
           <hr className="my-4" />
@@ -183,7 +185,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                       >
                         <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105" />
                       </svg>
-                      Comments
+                      {t("wishlistHub.comments")}
                     </button>
                   )}
 
@@ -191,7 +193,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
 
                 {wishlistItems?.map((item, index) => (
                   <div key={index} className="my-4">
-                    {item.deleted ? (<p className="inactive-wishlist-alert m-0">This item is no longer active</p>) : null}
+                    {item.deleted ? (<p className="inactive-wishlist-alert m-0">{t("wishlistHub.inactiveItemAlert")}</p>) : null}
                     
                   <div
                     className={[
@@ -214,7 +216,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          Link to buy
+                          {t("wishlistHub.linkToBuy")}
                         </a>
                       </div>
 
@@ -263,7 +265,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                   </div>
                   {item.modifiedByOwner != null ? (
                       <p className="modified-item-alert">
-                        ❔ This item was modified at {new Date(item.modifiedByOwner).toLocaleDateString()}
+                        {t("wishlistHub.modifiedItemAlert", { date: new Date(item.modifiedByOwner).toLocaleDateString() })}
                       </p>
                   ) : null}
 
@@ -273,14 +275,12 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                           <div className="wishlist-item-details-expanded mb-4">
                               {item.checkedOffBy != null ? (
                                   <>
-                                    <b>Checked off by: </b>
-                                    <p>{item.checkedOffByName}</p>
+                                    <b>{t("wishlistHub.checkedOffBy", { name: item.checkedOffByName })}</b> <br />
                                   </>
                               ) : null}
-                              <b>Description: </b>
+                              <b>{t("wishlistHub.description")}: </b><br />
                               <p>{item.description}</p>
-                              <b>Price: </b>
-                              <p>{item.price} {item.price_currency}</p>
+                              <p>{t("wishlistHub.price", { price: item.price, currency: item.price_currency })}</p>
                           </div>
                       )}
                   </div>

@@ -6,6 +6,7 @@ import PersonThumbnail from "./components/PersonThumbnail";
 import PersonDetail from "./components/PersonDetail";
 import UpperPanel from "../../components/ui/UpperPanel";
 import { useMediaQuery } from 'react-responsive';
+import { useTranslation } from "react-i18next";
 
 interface Person {
     user_id: string;
@@ -26,6 +27,7 @@ interface Invitation {
 }
 
 const WishlistHub = () => {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
     const [persons, setPersons] = useState<Person[]>([]);
     const [isViewingPerson, setIsViewingPerson] = useState<Person | null>(null);
@@ -108,16 +110,14 @@ const WishlistHub = () => {
     return (
         <>
             <div className="profile-container p-4">
-                <UpperPanel
-                    name="Gift For"
-                />
+                <UpperPanel name={t("wishlistHub.title", {name: ''})} />
 
                 <div>
-                    <p className="text-center">Choose who do you want to gift</p>
+                    <p className="text-center">{t("wishlistHub.choosePerson")}</p>
                     <div className="person-list-container">
                         {persons.length === 0 && (
                             <div className="alert alert-light" role="alert">
-                                You don't have any people yet. Add them to your profile to start gifting.
+                                {t("wishlistHub.noPeopleAlert")}
                             </div>
                         )}
 
