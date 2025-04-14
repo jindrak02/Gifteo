@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import UpperPanel from "../ui/UpperPanel";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
@@ -12,14 +13,13 @@ interface User {
 }
 
 const WishlistSettings = function (props: { onClickBack: () => void; wishlistId: string; wishlistName: string; wishlistForProfile?: string; isCustom?: boolean; }) {
+    const { t } = useTranslation();
     const [isPublic, setIsPublic] = useState(true);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
     const [showSpinner, setShowSpinner] = useState(false);
 
-    // Načtení uživatelů z API a stav viditelnosti wishlistu
     useEffect(() => {
-        // Načtení stavu viditelnosti wishlistu uživatelů se kterými je wishlist sdílen
         const fetchWishlistVisibility = async (wishlistId: string) => {
             setShowSpinner(true);
             try {
@@ -45,7 +45,6 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
             }
         }
 
-        // Načtení blízkých osob uživatele pro případný výběr
         const fetchUsers = async () => {
             setShowSpinner(true);
             try {
@@ -77,22 +76,20 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
     }, [props.wishlistId]);
 
     const handleVisibilityToggle = () => {
-        // Zobrazíme varování pouze pokud z private wishlistu děláme public a zároveň je wishlist custom
         if (!isPublic && props.isCustom) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Warning',
-                text: "Making this wishlist public will allow the person it's intended for to see it as well.",
+                title: t("app.swal.makeWishlistPublic.title"),
+                text: t("app.swal.makeWishlistPublic.text"),
                 showCancelButton: true,
-                confirmButtonText: 'Continue',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: t("app.swal.makeWishlistPublic.confirmButtonText"),
+                cancelButtonText: t("app.swal.makeWishlistPublic.cancelButtonText"),
             }).then((result) => {
                 if (result.isConfirmed) {
                     setIsPublic(true);
                 }
             });
         } else {
-            // V opačném případě přepneme viditelnost wishlistu
             setIsPublic(!isPublic);
         }
     };
@@ -101,15 +98,15 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
         if (selectedUsers.includes(userId)) {
             setSelectedUsers(selectedUsers.filter(id => id !== userId));
         } else {
-            // Pokud se uživatel pokouší sdílet wishlist s tím, pro koho je určen, upozorníme ho na to. (Pouze v případě, že props wishlistForProfile je definováno)
             const wishlistForProfile = users.find(user => user.user_id === userId)?.profile_id;
             if (props.wishlistForProfile && props.wishlistForProfile === wishlistForProfile) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Warning',
-                    text: "You are trying to share wishlist with the person that wishlist is for.",
+                    title: t("app.swal.shareWithTarget.title"),
+                    text: t("app.swal.shareWithTarget.text"),
                     showCancelButton: true,
-                    confirmButtonText: 'Continue',
+                    confirmButtonText: t("app.swal.shareWithTarget.confirmButtonText"),
+                    cancelButtonText: t("app.swal.shareWithTarget.cancelButtonText")
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setSelectedUsers([...selectedUsers, userId]);
@@ -139,22 +136,18 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
             const data = await res.json();
 
             if (data.success) {
-                console.log('Settings saved successfully:', data);
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
-                    text: "Settings saved successfully.",
+                    title: t("app.swal.success.title"),
+                    text: t("app.swal.success.text"),
                 });
             } else {
-                console.error('Error saving settings:', data.message);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: "Failed to save settings.",
+                    title: t("app.swal.error.title"),
+                    text: t("app.swal.error.title"),
                 });
             }
-
-
         } catch (error) {
             console.error('Error saving settings:', error);
         } finally {
@@ -163,76 +156,76 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
     };
 
     return (
-      <div className="container p-4 rounded profile-container">
-        <UpperPanel
-          name={"Wishlist settings"}
-          onClickBack={() => props.onClickBack()}
-        />
+        <div className="container p-4 rounded profile-container">
+            <UpperPanel
+                name={t("profile.wishlistSettings.title")}
+                onClickBack={() => props.onClickBack()}
+            />
 
-        <div className="wishlist-settings-form-wrapper">
-          <h2 className="text-center">{props.wishlistName}</h2>
+            <div className="wishlist-settings-form-wrapper">
+                <h2 className="text-center">{props.wishlistName}</h2>
 
-          <div className="mt-4 wishlist-settings-form">
-                <div className="card p-3 mb-3">
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                        <h5 className="mb-1">Share with all my people</h5>
-                        <p className="text-muted">
-                           Is this wishlist visible to all your people? If not, set who can see it.
-                        </p>
-                        </div>
-                        <div className="form-check form-switch">
-                        <input
-                            className="form-check-input"
-                            type="checkbox"
-                            checked={isPublic}
-                            onChange={handleVisibilityToggle}
-                            id="visibilityToggle"
-                        />
-                        </div>
-                    </div>
-                </div>
-
-                {!isPublic && (
+                <div className="mt-4 wishlist-settings-form">
                     <div className="card p-3 mb-3">
-                        <h5 className="mb-3">Who can see this wishlist?</h5>
-                        <div className="mb-3">
-                            <label className="form-label">Select Users:</label>
-                            <div className="list-group">
-                                {users?.map(user => (
-                                    <button 
-                                        key={user.user_id}
-                                        type="button" 
-                                        className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${selectedUsers.includes(user.user_id) ? 'active' : ''}`}
-                                        onClick={() => handleUserSelect(user.user_id)}
-                                    >
-                                        <img className="profile-picture-thumbnail-sm rounded" src={user.photo_url} alt={user.name} />
-                                        <p className={props.wishlistForProfile && props.wishlistForProfile == user.profile_id ? "text-red" : ""}>{user.name}</p>
-                                        {selectedUsers.includes(user.user_id) && (
-                                            <span className="badge bg-primary rounded-pill">✓</span>
-                                        )}
-                                    </button>
-                                ))}
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 className="mb-1">{t("profile.wishlistSettings.shareWithAllMyPeople")}</h5>
+                                <p className="text-muted">
+                                    {t("profile.wishlistSettings.shareWithAllMyPeopleDescription")}
+                                </p>
+                            </div>
+                            <div className="form-check form-switch">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    checked={isPublic}
+                                    onChange={handleVisibilityToggle}
+                                    id="visibilityToggle"
+                                />
                             </div>
                         </div>
-                        {selectedUsers.length > 0 && (
-                            <div className="alert">
-                                <small>Selected {selectedUsers.length} user(s)</small>
-                            </div>
-                        )}
                     </div>
-                )}
 
-                <button
-                className="btn btn-service mt-2"
-                onClick={handleSave}
-                >
-                    Save Settings
-                </button>
-          </div>
+                    {!isPublic && (
+                        <div className="card p-3 mb-3">
+                            <h5 className="mb-3">{t("profile.wishlistSettings.whoCanSee")}</h5>
+                            <div className="mb-3">
+                                <label className="form-label">{t("profile.wishlistSettings.whoCanSeeDescription")}</label>
+                                <div className="list-group">
+                                    {users?.map(user => (
+                                        <button
+                                            key={user.user_id}
+                                            type="button"
+                                            className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${selectedUsers.includes(user.user_id) ? 'active' : ''}`}
+                                            onClick={() => handleUserSelect(user.user_id)}
+                                        >
+                                            <img className="profile-picture-thumbnail-sm rounded" src={user.photo_url} alt={user.name} />
+                                            <p className={props.wishlistForProfile && props.wishlistForProfile === user.profile_id ? "text-red" : ""}>{user.name}</p>
+                                            {selectedUsers.includes(user.user_id) && (
+                                                <span className="badge bg-primary rounded-pill">✓</span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            {selectedUsers.length > 0 && (
+                                <div className="alert">
+                                    <small>{t("profile.wishlistSettings.selectedUsers", { count: selectedUsers.length })}</small>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <button
+                        className="btn btn-service mt-2"
+                        onClick={handleSave}
+                    >
+                        {t("app.buttons.save")}
+                    </button>
+                </div>
+            </div>
+            <LoadingSpinner className={showSpinner ? "" : "hidden"} />
         </div>
-        <LoadingSpinner className={showSpinner ? "" : "hidden"}/>
-      </div>
     );
 };
 

@@ -134,12 +134,12 @@ const Profile = () => {
   // Odhlášení uživatele
   const handleLogOut = async function () {
     const result = await Swal.fire({
-      title: "Log Out?",
+      title: t('swal.logOut.title'),
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#8F84F2",
-      confirmButtonText: "Yes, Log Out",
+      confirmButtonText: t('swal.logOut.confirmButtonText'),
     });
 
     if (result.isConfirmed) {
@@ -150,7 +150,7 @@ const Profile = () => {
 
       const data = await res.json();
       if (data.success) {
-        console.log("Logout Successful.");
+        console.log(t('swal.success.text'));
         window.location.reload(); // Obnovit aplikaci pro načtení session
       }
     }
@@ -265,13 +265,14 @@ const Profile = () => {
   
   const handleDeleteWishlist = async (wishlistId: string) => {
     const result = await Swal.fire({
-      title: "Delete wishlist",
-      text: "Are you sure? It can still be seen to some users.",
+      title: t('app.swal.deleteWishlist.title'),
+      text: t('app.swal.deleteWishlist.text'),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#8F84F2",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: t('app.swal.deleteWishlist.confirmButtonText'),
+      cancelButtonText: t('app.swal.deleteWishlist.cancelButtonText')
     });
 
     if (result.isConfirmed) {
@@ -381,7 +382,7 @@ const Profile = () => {
     return (
       <div className="profile-container container p-4 rounded">
         <div className="profile-edit-form">
-          <h2>Edit Profile</h2>
+          <h2>{t('profile.editProfile.title')}</h2>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -403,7 +404,7 @@ const Profile = () => {
           >
             <div className="mb-3">
               <label htmlFor="name" className="form-label">
-                Name
+                {t('profile.editProfile.name')}
               </label>
               <input
                 type="text"
@@ -419,7 +420,7 @@ const Profile = () => {
 
             <div className="mb-3">
               <label htmlFor="photo" className="form-label">
-                Photo
+                {t('profile.editProfile.photo')}
               </label>
               <input
                 type="file"
@@ -432,7 +433,7 @@ const Profile = () => {
 
             <div className="mb-3">
               <label htmlFor="bio" className="form-label">
-                Bio
+                {t('profile.editProfile.bio')}
               </label>
               <textarea
                 className="form-control"
@@ -447,7 +448,7 @@ const Profile = () => {
 
             <div className="mb-3">
               <label htmlFor="birthdate" className="form-label">
-                Birthdate
+                {t('profile.editProfile.birthdate')}
               </label>
               <input
                 type="date"
@@ -460,7 +461,7 @@ const Profile = () => {
 
             <div className="mb-3">
               <label htmlFor="interests" className="form-label">
-                Interests
+                {t('profile.editProfile.interests')}
               </label>
               <Select
                 isMulti
@@ -474,7 +475,7 @@ const Profile = () => {
                   label: i.name,
                   id: i.id,
                 }))}
-                placeholder="Select your interests..."
+                placeholder={t('profile.editProfile.interests')}
                 onChange={(selectedOptions) =>
                   setSelectedInterests(
                     selectedOptions as Array<{
@@ -488,19 +489,19 @@ const Profile = () => {
             </div>
 
             <div className="my-3 flex">
-              <p className="m-0 me-3">Preffered Language: </p>
+              <p className="m-0 me-3">{t('profile.editProfile.prefferedLanguage')}:</p>
               <LanguageSwitcher/>
             </div>
             
             <button type="submit" className="btn btn-service btn-primary">
-              Save
+              {t('app.buttons.save')}
             </button>
             <button
               type="button"
               className="btn btn-secondary mx-2"
               onClick={() => setIsEditing(false)}
             >
-              Cancel
+              {t('app.buttons.cancel')}
             </button>
           </form>
 
@@ -513,8 +514,8 @@ const Profile = () => {
   // Zobrazení formuláře pro přidání wishlistu
   if (isAddingWishlist) {
     return (
-      <div className="container p-4 rounded add-wishlist-container">
-        <h2>Add Wishlist</h2>
+      <div className="profile-container p-4 rounded add-wishlist-container">
+        <h2>{t('profile.addWishlist')}</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -525,7 +526,7 @@ const Profile = () => {
         >
           <div className="mb-3">
             <label htmlFor="wishlistName" className="form-label">
-              Wishlist Name
+              {t('profile.wishlistName')}
             </label>
             <input
               type="text"
@@ -538,14 +539,14 @@ const Profile = () => {
             />
           </div>
           <button type="submit" className="btn btn-service btn-primary">
-            Save
+            {t('app.buttons.save')}
           </button>
           <button
             type="button"
             className="btn btn-secondary mx-2"
             onClick={() => setIsAddingWishlist(false)}
           >
-            Cancel
+            {t('app.buttons.cancel')}
           </button>
         </form>
       </div>
@@ -625,7 +626,7 @@ const Profile = () => {
                   className="btn btn-service btn-primary"
                   onClick={() => setIsEditing(true)}
                 >
-                  Edit profile
+                  {t('profile.edit')}
                 </button>
               </div>
 
@@ -645,7 +646,7 @@ const Profile = () => {
                       ))
                     ) : (
                       <span className="badge bg-secondary me-2">
-                        There are no interests yet 😢
+                        {t('profile.noInterests')}
                       </span>
                     )}
                   </div>
@@ -654,26 +655,26 @@ const Profile = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-gift" viewBox="0 0 16 16">
                         <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506V2.5zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43a.522.522 0 0 0 .023.07zM9 3h2.932a.56.56 0 0 0 .023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0V3zM1 4v2h6V4H1zm8 0v2h6V4H9zm5 3H9v8h4.5a.5.5 0 0 0 .5-.5V7zm-7 8V7H2v7.5a.5.5 0 0 0 .5.5H7z"/>
                       </svg>
-                      <p>Wishlists: {wishlists.length}</p>
+                      <p>{t('profile.wishlistsCount', {count: wishlists.length})}</p>
                     </div>
                     <div className="profile-info-item">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope" viewBox="0 0 16 16">
                         <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
                       </svg>
-                      <p>Email: {profileData?.email}</p>
+                      <p>{t('profile.email')}: {profileData?.email}</p>
                     </div>
                     <div className="profile-info-item">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-calendar-check" viewBox="0 0 16 16">
                         <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                       </svg>
-                      <p>Joined: {profileData?.created_at?.toLocaleDateString()}</p>
+                      <p>{t('profile.joinedDate', {date: profileData?.created_at?.toLocaleDateString()})}</p>
                     </div>
                     <div className="profile-info-item">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-cake2" viewBox="0 0 16 16">
                         <path d="m3.494.013-.595.79A.747.747 0 0 0 3 1.814v2.683c-.149.034-.293.077-.427.129A4.03 4.03 0 0 0 1.348 5.5H.5a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-.651a4.03 4.03 0 0 0-1.225-.871c-.134-.052-.278-.095-.427-.129V1.814A.747.747 0 0 0 13.1.803l-.595-.79A.751.751 0 0 0 11.9 0h-1.3a.751.751 0 0 0-.6.013A.752.752 0 0 0 9.4 0h-1.3a.751.751 0 0 0-.6.013A.752.752 0 0 0 6.9 0H5.6a.751.751 0 0 0-.6.013zM4.5 5.5c.128 0 .256.016.384.033.13.017.259.053.384.1.125.047.24.112.34.184.102.073.186.167.247.273l.922 1.198.922-1.198a.75.75 0 0 1 .247-.273c.1-.072.215-.137.34-.184.125-.047.255-.083.384-.1.128-.017.256-.033.384-.033a2.53 2.53 0 0 1 1.25.328c.383.193.692.474.886.83.194.356.308.762.308 1.342v5.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V8c0-.58.114-.986.308-1.342.194-.356.503-.637.886-.83.383-.193.802-.328 1.25-.328zm8.5 0c.128 0 .256.016.384.033.13.017.259.053.384.1.125.047.24.112.34.184.102.073.186.167.247.273l.922 1.198.922-1.198a.75.75 0 0 1 .247-.273c.1-.072.215-.137.34-.184.125-.047.255-.083.384-.1.128-.017.256-.033.384-.033.447 0 .867.135 1.25.328.383.193.692.474.886.83.194.356.308.762.308 1.342v5.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V8c0-.58.114-.986.308-1.342.194-.356.503-.637.886-.83.383-.193.802-.328 1.25-.328zM1 14V6.5h.551a.5.5 0 0 1-.109.343l-.892 1.159a.5.5 0 0 0-.05.545.5.5 0 0 0 .445.255h7.11a.5.5 0 0 0 .445-.255.5.5 0 0 0-.05-.545l-.892-1.159a.5.5 0 0 1-.109-.343h1.3a.5.5 0 0 1-.108.343l-.893 1.159a.5.5 0 0 0-.05.546.5.5 0 0 0 .445.254h7.11a.5.5 0 0 0 .445-.254.5.5 0 0 0-.05-.546l-.893-1.159a.5.5 0 0 1-.107-.343h.55V14H1z"/>
                       </svg>
-                      <p>Birthday: {profileData?.birthdate?.toLocaleDateString()}</p>
+                      <p>{t('profile.birthday')}: {profileData?.birthdate?.toLocaleDateString()}</p>
                     </div>
                   </div>
                 </div>
@@ -687,16 +688,16 @@ const Profile = () => {
                   ))
                 ) : (
                   <span className="badge bg-secondary me-2">
-                    There are no interests yet 😢
+                    {t('profile.noInterests')}
                   </span>
                 )}
             </div>
             )}
 
             <div className="bio my-4 alert alert-secondary">
-              <p> <strong>About me: </strong>{profileData?.bio}</p>
+              <p> <strong>{t('profile.aboutMe')}: </strong>{profileData?.bio}</p>
               <p>
-                <strong>Birthday: </strong>{" "}
+                <strong>{t('profile.birthday')}: </strong>{" "}
                 {profileData?.birthdate?.toLocaleDateString()}
               </p>
             </div>
@@ -705,19 +706,19 @@ const Profile = () => {
           <div className="desktop-split-view-right">
             <div className="my-4 my-wishlists-wrapper">
               <div className="profile-wishlists my-4">
-                <h4 className="mt-4 no-mb-desktop">My wishlists</h4>
+                <h4 className="mt-4 no-mb-desktop">{t('profile.wishlists')}</h4>
                 <button
                   className="btn btn-service btn-primary"
                   onClick={() => setIsAddingWishlist(true)}
                 >
-                  Add wishlist
+                  {t('profile.addWishlist')}
                 </button>
               </div>
 
               <div className="wishlists-container my-4">
                 {wishlists.length === 0 && (
                   <div className="alert alert-secondary">
-                    You have no wishlists yet. Create one! 🎉
+                    {t('profile.noWishlists')}
                   </div>
                 )}
                 {wishlists.map((wishlist) => (

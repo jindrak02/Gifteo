@@ -1,6 +1,71 @@
 {
     "app": {
-      "title": "Gifteo"
+      "title": "Gifteo",
+      "buttons": {
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "back": "Back",
+        "next": "Next",
+        "finish": "Finish",
+        "newItem": "New item",
+        "saveWishlist": "Save wishlist",
+        "fetchItemData": "Fetch item data",
+        "newWishlist": "New wishlist"
+      },
+      "swal": {
+        "sessionExpired": {
+          "title": "Session expired",
+          "text": "Please log in again.",
+          "confirmButtonText": "Log in"
+        },
+        "delete": {
+          "title": "Are you sure?",
+          "text": "This action cannot be undone.",
+          "confirmButtonText": "Yes, delete it!",
+          "cancelButtonText": "No, cancel!"
+        },
+        "success": {
+          "title": "Success!",
+          "text": "Your changes have been saved."
+        },
+        "error": {
+          "title": "Error!",
+          "text": "Something went wrong. Please try again."
+        },
+        "logOut": {
+          "title": "Log out?",
+          "confirmButtonText": "Yes",
+          "cancelButtonText": "No"
+        },
+        "removeItem": {
+          "title": "Remove item",
+          "text": "It can still be seen to some users.",
+          "confirmButtonText": "Yes",
+          "cancelButtonText": "No"
+        },
+        "deleteWishlist": {
+          "title": "Delete wishlist",
+          "text": "Are you sure? It can still be seen to some users.",
+          "confirmButtonText": "Yes",
+          "cancelButtonText": "No"
+        },
+        "makeWishlistPublic": {
+          "title": "Share wishlist with all my people",
+          "text": "Are you sure? It can enable the person who wishlist is intended for to see it as well.",
+          "confirmButtonText": "Yes",
+          "cancelButtonText": "No"
+        },
+        "shareWithTarget": {
+          "title": "Share wishlist with target person",
+          "text": "Are you sure? This will enable the person who wishlist is for to see the wishlist.",
+          "confirmButtonText": "Yes",
+          "cancelButtonText": "No"
+        }
+      }
     },
     "navigation": {
       "myProfile": "My Profile",
@@ -13,55 +78,47 @@
     "profile": {
       "hi": "Hi {{name}}!",
       "edit": "Edit profile",
+      "editProfile": {
+        "title": "Edit profile",
+        "name": "Name",
+        "photo": "Photo",
+        "bio": "Bio",
+        "birthdate": "Birthdate",
+        "interests": "Interests",
+        "prefferedLanguage": "Preferred language"
+      },
       "bio": "Bio",
       "birthday": "Birthday",
       "interests": "Interests",
       "noInterests": "There are no interests yet 😢",
+      "wishlistsCount": "Wishlists: {{count}}",
+      "email": "Email",
+      "joinedDate": "Joined {{date}}",
+      "birthDay": "Birth Day",
+      "birthDayDate": "Birth Day {{date}}",
       "aboutMe": "About me",
       "wishlists": "My wishlists",
       "addWishlist": "Add wishlist",
-      "noWishlists": "You have no wishlists yet. Create one! 🎉"
-    },
-    "myPeople": {
-      "title": "My People",
-      "newInvitation": "You have {count} new invitation(s).",
-      "noPeople": "You have connected with no people yet.",
-      "clickBelow": "Click the button below to add a new person.",
-      "addPerson": "Add person"
-    },
-    "common": {
-      "save": "Save",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "edit": "Edit",
-      "back": "Back",
-      "name": "Name",
-      "description": "Description",
-      "price": "Price"
-    },
-    "wishlist": {
-      "settings": "Wishlist settings",
-      "editWishlist": "Edit wishlist",
-      "newItem": "New item",
-      "saveWishlist": "Save wishlist",
-      "fetchItemData": "Fetch item data",
-      "imageUrl": "Image URL",
-      "selectCurrency": "Select currency",
-      "removeItem": "Remove item",
-      "removeItemConfirm": "It can still be seen to some users."
-    },
-    "calendar": {
-      "title": "My calendar",
-      "upcomingEvents": "Upcoming Events",
-      "addEvent": "Add event",
-      "noEvents": "No upcoming events found."
-    },
-    "myIdeas": {
-      "title": "My Ideas",
-      "myCustomWishlists": "My custom wishlists",
-      "createNewWishlist": "Create new wishlist",
-      "noCustomWishlists": "You dont have any custom wishlists for your close ones yet.",
-      "sharedWithMe": "Custom wishlists shared with me",
-      "noSharedWishlists": "No wishlists have been shared with you yet."
+      "wishlistName": "Wishlist name",
+      "noWishlists": "You have no wishlists yet. Create one! 🎉",
+      "editWishlist": {
+        "title": "Edit wishlist",
+        "fetchItemDataPlaceholder": "Paste link, press button to magicaly fill the form",
+        "fetchItemDataLoadingText": "This may take a few seconds, we are fetching the item data from eshop...",
+        "name": "Name",
+        "description": "Description",
+        "price": "Price",
+        "priceCurrency": "Price currency",
+        "selectCurrency": "Select currency",
+        "imageUrl": "Image URL"
+      },
+      "wishlistSettings": {
+        "title": "Wishlist settings",
+        "shareWithAllMyPeople": "Share with all my people",
+        "shareWithAllMyPeopleDescription": "Is this wishlist visible to all your people? If not, set who can see it.",
+        "whoCanSee": "Who can see this wishlist?",
+        "whoCanSeeDescription": "Select who can see this wishlist:",
+        "selectedUsers": "Selected users: {{count}}"
+      }
     }
 }

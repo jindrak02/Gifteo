@@ -1,25 +1,124 @@
 {
     "app": {
-      "title": "Gifteo"
+        "title": "Gifteo",
+        "buttons": {
+            "add": "Přidat",
+            "edit": "Upravit",
+            "delete": "Smazat",
+            "save": "Uložit",
+            "cancel": "Zrušit",
+            "confirm": "Potvrdit",
+            "back": "Zpět",
+            "next": "Další",
+            "finish": "Dokončit",
+            "newItem": "Nová položka",
+            "saveWishlist": "Uložit seznam přání",
+            "fetchItemData": "Načíst data o položce",
+            "newWishlist": "Nový seznam přání"
+        },
+        "swal": {
+          "sessionExpired": {
+              "title": "Vypršela platnost relace",
+              "text": "Prosím, přihlaste se znovu.",
+              "confirmButtonText": "Přihlásit se"
+            },
+            "delete": {
+                "title": "Jste si jistí?",
+                "text": "Tuto akci nelze vrátit zpět.",
+                "confirmButtonText": "Ano, smazat!",
+                "cancelButtonText": "Ne, zrušit!"
+            },
+            "success": {
+                "title": "Úspěch!",
+                "text": "Vaše změny byly uloženy."
+            },
+            "error": {
+                "title": "Chyba!",
+                "text": "Něco se pokazilo. Zkuste to prosím znovu."
+            },
+            "logOut": {
+                "title": "Odhlásit se?",
+                "confirmButtonText": "Ano",
+                "cancelButtonText": "Ne"
+            },
+            "removeItem": {
+                "title": "Odebrat položku",
+                "text": "Stále ji mohou vidět někteří uživatelé.",
+                "confirmButtonText": "Ano",
+                "cancelButtonText": "Ne"
+            },
+            "deleteWishlist": {
+                "title": "Smazat seznam přání",
+                "text": "Jste si jistí? Stále jej mohou vidět někteří uživatelé.",
+                "confirmButtonText": "Ano",
+                "cancelButtonText": "Ne"
+            },            
+            "makeWishlistPublic": {
+              "title": "Sdílet seznam přání se všemi mými blízkými",
+              "text": "Jste si jistí? Může to umožnit osobě, pro kterou je seznam přání určen, aby jej také viděla.",
+              "confirmButtonText": "Ano",
+              "cancelButtonText": "Ne"
+            },
+            "shareWithTarget": {
+              "title": "Sdílet seznam přání s cílovou osobou",
+              "text": "Jste si jistí? To umožní osobě, pro kterou je seznam přání určen, aby jej viděla.",
+              "confirmButtonText": "Ano",
+              "cancelButtonText": "Ne"
+            }
+        }
     },
     "navigation": {
-      "myProfile": "Můj Profil",
-      "myPeople": "Moji Blízcí",
-      "myIdeas": "Moje Nápady",
-      "giftFor": "Obdaruj",
-      "myCalendar": "Můj Kalendář",
-      "logOut": "Odhlásit se"
+        "myProfile": "Můj profil",
+        "myPeople": "Moji blízcí",
+        "myIdeas": "Moje nápady",
+        "giftFor": "Obdarovat",
+        "myCalendar": "Můj kalendář",
+        "logOut": "Odhlásit se"
     },
     "profile": {
-      "hi": "Ahoj, {{name}}!",
-      "edit": "Upravit profil",
-      "bio": "Bio",
-      "birthday": "Narozeniny",
-      "interests": "Zájmy",
-      "noInterests": "Zatím zde nejsou žádné zájmy 😢",
-      "aboutMe": "O mně",
-      "wishlists": "Moje seznamy přání",
-      "addWishlist": "Přidat seznam přání",
-      "noWishlists": "Zatím nemáte žádné seznamy přání. Vytvořte si ho! 🎉"
+        "hi": "Ahoj {{name}}!",
+        "edit": "Upravit profil",
+        "editProfile": {
+            "title": "Upravit profil",
+            "name": "Jméno",
+            "photo": "Fotografie",
+            "bio": "Popisek",
+            "birthdate": "Datum narození",
+            "interests": "Zájmy",
+            "prefferedLanguage": "Preferovaný jazyk"
+        },
+        "bio": "Popisek",
+        "birthday": "Narozeniny",
+        "interests": "Zájmy",
+        "noInterests": "Zatím zde nejsou žádné zájmy 😢",
+        "wishlistsCount": "Seznamy přání: {{count}}",
+        "email": "E-mail",
+        "joinedDate": "Uživatel se přidal: {{date}}",
+        "birthDay": "Den narození",
+        "birthDayDate": "Datum narození: {{date}}",
+        "aboutMe": "O mně",
+        "wishlists": "Moje seznamy přání",
+        "addWishlist": "Přidat seznam přání",
+        "wishlistName": "Název seznamu přání",
+        "noWishlists": "Zatím nemáte žádné seznamy přání. Vytvořte si ho! 🎉",
+        "editWishlist": {
+            "title": "Upravit seznam přání",
+            "fetchItemDataPlaceholder": "Vložte odkaz a stiskněte tlačítko pro magické vyplnění formuláře",
+            "fetchItemDataLoadingText": "Toto může trvat několik sekund, načítáme data o položce z e-shopu...",
+            "name": "Název",
+            "description": "Popis",
+            "price": "Cena",
+            "priceCurrency": "Měna ceny",
+            "selectCurrency": "Vyberte měnu",
+            "imageUrl": "URL obrázku"
+        },
+        "wishlistSettings": {
+            "title": "Nastavení seznamu přání",
+            "shareWithAllMyPeople": "Sdílet se všemi mými blízkými",
+            "shareWithAllMyPeopleDescription": "Je tento seznam přání viditelný pro všechny vaše blízké? Pokud ne, nastavte, kdo jej může vidět.",
+            "whoCanSee": "Kdo může vidět tento seznam přání?",
+            "whoCanSeeDescription": "Vyberte, kdo může vidět tento seznam přání:",
+            "selectedUsers": "Vybraní uživatelé: {{count}}"
+        }
     }
 }
