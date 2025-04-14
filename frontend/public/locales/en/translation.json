@@ -120,5 +120,8 @@
         "whoCanSeeDescription": "Select who can see this wishlist:",
         "selectedUsers": "Selected users: {{count}}"
       }
+    },
+    "login": {
+      "welcome": "Welcome to Gifteo"
     }
 }

@@ -64,7 +64,6 @@
 
     .profile-wishlists {
         height: 100px;
-        justify-content: flex-start;
         gap: 20px;
     }
 

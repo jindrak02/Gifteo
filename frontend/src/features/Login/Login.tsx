@@ -2,10 +2,12 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../store/AuthContext';
 import { useEffect, useState } from 'react';
 import { fetchApi } from '../../utils/fetchApi';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const { user, logout } = useAuth();
   const [nameDay, setNameDay] = useState('TODO');
+  const { t } = useTranslation();
 
   // TODO: Fetch name day
   // useEffect(() => {
@@ -54,7 +56,7 @@ const Login = () => {
       <div className='flex-container login'>
         <div className="login-container">
           <img src='images/icon.png' alt="Gifteo icon" className='icon-main my-2'/>
-          <h1 className="login-title">Welcome to Gifteo</h1>
+          <h1 className="login-title">{t('login.welcome')}</h1>
           <hr className="divider" />
           <GoogleLogin onSuccess={onSuccess} onError={onFailure} />
           {/* <p className="name-day-info text-center">Todays date is {today}. Nameday has {nameDay}.</p> */}

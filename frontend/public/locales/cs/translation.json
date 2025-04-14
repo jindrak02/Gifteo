@@ -98,7 +98,7 @@
         "birthDayDate": "Datum narození: {{date}}",
         "aboutMe": "O mně",
         "wishlists": "Moje seznamy přání",
-        "addWishlist": "Přidat seznam přání",
+        "addWishlist": "Přidat seznam",
         "wishlistName": "Název seznamu přání",
         "noWishlists": "Zatím nemáte žádné seznamy přání. Vytvořte si ho! 🎉",
         "editWishlist": {
@@ -120,5 +120,8 @@
             "whoCanSeeDescription": "Vyberte, kdo může vidět tento seznam přání:",
             "selectedUsers": "Vybraní uživatelé: {{count}}"
         }
+    },
+    "login": {
+      "welcome": "Vítejte v Gifteo"
     }
 }

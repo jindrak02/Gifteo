@@ -134,12 +134,13 @@ const Profile = () => {
   // Odhlášení uživatele
   const handleLogOut = async function () {
     const result = await Swal.fire({
-      title: t('swal.logOut.title'),
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#8F84F2",
-      confirmButtonText: t('swal.logOut.confirmButtonText'),
+      title: t('app.swal.logOut.title'),
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#8F84F2",
+        confirmButtonText: t('app.swal.logOut.confirmButtonText'),
+        cancelButtonText: t('app.swal.logOut.cancelButtonText'),
     });
 
     if (result.isConfirmed) {
