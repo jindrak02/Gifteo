@@ -81,7 +81,7 @@ router.get("/", authenticateUser, async (req, res) => {
             )
             AND (wi.deleted = false OR wi.id IS NULL)
 
-            ORDER BY w.created_at DESC;
+            ORDER BY w.created_at DESC, wi.last_modified DESC;
         `;
 
         const customWishlistsQueryResult = await pool.query( customWishlistsQuery, [userId] );

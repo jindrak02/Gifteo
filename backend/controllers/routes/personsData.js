@@ -195,7 +195,8 @@ router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async 
             AND (
                 w.shared_with_all_my_people = true
                 OR ws.shared_with_user_id IS NOT NULL
-            );
+            )
+            ORDER BY w."last_modified" DESC;
         `;
 
         const wishlistItems = `
@@ -204,7 +205,8 @@ router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async 
 
             FROM "wishlistItem" wi
             WHERE wi.wishlist_id = $1
-            AND wi.deleted = false;
+            AND wi.deleted = false
+            ORDER BY wi."last_modified" DESC;
         `;
 
         const personDetailsQueryResult = await pool.query(personDetailsQuery, [personId]);
@@ -260,7 +262,9 @@ router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
             FROM "wishlistItem" wi
             LEFT JOIN "wishlist" w on wi.wishlist_id = w.id
             WHERE wi.wishlist_id = $1
-            AND wi.deleted = false;
+            AND wi.deleted = false
+            
+            ORDER BY wi."last_modified" DESC;
         `;
 
         const wishlistItemsQueryResult = await pool.query(wishlistItemsQuery, [wishlistId]);

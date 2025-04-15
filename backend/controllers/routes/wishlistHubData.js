@@ -90,7 +90,7 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
           )
         )
         AND w.is_custom = false
-        ORDER BY w.created_at DESC, wi.created_at ASC;
+        ORDER BY w.created_at DESC, wi.last_modified DESC;
       `;
 
       const wishlistsQueryResult = await pool.query(wishlistsQuery, [personId, userId]);

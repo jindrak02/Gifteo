@@ -191,7 +191,7 @@
         "price": "Price",
         "priceCurrency": "Price currency",
         "selectCurrency": "Select currency",
-        "imageUrl": "Image URL"
+        "imageUrl": "Link to image"
       },
       "wishlistSettings": {
         "title": "Wishlist settings",

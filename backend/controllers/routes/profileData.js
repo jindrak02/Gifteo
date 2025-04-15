@@ -268,7 +268,8 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
           wi."price_currency" AS currency,
           wi."description" itemDescription,
           wi."photo_url" itemPhotoUrl,
-          wi."url" itemUrl
+          wi."url" itemUrl,
+          wi.last_modified
 
       FROM "wishlist" w
       LEFT JOIN "wishlistItem" wi
@@ -278,7 +279,8 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
       AND w.deleted = false
       AND w.created_by_user_id = $2
       AND w.is_custom = false
-      ORDER BY w.created_at DESC;
+
+      ORDER BY w.last_modified DESC, wi.last_modified DESC;
     `;
     const wishlistsQueryResult = await pool.query(wishlistsQuery, [profileId, userId]);
 
@@ -301,7 +303,8 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
           currency: row.currency,
           description: row.itemdescription,
           photo_url: row.itemphotourl,
-          url: row.itemurl
+          url: row.itemurl,
+          last_modified: row.last_modified
         });
       }
     });

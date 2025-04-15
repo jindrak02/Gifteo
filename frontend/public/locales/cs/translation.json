@@ -191,7 +191,7 @@
             "price": "Cena",
             "priceCurrency": "Měna ceny",
             "selectCurrency": "Vyberte měnu",
-            "imageUrl": "URL obrázku"
+            "imageUrl": "Odkaz na obrázek"
         },
         "wishlistSettings": {
             "title": "Nastavení seznamu přání",

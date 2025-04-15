@@ -176,125 +176,121 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
               </button>
             </div>
 
-            {[...items].reverse().map((item, reversedIndex) => {
-              const index = items.length - 1 - reversedIndex;
+            {items.map((item, index) => (
+              <div key={index} className="wishlist-item-wrapper gap-2 my-4">
+                <div>
+                  <img
+                    className="wishlist-thumbnail"
+                    src={item.photo_url === "" ? undefined : item.photo_url}
+                    alt="item photo"
+                  />
+                </div>
+                <div className="flex-col gap-2">
+                  <input
+                    type="text"
+                    name="url"
+                    value={item.url}
+                    onChange={(e) => handleChange(index, e)}
+                    placeholder={t("profile.editWishlist.fetchItemDataPlaceholder")}
+                    className="border p-2"
+                  />
 
-              return (
-                <div key={index} className="wishlist-item-wrapper gap-2 my-4">
-                  <div>
-                    <img
-                      className="wishlist-thumbnail"
-                      src={item.photo_url === "" ? undefined : item.photo_url}
-                      alt="item photo"
-                    />
-                  </div>
-                  <div className="flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleFetchItemData(index, item.url)}
+                    className="btn-service rounded shadow"
+                  >
+                    {t("app.buttons.fetchItemData")}
+                  </button>
+
+                  <div className="flex-col">
+                    <label className="p-1" htmlFor="name">
+                      {t("profile.editWishlist.name")}
+                    </label>
                     <input
                       type="text"
-                      name="url"
-                      value={item.url}
+                      name="name"
+                      value={item.name}
                       onChange={(e) => handleChange(index, e)}
-                      placeholder={t("profile.editWishlist.fetchItemDataPlaceholder")}
+                      placeholder=""
+                      className="border p-2"
+                      required
+                      minLength={3}
+                      maxLength={30}
+                    />
+                  </div>
+
+                  <div className="flex-col">
+                    <label className="p-1" htmlFor="description">
+                      {t("profile.editWishlist.description")}
+                    </label>
+                    <textarea
+                      name="description"
+                      value={item.description || ""}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder=""
+                      className="border p-2"
+                      maxLength={200}
+                    />
+                  </div>
+
+                  <div className="flex-col">
+                    <label className="p-1" htmlFor="description">
+                      {t("profile.editWishlist.price")}
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={item.price}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder=""
+                      className="border p-2"
+                      min={0}
+                      step={0.01}
+                    />
+                    <select
+                      name="currency"
+                      value={item.currency}
+                      onChange={(e) => handleChange(index, e)}
+                      className="border p-2"
+                    >
+                      <option value="">{t("profile.editWishlist.selectCurrency")}</option>
+                      <option value="CZK">CZK - Czech Koruna</option>
+                      <option value="EUR">EUR - Euro</option>
+                      <option value="USD">USD - US Dollar</option>
+                      <option value="GBP">GBP - British Pound</option>
+                      <option value="PLN">PLN - Polish Zloty</option>
+                      <option value="CHF">CHF - Swiss Franc</option>
+                      <option value="JPY">JPY - Japanese Yen</option>
+                      <option value="AUD">AUD - Australian Dollar</option>
+                    </select>
+                  </div>
+
+                  <div className="flex-col">
+                    <label className="p-1" htmlFor="description">
+                      {t("profile.editWishlist.imageUrl")}
+                    </label>
+                    <input
+                      type="text"
+                      name="photo_url"
+                      value={item.photo_url}
+                      onChange={(e) => handleChange(index, e)}
+                      placeholder=""
                       className="border p-2"
                     />
-
-                    <button
-                      type="button"
-                      onClick={() => handleFetchItemData(index, item.url)}
-                      className="btn-service rounded shadow"
-                    >
-                      {t("app.buttons.fetchItemData")}
-                    </button>
-
-                    <div className="flex-col">
-                      <label className="p-1" htmlFor="name">
-                        {t("profile.editWishlist.name")}
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={item.name}
-                        onChange={(e) => handleChange(index, e)}
-                        placeholder=""
-                        className="border p-2"
-                        required
-                        minLength={3}
-                        maxLength={30}
-                      />
-                    </div>
-
-                    <div className="flex-col">
-                      <label className="p-1" htmlFor="description">
-                        {t("profile.editWishlist.description")}
-                      </label>
-                      <textarea
-                        name="description"
-                        value={item.description || ""}
-                        onChange={(e) => handleChange(index, e)}
-                        placeholder=""
-                        className="border p-2"
-                        maxLength={200}
-                      />
-                    </div>
-
-                    <div className="flex-col">
-                      <label className="p-1" htmlFor="description">
-                        {t("profile.editWishlist.price")}
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={item.price}
-                        onChange={(e) => handleChange(index, e)}
-                        placeholder=""
-                        className="border p-2"
-                        min={0}
-                        step={0.01}
-                      />
-                      <select
-                        name="currency"
-                        value={item.currency}
-                        onChange={(e) => handleChange(index, e)}
-                        className="border p-2"
-                      >
-                        <option value="">{t("profile.editWishlist.selectCurrency")}</option>
-                        <option value="CZK">CZK - Czech Koruna</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="USD">USD - US Dollar</option>
-                        <option value="GBP">GBP - British Pound</option>
-                        <option value="PLN">PLN - Polish Zloty</option>
-                        <option value="CHF">CHF - Swiss Franc</option>
-                        <option value="JPY">JPY - Japanese Yen</option>
-                        <option value="AUD">AUD - Australian Dollar</option>
-                      </select>
-                    </div>
-
-                    <div className="flex-col">
-                      <label className="p-1" htmlFor="description">
-                        {t("profile.editWishlist.imageUrl")}
-                      </label>
-                      <input
-                        type="text"
-                        name="photo_url"
-                        value={item.photo_url}
-                        onChange={(e) => handleChange(index, e)}
-                        placeholder=""
-                        className="border p-2"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      className="text-red-500"
-                    >
-                      ❌
-                    </button>
                   </div>
                 </div>
-              );
-            })}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    className="text-red-500"
+                  >
+                    ❌
+                  </button>
+                </div>
+              </div>
+            ))}
 
             <LoadingSpinner
               message={t("profile.editWishlist.fetchItemDataLoadingText")}
