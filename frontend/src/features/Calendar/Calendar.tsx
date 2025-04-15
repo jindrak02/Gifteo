@@ -8,6 +8,7 @@ import EventThumbnail from "./components/EventThumbnail";
 import CreateEventForm from "./components/CreateEventForm";
 import EditEventForm from "./components/EditEventForm";
 import "../../assets/Calendar.css";
+import { useTranslation } from "react-i18next";
 
 interface Event {
     eventId: string;
@@ -27,6 +28,7 @@ interface Person {
 }
 
 const Calendar = () => {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
     const [events, setEvents] = useState<Event[]>([]);
     const [countryCode, setCountryCode] = useState<string | null>(null);
@@ -64,16 +66,16 @@ const Calendar = () => {
                     console.error("Error fetching upcoming events:", data.message);
                     Swal.fire({
                         icon: "error",
-                        title: "Error",
-                        text: data.message,
+                        title: t("app.swal.eventError.title"),
+                        text: t("app.swal.eventError.text"),
                     });
                 }
             } catch (error) {
                 console.error("Error fetching upcoming events:", error);
                     Swal.fire({
                     icon: "error",
-                    title: "Error",
-                    text: "Failed to fetch upcoming events.",
+                    title: t("app.swal.eventError.title"),
+                    text: t("app.swal.eventError.text"),
                 });
             } finally {
                 setShowSpinner(false);
@@ -155,13 +157,14 @@ const Calendar = () => {
         }
 
         Swal.fire({
-            title: "Delete event",
-            text: "You won't be able to revert this!",
+            title: t("app.swal.deleteEvent.title"),
+            text: t("app.swal.deleteEvent.text"),
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD3333",
             cancelButtonColor: "#8F84F2",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: t("app.swal.deleteEvent.confirmButtonText"),
+            cancelButtonText: t("app.swal.deleteEvent.cancelButtonText"),
         }).then(async (result) => {
             if (result.isConfirmed) {
                 await deleteEvent(eventId);
@@ -227,11 +230,13 @@ const Calendar = () => {
     return (
         <>
             <div className="profile-container p-4">
-                <UpperPanel name="My calendar" />
+                <UpperPanel name={t("myCalendar.title")} />
 
                 <div className="flex justify-between mb-4">
-                    <h3 className="text-2xl font-bold">Upcoming Events</h3>
-                    <button className="btn btn-service btn-primary" onClick={() => setIsAddingEvent(true)}>Add event</button>
+                    <h3 className="text-2xl font-bold">{t("myCalendar.upcomingEvents")}</h3>
+                    <button className="btn btn-service btn-primary" onClick={() => setIsAddingEvent(true)}>
+                        {t("myCalendar.addEvent")}
+                    </button>
                 </div>
 
                 <LoadingSpinner className={showSpinner ? "" : "hidden"} />
@@ -266,7 +271,7 @@ const Calendar = () => {
                 ) : (
                     !showSpinner && (
                         <div className="text-center py-8">
-                            <p className="text-gray-500">No upcoming events found.</p>
+                            <p className="text-gray-500">{t("myCalendar.noEvents")}</p>
                         </div>
                     )
                 )}

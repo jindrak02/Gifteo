@@ -3,6 +3,7 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import UpperPanel from "../../../components/ui/UpperPanel";
+import { useTranslation } from "react-i18next";
 
 interface EditEventFormProps {
     event: Event
@@ -32,6 +33,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
     onEventEdited,
     connectedPersons,
 }) => {
+    const { t } = useTranslation();
 
     const formatDateForInput = (date: string) => {
         const localDate = new Date(date);
@@ -59,8 +61,8 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
         if (!eventName || !eventDate) {
             Swal.fire({
                 icon: "error",
-                title: "Missing information",
-                text: "Please fill all required fields.",
+                title: t("app.swal.missingInformation.title"),
+                text: t("app.swal.missingInformation.text"),
             });
             return;
         }
@@ -96,8 +98,8 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
             if (data.success) {
                 Swal.fire({
                 icon: "success",
-                title: "Success",
-                text: "Event added successfully!",
+                title: t("app.swal.eventUpdatedSuccess.title"),
+                text: t("app.swal.eventUpdatedSuccess.text"),
                 });
                 onEventEdited(data.eventId);
             } else {
@@ -127,8 +129,8 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
             setNewNotification(1);
             Swal.fire({
                 icon: "warning",
-                title: "Max notifications reached",
-                text: "You can only add up to 3 notifications.",
+                title: t("app.swal.maxNotificationsReached.title"),
+                text: t("app.swal.maxNotificationsReached.text"),
             });
             return;
         }
@@ -145,14 +147,14 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
     return (
         <>
             <UpperPanel
-                name={event.eventName}
+                name={t("myCalendar.editEvent", { eventName: event.eventName })}
                 onClickBack={onClose}
             />
 
             <div className="card shadow-lg max-w-lg mx-auto mt-5">
 
                 <div className="card-header bg-primary text-white py-3">
-                    <h5 className="mb-0">Edit {event.eventName}</h5>
+                    <h5 className="mb-0">{t("myCalendar.editEvent", { eventName: event.eventName })}</h5>
                 </div>
 
                 <div className="card-body p-4">
@@ -161,13 +163,13 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
 
                         <div className="mb-3">
                             <label htmlFor="eventName" className="form-label">
-                                Event Name*
+                                {t("myCalendar.eventNameLabel")}
                             </label>
                             <input
                                 type="text"
                                 className="form-control"
                                 id="eventName"
-                                placeholder="Birthday, Anniversary, etc."
+                                placeholder={t('myCalendar.eventNamePlaceholder')}
                                 maxLength={50}
                                 minLength={3}
                                 value={eventName}
@@ -178,7 +180,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
 
                         <div className="mb-3">
                             <label htmlFor="eventDate" className="form-label">
-                                Event Date*
+                                {t("myCalendar.eventDateLabel")}
                             </label>
                             <input
                                 type="date"
@@ -192,7 +194,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
 
                         <div className="mb-3">
                             <label htmlFor="person" className="form-label">
-                                Person
+                                {t("myCalendar.personLabel")}
                             </label>
                             <select
                                 className="form-select"
@@ -200,7 +202,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
                                 value={selectedPerson}
                                 onChange={(e) => setSelectedPerson(e.target.value !== "undefined" ? e.target.value : undefined)}
                             >
-                                <option value="undefined">Select a person</option>
+                                <option value="undefined">{t("myCalendar.selectPerson")}</option>
 
                                 {connectedPersons.map((person) => (
                                 <option key={person.profileId} value={person.profileId}>
@@ -212,7 +214,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
                         </div>
 
                         <div className="mb-4">
-                            <label className="form-label">Notifications</label>
+                            <label className="form-label">{t("myCalendar.notificationsLabel")}</label>
                             <div className="d-flex mb-2">
                                 <input
                                     type="number"
@@ -222,20 +224,20 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
                                     value={newNotification}
                                     onChange={(e) => setNewNotification(parseInt(e.target.value))}
                                 />
-                                    <span className="me-2 d-flex align-items-center">days before</span>
+                                    <span className="me-2 d-flex align-items-center">{t("myCalendar.daysBefore")}</span>
                                 <button
                                     type="button"
                                     className="btn btn-outline-primary"
                                     onClick={addNotification}
                                 >
-                                    Add
+                                    {t("myCalendar.addNotification")}
                                 </button>
                             </div>
 
                             <div className="d-flex flex-wrap gap-2 mt-2">
                                 {notifications.map((days) => (
                                     <div key={days} className="badge bg-light text-dark p-2">
-                                        {days} {days === 1 ? "day" : "days"} before
+                                        {days} {t("myCalendar.daysBefore")}
                                         <button
                                             type="button"
                                             className="btn-close ms-2"
@@ -253,7 +255,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
                                 className="btn btn-outline-secondary me-2"
                                 onClick={onClose}
                             >
-                                Cancel
+                                {t("myCalendar.cancel")}
                             </button>
 
                             <button
@@ -264,10 +266,10 @@ const EditEventForm: React.FC<EditEventFormProps> = ({
                                 {isSubmitting ? (
                                 <>
                                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Updating...
+                                    {t("myCalendar.updating")}
                                 </>
                                 ) : (
-                                "Update Event"
+                                t("myCalendar.updateEvent")
                                 )}
                             </button>
                         </div>

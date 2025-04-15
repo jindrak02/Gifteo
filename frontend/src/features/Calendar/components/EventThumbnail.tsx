@@ -1,5 +1,6 @@
 import React from 'react';
 import formatDate from '../../../utils/formatDateToCountryCode';
+import { useTranslation } from 'react-i18next';
 
 interface EventThumbnailProps {
     countryCode: string | null;
@@ -26,11 +27,12 @@ const EventThumbnail: React.FC<EventThumbnailProps> = ({
     onEdit,
     onDelete
 }) => {
+    const { t } = useTranslation();
     const formattedDate = countryCode ? formatDate(eventDate, countryCode) : eventDate;
     
     const imageUrl = (eventForPhoto || "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg") || "https://via.placeholder.com/50";
     
-    const sourceLabel = source === "global" ? "Global Event" : "Personal Event";
+    const sourceLabel = source === "global" ? t('myCalendar.globalEvent') : t('myCalendar.personalEvent');
     const sourceClass = source === "global" ? "bg-secondary" : "bg-purple text-white";
 
     return (
@@ -86,17 +88,17 @@ const EventThumbnail: React.FC<EventThumbnailProps> = ({
             </div>
             <div className="ms-3">
               <p className="text-secondary">{formattedDate}</p>
-              {eventFor && <p className="small text-muted">For: {eventFor}</p>}
+              {eventFor && <p className="small text-muted">{t('myIdeas.for')}: {eventFor}</p>}
             </div>
           </div>
 
           {notifications && notifications.length > 0 && (
             <div className="mt-2">
-              <p className="small text-muted">Notifications:</p>
+              <p className="small text-muted">{t('myCalendar.notifications')}:</p>
               <div className="d-flex flex-wrap gap-1 mt-1">
                 {notifications.map((days, index) => (
                   <span key={index} className="badge bg-light text-dark me-1">
-                    {days} {days === 1 ? "day" : "days"} before
+                    {days} {t('myCalendar.daysBefore')}
                   </span>
                 ))}
               </div>

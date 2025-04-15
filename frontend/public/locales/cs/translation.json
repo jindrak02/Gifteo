@@ -115,6 +115,36 @@
             "wishlistDeletedError": {
               "title": "Jejda...",
               "text": "Tohle by se nikdy nemělo stát! A přesto jsme tady."
+            },
+            "deleteEvent": {
+              "title": "Smazat událost",
+              "text": "Tuto akci nelze vrátit zpět!",
+              "confirmButtonText": "Ano, smazat!",
+              "cancelButtonText": "Zrušit"
+            },
+            "missingInformation": {
+              "title": "Chybějící informace",
+              "text": "Vyplňte prosím všechna povinná pole."
+            },
+            "maxNotificationsReached": {
+              "title": "Maximální počet upozornění dosažen",
+              "text": "Můžete přidat maximálně 3 upozornění."
+            },
+            "eventAddedSuccess": {
+              "title": "Úspěch",
+              "text": "Událost byla úspěšně přidána!"
+            },
+            "eventUpdatedSuccess": {
+              "title": "Úspěch",
+              "text": "Událost byla úspěšně aktualizována!"
+            },
+            "eventDeletedSuccess": {
+              "title": "Úspěch",
+              "text": "Událost byla úspěšně smazána!"
+            },
+            "eventError": {
+              "title": "Chyba",
+              "text": "Nepodařilo se zpracovat událost."
             }
         }
     },
@@ -242,7 +272,7 @@
       "createWishlist": "Vytvořit nový seznam nápadů",
       "noMyWishlists": "Zatím nemáte žádné vlastní seznamy nápadů pro své blízké.",
       "noSharedWishlists": "Zatím s vámi nebyly sdíleny žádné seznamy nápadů.",
-      "sharedBy": "{{name}} sdílí s vámi",
+      "sharedBy": "{{name}} s vámi sdílí",
       "addWishlist": "Přidat seznam nápadů",
       "wishlistName": "Název seznamu nápadů",
       "wishlistFor": "Seznam nápadů pro",
@@ -250,5 +280,29 @@
       "cancel": "Zrušit",
       "wishlistNotFound": "Seznam nápadů nebyl nalezen",
       "for": "Pro"
+    },
+    "myCalendar": {
+      "title": "Můj kalendář",
+      "upcomingEvents": "Nadcházející události",
+      "addEvent": "Přidat událost",
+      "noEvents": "Nenalezeny žádné nadcházející události.",
+      "eventNameLabel": "Název události*",
+      "eventNamePlaceholder": "Narozeniny, výročí, svátek...",
+      "eventDateLabel": "Datum události*",
+      "personLabel": "Osoba",
+      "notificationsLabel": "Upozornění",
+      "daysBefore": "dní předem",
+      "addNotification": "Přidat",
+      "cancel": "Zrušit",
+      "createEvent": "Vytvořit událost",
+      "updateEvent": "Aktualizovat událost",
+      "creating": "Vytváření...",
+      "updating": "Aktualizace...",
+      "editEvent": "Upravit {{eventName}}",
+      "selectPerson": "Vyberte osobu",
+      "deleteEventConfirmation": "Tuto akci nelze vrátit zpět!",
+      "notifications": "Upozornění",
+      "globalEvent": "Globální událost",
+      "personalEvent": "Osobní událost"
     }
 }

@@ -3,6 +3,7 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import UpperPanel from "../../../components/ui/UpperPanel";
+import { useTranslation } from "react-i18next";
 
 interface CreateEventFormProps {
     onClose: () => void;
@@ -19,6 +20,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     onEventCreated,
     connectedPersons,
 }) => {
+    const { t } = useTranslation();
     const [eventName, setEventName] = useState("");
     const [eventDate, setEventDate] = useState("");
     const [selectedPerson, setSelectedPerson] = useState<string | undefined>(undefined);
@@ -32,8 +34,8 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
         if (!eventName || !eventDate) {
         Swal.fire({
             icon: "error",
-            title: "Missing information",
-            text: "Please fill all required fields.",
+            title: t("app.swal.missingInformation.title"),
+            text: t("app.swal.missingInformation.text"),
         });
         return;
         }
@@ -64,8 +66,8 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
             if (data.success) {
                 Swal.fire({
                 icon: "success",
-                title: "Success",
-                text: "Event added successfully!",
+                title: t("app.swal.eventAddedSuccess.title"),
+                text: t("app.swal.eventAddedSuccess.text"),
                 });
                 onEventCreated(data.eventId);
             } else {
@@ -91,11 +93,10 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
     const addNotification = () => {
         if (notifications.length >= 3) {
-            setNewNotification(1);
             Swal.fire({
                 icon: "warning",
-                title: "Max notifications reached",
-                text: "You can only add up to 3 notifications.",
+                title: t("app.swal.maxNotificationsReached.title"),
+                text: t("app.swal.maxNotificationsReached.text"),
             });
             return;
         }
@@ -112,14 +113,14 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     return (
         <>
             <UpperPanel
-                name="Create Event"
+                name={t("myCalendar.createEvent")}
                 onClickBack={onClose}
             />
 
             <div className="card shadow-lg max-w-lg mx-auto mt-5">
 
                 <div className="card-header bg-primary text-white py-3">
-                    <h5 className="mb-0">Add New Event</h5>
+                    <h5 className="mb-0">{t("myCalendar.addEvent")}</h5>
                 </div>
 
                 <div className="card-body p-4">
@@ -128,13 +129,13 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
                         <div className="mb-3">
                             <label htmlFor="eventName" className="form-label">
-                                Event Name*
+                                {t("myCalendar.eventNameLabel")}
                             </label>
                             <input
                                 type="text"
                                 className="form-control"
                                 id="eventName"
-                                placeholder="Birthday, Anniversary, etc."
+                                placeholder={t('myCalendar.eventNamePlaceholder')}
                                 maxLength={50}
                                 minLength={3}
                                 value={eventName}
@@ -145,7 +146,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
                         <div className="mb-3">
                             <label htmlFor="eventDate" className="form-label">
-                                Event Date*
+                                {t("myCalendar.eventDateLabel")}
                             </label>
                             <input
                                 type="date"
@@ -159,7 +160,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
                         <div className="mb-3">
                             <label htmlFor="person" className="form-label">
-                                Person
+                                {t("myCalendar.personLabel")}
                             </label>
                             <select
                                 className="form-select"
@@ -167,7 +168,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                 value={selectedPerson}
                                 onChange={(e) => setSelectedPerson(e.target.value)}
                             >
-                                <option value={undefined}>Select a person</option>
+                                <option value={undefined}>{t("myCalendar.selectPerson")}</option>
                                 {connectedPersons.map((person) => (
                                 <option key={person.profileId} value={person.profileId}>
                                     {person.name}
@@ -177,7 +178,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                         </div>
 
                         <div className="mb-4">
-                            <label className="form-label">Notifications</label>
+                            <label className="form-label">{t("myCalendar.notificationsLabel")}</label>
                             <div className="d-flex mb-2">
                                 <input
                                     type="number"
@@ -187,20 +188,20 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                     value={newNotification}
                                     onChange={(e) => setNewNotification(parseInt(e.target.value))}
                                 />
-                                    <span className="me-2 d-flex align-items-center">days before</span>
+                                    <span className="me-2 d-flex align-items-center">{t("myCalendar.daysBefore")}</span>
                                 <button
                                     type="button"
                                     className="btn btn-outline-primary"
                                     onClick={addNotification}
                                 >
-                                    Add
+                                    {t("myCalendar.addNotification")}
                                 </button>
                             </div>
 
                             <div className="d-flex flex-wrap gap-2 mt-2">
                                 {notifications.map((days) => (
                                     <div key={days} className="badge bg-light text-dark p-2">
-                                        {days} {days === 1 ? "day" : "days"} before
+                                        {days} {t("myCalendar.daysBefore")}
                                         <button
                                             type="button"
                                             className="btn-close ms-2"
@@ -218,7 +219,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                 className="btn btn-outline-secondary me-2"
                                 onClick={onClose}
                             >
-                                Cancel
+                                {t("myCalendar.cancel")}
                             </button>
 
                             <button
@@ -229,10 +230,10 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
                                 {isSubmitting ? (
                                 <>
                                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Creating...
+                                    {t("myCalendar.creating")}
                                 </>
                                 ) : (
-                                "Create Event"
+                                t("myCalendar.createEvent")
                                 )}
                             </button>
                         </div>

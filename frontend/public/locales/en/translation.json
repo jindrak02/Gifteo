@@ -115,6 +115,36 @@
         "wishlistDeletedError": {
           "title": "Oops...",
           "text": "This should absolutely never happen! Yet, here we are."
+        },
+        "deleteEvent": {
+          "title": "Delete event",
+          "text": "You won't be able to revert this!",
+          "confirmButtonText": "Yes, delete it!",
+          "cancelButtonText": "Cancel"
+        },
+        "missingInformation": {
+          "title": "Missing information",
+          "text": "Please fill all required fields."
+        },
+        "maxNotificationsReached": {
+          "title": "Max notifications reached",
+          "text": "You can only add up to 3 notifications."
+        },
+        "eventAddedSuccess": {
+          "title": "Success",
+          "text": "Event added successfully!"
+        },
+        "eventUpdatedSuccess": {
+          "title": "Success",
+          "text": "Event updated successfully!"
+        },
+        "eventDeletedSuccess": {
+          "title": "Success",
+          "text": "Event deleted successfully!"
+        },
+        "eventError": {
+          "title": "Error",
+          "text": "Failed to process the event."
         }
       }
     },
@@ -250,5 +280,29 @@
       "cancel": "Cancel",
       "wishlistNotFound": "Idea list not found",
       "for": "For"
+    },
+    "myCalendar": {
+      "title": "My calendar",
+      "upcomingEvents": "Upcoming Events",
+      "addEvent": "Add event",
+      "noEvents": "No upcoming events found.",
+      "eventNameLabel": "Event Name*",
+      "eventNamePlaceholder": "Birthday, Anniversary, etc.",
+      "eventDateLabel": "Event Date*",
+      "personLabel": "Person",
+      "notificationsLabel": "Notifications",
+      "daysBefore": "days before",
+      "addNotification": "Add",
+      "cancel": "Cancel",
+      "createEvent": "Create Event",
+      "updateEvent": "Update Event",
+      "creating": "Creating...",
+      "updating": "Updating...",
+      "editEvent": "Edit {{eventName}}",
+      "selectPerson": "Select a person",
+      "deleteEventConfirmation": "You won't be able to revert this!",
+      "notifications": "Notifications",
+      "globalEvent": "Global event",
+      "personalEvent": "Personal event"
     }
 }
