@@ -358,6 +358,7 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
 
   const { items } = req.body;
   const wishlistId = req.params.wishlistId;
+  const DEFAULT_IMAGE_URL = "https://res.cloudinary.com/db82w52p8/image/upload/c_thumb,w_200,g_face/v1744737553/unknown_gift_aclw2y.png";
 
   console.log(items);
 
@@ -427,7 +428,7 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
             sanitize(item.description || ""),
             sanitize(item.price),
             sanitize(item.currency),
-            sanitize(item.photo_url), 
+            sanitize(item.photo_url || DEFAULT_IMAGE_URL), 
             sanitize(item.url), 
             sanitize(item.id)
           ]);
@@ -447,7 +448,7 @@ router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => 
           sanitize(item.description || ""),
           sanitize(item.price),
           sanitize(item.currency),
-          sanitize(item.photo_url), 
+          sanitize(item.photo_url || DEFAULT_IMAGE_URL), 
           sanitize(item.url)
         ]);
       }

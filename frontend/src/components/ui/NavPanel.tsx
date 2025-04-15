@@ -1,42 +1,67 @@
 import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useInvitations } from "../../store/InvitationContext";
-import { useMediaQuery } from 'react-responsive';
+import { useMediaQuery } from "react-responsive";
 import Swal from "sweetalert2";
-import {fetchWithAuth} from "../../utils/fetchWithAuth";
+import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 const NavPanel = function () {
+  const location = useLocation();
   const { invitations } = useInvitations();
   const hasInvitations = invitations.length > 0;
   const isDesktop = useMediaQuery({ minWidth: 1200 });
   const { t } = useTranslation();
 
-    // Odhlášení uživatele
-    const handleLogOut = async function () {
-      const result = await Swal.fire({
-        title: t('app.swal.logOut.title'),
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#8F84F2",
-        confirmButtonText: t('app.swal.logOut.confirmButtonText'),
-        cancelButtonText: t('app.swal.logOut.cancelButtonText'),
+  useEffect(() => {
+    switch (location.pathname) {
+      case "/calendar":
+        document.title = t("navigation.myCalendar") + " - Gifteo";
+        break;
+      case "/ideas":
+        document.title = t("navigation.myIdeas") + " - Gifteo";
+        break;
+      case "/hub":
+        document.title = t("navigation.giftFor") + " - Gifteo";
+        break;
+      case "/people":
+        document.title = t("navigation.myPeople") + " - Gifteo";
+        break;
+      case "/profile":
+        document.title = t("navigation.myProfile") + " - Gifteo";
+        break;
+      default:
+        document.title = "Gifteo";
+    }
+  }, [location, t]);
+
+  // Odhlášení uživatele
+  const handleLogOut = async function () {
+    const result = await Swal.fire({
+      title: t("app.swal.logOut.title"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#8F84F2",
+      confirmButtonText: t("app.swal.logOut.confirmButtonText"),
+      cancelButtonText: t("app.swal.logOut.cancelButtonText"),
+    });
+
+    if (result.isConfirmed) {
+      const res = await fetchWithAuth("auth/logout", {
+        method: "POST",
+        credentials: "include", // Posílání cookies
       });
-  
-      if (result.isConfirmed) {
-        const res = await fetchWithAuth("auth/logout", {
-          method: "POST",
-          credentials: "include", // Posílání cookies
-        });
-  
-        const data = await res.json();
-        if (data.success) {
-          console.log("Logout Successful.");
-          window.location.reload(); // Obnovit aplikaci pro načtení session
-        }
+
+      const data = await res.json();
+      if (data.success) {
+        console.log("Logout Successful.");
+        window.location.reload(); // Obnovit aplikaci pro načtení session
       }
-    };
+    }
+  };
 
   return (
     <>
@@ -47,8 +72,12 @@ const NavPanel = function () {
             isDesktop ? (
               <>
                 <div className="flex desktop-nav-links">
-                  <img className="profile-picture-thumbnail-sm" src="/images/icon.png" alt="Gifteo logo" />
-                  
+                  <img
+                    className="profile-picture-thumbnail-sm"
+                    src="/images/icon.png"
+                    alt="Gifteo logo"
+                  />
+
                   <NavLink
                     to="/calendar"
                     className={({ isActive }) =>
@@ -72,7 +101,9 @@ const NavPanel = function () {
                         <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
                       </svg>
-                      <p className="desktop-menu-title">{t('navigation.myCalendar')}</p>
+                      <p className="desktop-menu-title">
+                        {t("navigation.myCalendar")}
+                      </p>
                     </button>
                   </NavLink>
 
@@ -98,7 +129,9 @@ const NavPanel = function () {
                       >
                         <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1" />
                       </svg>
-                      <p className="desktop-menu-title">{t('navigation.myIdeas')}</p>
+                      <p className="desktop-menu-title">
+                        {t("navigation.myIdeas")}
+                      </p>
                     </button>
                   </NavLink>
 
@@ -125,7 +158,9 @@ const NavPanel = function () {
                         <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z" />
                         <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
                       </svg>
-                      <p className="desktop-menu-title">{t('navigation.giftFor')}</p>
+                      <p className="desktop-menu-title">
+                        {t("navigation.giftFor")}
+                      </p>
                     </button>
                   </NavLink>
 
@@ -152,7 +187,9 @@ const NavPanel = function () {
                         >
                           <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4" />
                         </svg>
-                        <p className="desktop-menu-title">{t('navigation.myPeople')}</p>
+                        <p className="desktop-menu-title">
+                          {t("navigation.myPeople")}
+                        </p>
                       </button>
                       {hasInvitations && (
                         <div className="new-invitation-icon"></div>
@@ -182,13 +219,18 @@ const NavPanel = function () {
                       >
                         <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
                       </svg>
-                      <p className="desktop-menu-title">{t('navigation.myProfile')}</p>
+                      <p className="desktop-menu-title">
+                        {t("navigation.myProfile")}
+                      </p>
                     </button>
                   </NavLink>
                 </div>
 
                 <div className="flex">
-                  <div className="flex desktop-nav-services me-3" onClick={handleLogOut}>
+                  <div
+                    className="flex desktop-nav-services me-3"
+                    onClick={handleLogOut}
+                  >
                     <button className="btn nav-btn-custom btn-tooltip">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -207,13 +249,14 @@ const NavPanel = function () {
                           d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"
                         ></path>
                       </svg>
-                      <p className="desktop-menu-title">{t('navigation.logOut')}</p>
+                      <p className="desktop-menu-title">
+                        {t("navigation.logOut")}
+                      </p>
                     </button>
                   </div>
 
                   <LanguageSwitcher />
                 </div>
-                
               </>
             ) : (
               <>
@@ -240,7 +283,9 @@ const NavPanel = function () {
                       <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
                       <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
                     </svg>
-                    <p className="desktop-menu-title">{t('navigation.myCalendar')}</p>
+                    <p className="desktop-menu-title">
+                      {t("navigation.myCalendar")}
+                    </p>
                   </button>
                 </NavLink>
 
@@ -266,7 +311,9 @@ const NavPanel = function () {
                     >
                       <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1" />
                     </svg>
-                    <p className="desktop-menu-title">{t('navigation.myIdeas')}</p>
+                    <p className="desktop-menu-title">
+                      {t("navigation.myIdeas")}
+                    </p>
                   </button>
                 </NavLink>
 
@@ -293,7 +340,9 @@ const NavPanel = function () {
                       <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z" />
                       <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
                     </svg>
-                    <p className="desktop-menu-title">{t('navigation.giftFor')}</p>
+                    <p className="desktop-menu-title">
+                      {t("navigation.giftFor")}
+                    </p>
                   </button>
                 </NavLink>
 
@@ -320,7 +369,9 @@ const NavPanel = function () {
                       >
                         <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4" />
                       </svg>
-                      <p className="desktop-menu-title">{t('navigation.myPeople')}</p>
+                      <p className="desktop-menu-title">
+                        {t("navigation.myPeople")}
+                      </p>
                     </button>
                     {hasInvitations && (
                       <div className="new-invitation-icon"></div>
@@ -350,7 +401,9 @@ const NavPanel = function () {
                     >
                       <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
                     </svg>
-                    <p className="desktop-menu-title">{t('navigation.myProfile')}</p>
+                    <p className="desktop-menu-title">
+                      {t("navigation.myProfile")}
+                    </p>
                   </button>
                 </NavLink>
               </>
