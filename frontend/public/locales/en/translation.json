@@ -51,7 +51,7 @@
           "title": "Delete wishlist",
           "text": "Are you sure? It can still be seen to some users.",
           "confirmButtonText": "Yes",
-          "cancelButtonText": "No"
+          "cancelButtonText": "Cancel"
         },
         "makeWishlistPublic": {
           "title": "Share wishlist with all my people",
@@ -107,6 +107,14 @@
         "uncheckItemError": {
           "title": "Oops...",
           "text": "You can only uncheck items that you have checked off!"
+        },
+        "wishlistDeletedSuccess": {
+          "title": "Success",
+          "text": "Wishlist deleted successfully."
+        },
+        "wishlistDeletedError": {
+          "title": "Oops...",
+          "text": "This should absolutely never happen! Yet, here we are."
         }
       }
     },
@@ -183,7 +191,7 @@
         "addPersonButton": "Add person",
         "addPersonHeader": "Add new person",
         "ExistingGifteoUser": "Existing Gifteo user",
-        "ExistingGifteoUserDescription": "Find your friends or family members that use Gifteo and add them to your dashboard.",
+        "ExistingGifteoUserDescription": "Find your friends or family members that use Gifteo and connect with them.",
         "NonGifteoUser": "Person without Gifteo",
         "NonGifteoUserDescription": "Friends or family doesn’t use Gifteo? Don’t worry, you can still create a profile for them.",
         "userSearchPlaceholder": "Search for user...",
@@ -226,5 +234,21 @@
       "linkToBuy": "Link to buy",
       "participants": "Participants",
       "extraParticipants": "+{{count}}"
+    },
+    "myIdeas": {
+      "title": "My Ideas For Others",
+      "myWishlists": "My idea lists",
+      "sharedWishlists": "Idea lists shared with me",
+      "createWishlist": "Create new idea list",
+      "noMyWishlists": "You don't have any idea lists for your close ones yet.",
+      "noSharedWishlists": "No idea lists have been shared with you yet.",
+      "sharedBy": "{{name}} shares with you",
+      "addWishlist": "Add idea list",
+      "wishlistName": "Idea list Name",
+      "wishlistFor": "Idea list For",
+      "save": "Save",
+      "cancel": "Cancel",
+      "wishlistNotFound": "Idea list not found",
+      "for": "For"
     }
 }

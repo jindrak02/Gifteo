@@ -107,6 +107,14 @@
             "uncheckItemError": {
               "title": "Jejda...",
               "text": "Můžete odškrtnout pouze položky, které jste zaškrtli!"
+            },
+            "wishlistDeletedSuccess": {
+              "title": "Úspěch",
+              "text": "Seznam nápadů byl úspěšně smazán."
+            },
+            "wishlistDeletedError": {
+              "title": "Jejda...",
+              "text": "Tohle by se nikdy nemělo stát! A přesto jsme tady."
             }
         }
     },
@@ -172,18 +180,18 @@
         "noPeopleHeader": "Zatím jste se s nikým nepropojili.",
         "noPeopleText": "Klikněte na tlačítko níže pro přidání nové osoby.",
         "invitations": {
-        "yourInvitations": "Vaše pozvánky",
-        "newInvitation": "Máte {{count}} nových pozvánek.",
-        "noInvitations": "Momentálně nemáte žádné pozvánky.",
-        "thoseUsersWantToConnect": "Tito uživatelé si vás chtějí přidat mezi své blízké osoby:",
-        "invitationSend": "Odesláno: {{date}}"
-      },
+          "yourInvitations": "Vaše pozvánky",
+          "newInvitation": "Máte {{count}} nových pozvánek.",
+          "noInvitations": "Momentálně nemáte žádné pozvánky.",
+          "thoseUsersWantToConnect": "Tito uživatelé si vás chtějí přidat mezi své blízké osoby:",
+          "invitationSend": "Odesláno: {{date}}"
+        },
       "userHasNoWishlists": "Tento uživatel zatím nemá žádné seznamy přání.",
       "addPerson": {
         "addPersonButton": "Přidat osobu",
         "addPersonHeader": "Přidat novou osobu",
         "ExistingGifteoUser": "Existující uživatel Gifteo",
-        "ExistingGifteoUserDescription": "Najděte své přátele nebo členy rodiny, kteří používají Gifteo, a přidejte je na svůj dashboard.",
+        "ExistingGifteoUserDescription": "Najděte své přátele nebo členy rodiny, kteří používají Gifteo, a spojte se s nimi.",
         "NonGifteoUser": "Osoba bez Gifteo",
         "NonGifteoUserDescription": "Přátelé nebo rodina nepoužívají Gifteo? Nebojte se, můžete pro ně stále vytvořit profil.",
         "userSearchPlaceholder": "Hledat uživatele...",
@@ -226,5 +234,21 @@
       "linkToBuy": "Odkaz ke koupi",
       "participants": "Účastníci",
       "extraParticipants": "+{{count}}"
+    },
+    "myIdeas": {
+      "title": "Moje nápady pro ostatní",
+      "myWishlists": "Moje vlastní seznamy nápadů",
+      "sharedWishlists": "Seznamy nápadů sdílené se mnou",
+      "createWishlist": "Vytvořit nový seznam nápadů",
+      "noMyWishlists": "Zatím nemáte žádné vlastní seznamy nápadů pro své blízké.",
+      "noSharedWishlists": "Zatím s vámi nebyly sdíleny žádné seznamy nápadů.",
+      "sharedBy": "{{name}} sdílí s vámi",
+      "addWishlist": "Přidat seznam nápadů",
+      "wishlistName": "Název seznamu nápadů",
+      "wishlistFor": "Seznam nápadů pro",
+      "save": "Uložit",
+      "cancel": "Zrušit",
+      "wishlistNotFound": "Seznam nápadů nebyl nalezen",
+      "for": "Pro"
     }
 }

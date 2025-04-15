@@ -36,7 +36,7 @@ const MyPeople = () => {
     const [isViewingInvitations, setIsViewingInvitations] = useState<boolean>(false);
     const { invitations, fetchInvitations } = useInvitations();
     const location = useLocation();
-
+    
     useEffect(() => {
         setShowPersonDetail(null);
         setIsAddingPerson(false);

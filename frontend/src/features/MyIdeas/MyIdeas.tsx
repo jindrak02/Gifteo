@@ -8,6 +8,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import AddWishlistForm from "./components/AddWishlistForm";
 import WishlistEditForm from "../../components/wishlist/WishlistEditForm";
 import WishlistCopyDetail from "../WishlistHub/components/WishlistDetail";
+import { useTranslation } from "react-i18next";
 
 interface CustomWishlist {
     id: string;
@@ -44,6 +45,7 @@ interface Person {
 }
 
 const MyIdeas = () => {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
     const [customWishlists, setCustomWishlists] = useState<CustomWishlist[]>([]);
     const [connectedPersons, setConnectedPersons] = useState<Person[]>([]);
@@ -158,41 +160,47 @@ const MyIdeas = () => {
 
     const handleDeleteWishlist = async (wishlistId: string) => {
         const result = await Swal.fire({
-          title: "Delete wishlist",
-          text: "Are you sure? It can still be seen to some users.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#8F84F2",
-          confirmButtonText: "Yes, delete it!",
+            title: t("app.swal.deleteWishlist.title"),
+            text: t("app.swal.deleteWishlist.text"),
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#8F84F2",
+            confirmButtonText: t("app.swal.deleteWishlist.confirmButtonText"),
+            cancelButtonText: t("app.swal.deleteWishlist.cancelButtonText"),
         });
-    
+
         if (result.isConfirmed) {
-          const res = await fetchWithAuth(
-            `profileData/deleteWishlist/${wishlistId}`,
-            {
-              method: "DELETE",
-              credentials: "include",
-            }
-          );
-    
-          const data = await res.json();
-    
-          if (data.success) {
-            console.log("Wishlist deleted successfully.");
-            setCustomWishlists((prevWishlists) =>
-              prevWishlists.filter((wishlist) => wishlist.id !== wishlistId)
+            const res = await fetchWithAuth(
+                `profileData/deleteWishlist/${wishlistId}`,
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                }
             );
-          } else {
-            console.log("Wishlist deletion failed:", data.message);
-            Swal.fire({
-              icon: "error",
-                title: "Oops...",
-                text: "This should absolutely never happen! Yet, here we are.",
-                confirmButtonColor: "#8F84F2",
-                confirmButtonText: "OK",
-            });
-          }
+
+            const data = await res.json();
+
+            if (data.success) {
+                console.log("Wishlist deleted successfully.");
+                setCustomWishlists((prevWishlists) =>
+                    prevWishlists.filter((wishlist) => wishlist.id !== wishlistId)
+                );
+                Swal.fire({
+                    icon: "success",
+                    title: t("app.swal.wishlistDeletedSuccess.title"),
+                    text: t("app.swal.wishlistDeletedSuccess.text"),
+                });
+            } else {
+                console.log("Wishlist deletion failed:", data.message);
+                Swal.fire({
+                    icon: "error",
+                    title: t("app.swal.wishlistDeletedError.title"),
+                    text: t("app.swal.wishlistDeletedError.text"),
+                    confirmButtonColor: "#8F84F2",
+                    confirmButtonText: "OK",
+                });
+            }
         }
     };
 
@@ -249,14 +257,14 @@ const MyIdeas = () => {
         <>
 
         <div className="profile-container p-4">
-            <UpperPanel name="My Ideas"/>
+            <UpperPanel name={t("myIdeas.title")} />
             
             <div className="desktop-split-view">
                 <div className="desktop-split-view-left">
                     <div className="my-custom-wishlists">
 
                             <div className="flex justify-between">
-                                <p className="p-0 m-0">My custom wishlists</p>
+                                <p className="p-0 m-0">{t("myIdeas.myWishlists")}</p>
                                 <button className="btn" onClick={() => setExpandMySection(!expandMySection)}>
                                     {expandMySection? (
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
@@ -272,7 +280,7 @@ const MyIdeas = () => {
 
                         <div className={expandMySection? "flex-end flex-column mb-4" : "hidden"}>
                             <button className="btn btn-primary btn-service my-4" onClick={() => setIsAddingWishlist(true)}>
-                                Create new wishlist
+                                {t("myIdeas.createWishlist")}
                             </button>
                             {myWishlists.length > 0 ? (
                                 <div>
@@ -282,7 +290,7 @@ const MyIdeas = () => {
                                             title={wishlist.name}
                                             imageUrls={wishlist.items.map((item) => item.photo_url)}
                                             showButtons={true}
-                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : "Not specified"}
+                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : t("myIdeas.wishlistFor")}
                                             forProfilePhotoUrl={wishlist.forProfilePhotoUrl}
                                             onDelete={() => handleDeleteWishlist(wishlist.id)}
                                             onEdit={() => setIsEditingWishlist(wishlist.id)}
@@ -291,7 +299,7 @@ const MyIdeas = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <p className="">You dont have any custom wishlists for your close ones yet.</p>
+                                <p className="">{t("myIdeas.noMyWishlists")}</p>
                             )}
                         </div>
                     </div>
@@ -300,10 +308,10 @@ const MyIdeas = () => {
                 <div className="desktop-split-view-right">
                     <div className="my-added-custom-wishlists">
                         <div className="flex justify-between">
-                            <p className="p-0 m-0">Custom wishlists shared with me</p>
+                            <p className="p-0 m-0">{t("myIdeas.sharedWishlists")}</p>
                             <button className="btn" onClick={() => setExpandSharedSection(!expandSharedSection)}>
                                     {expandSharedSection? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 16 16">
                                             <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
                                         </svg>
                                     ) : (
@@ -320,7 +328,7 @@ const MyIdeas = () => {
                                     <div key={wishlist.id} className="mb-4">
                                         <div className="flex">
                                             <img className="profile-picture-thumbnail-sm rounded-circle" src={wishlist.ownerPhotoUrl} alt={wishlist.ownerName} />
-                                            <p className="my-0 mx-2">{wishlist.ownerName.split(' ')[0]} shares with you</p>
+                                            <p className="my-0 mx-2">{t("myIdeas.sharedBy", { name: wishlist.ownerName.split(" ")[0] })}</p>
                                         </div>
 
                                         <WishlistThumbnail
@@ -328,7 +336,7 @@ const MyIdeas = () => {
                                             title={wishlist.name}
                                             imageUrls={wishlist.items.map((item) => item.photo_url)}
                                             showButtons={false}
-                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : "Not specified"}
+                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : t("myIdeas.wishlistFor")}
                                             forProfilePhotoUrl={wishlist.forProfilePhotoUrl}
                                             onClick={() => setIsViewingWishlist(wishlist.id)}
                                         />
@@ -336,7 +344,7 @@ const MyIdeas = () => {
                                 
                                 ))
                         ) : (
-                            <p className="">No wishlists have been shared with you yet.</p>
+                            <p className="">{t("myIdeas.noSharedWishlists")}</p>
                         )}
                         </div>
 

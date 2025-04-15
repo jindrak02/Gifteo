@@ -4,6 +4,7 @@ import { fetchWithAuth } from "../../../utils/fetchWithAuth";
 import Select from 'react-select';
 import UpperPanel from "../../../components/ui/UpperPanel";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { useTranslation } from "react-i18next";
 
 type AddWishlistFormProps = {
     onClickBack: () => void;
@@ -17,6 +18,7 @@ interface Person {
 }
 
 const AddWishlistForm = (props : AddWishlistFormProps) => {
+    const { t } = useTranslation();
     const [showSpinner, setShowSpinner] = useState(false);
 
     const handleAddWishlist = async (wishlistName: string, connectedPerson: string) => {
@@ -64,7 +66,7 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
 
     return (
         <div className="profile-container p-4">
-            <UpperPanel name="Add Wishlist" onClickBack={props.onClickBack}/>
+            <UpperPanel name={t("myIdeas.addWishlist")} onClickBack={props.onClickBack} />
 
             <div className="container p-4 rounded add-wishlist-container">
                 <form
@@ -79,7 +81,7 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
 
                     <div className="mb-3">
                         <label htmlFor="wishlistName" className="form-label">
-                        Wishlist Name
+                            {t("myIdeas.wishlistName")}
                         </label>
                         <input
                         type="text"
@@ -94,7 +96,7 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
 
                     <div className="mb-3">
                         <label htmlFor="connectedPerson" className="form-label">
-                        Wishlist For
+                            {t("myIdeas.wishlistFor")}
                         </label>
 
                         <Select
@@ -121,14 +123,14 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
                     </div>
 
                     <button type="submit" className="btn btn-service btn-primary">
-                        Save
+                        {t("myIdeas.save")}
                     </button>
                     <button
                         type="button"
                         className="btn btn-secondary mx-2"
                         onClick={() => props.onClickBack()}
                     >
-                        Cancel
+                        {t("myIdeas.cancel")}
                     </button>
 
                 </form>

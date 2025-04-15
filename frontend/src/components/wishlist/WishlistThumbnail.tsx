@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 interface WishlistThumbnailProps {
   title: string;
   imageUrls: string[];
@@ -10,6 +12,8 @@ interface WishlistThumbnailProps {
 }
 
 const WishlistThumbnail = ({ title, imageUrls, showButtons, forProfileName, forProfilePhotoUrl, onDelete, onEdit, onClick }: WishlistThumbnailProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="wishlist-card p-3 rounded shadow-sm mb-4">
       <div className="d-flex justify-content-between align-items-center mb-2">
@@ -79,7 +83,7 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, forProfileName, forP
               />
             )}
             <div className="text-muted">
-              For: {forProfileName}
+              {t('myIdeas.for')}: {forProfileName}
             </div>
           </div>
         </div>
