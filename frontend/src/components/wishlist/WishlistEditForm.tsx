@@ -49,8 +49,8 @@ const WishlistEditForm: React.FC<WishlistFormProps> = ({ items: initialItems, na
   
   const addItem = () => {
     setItems([
-      ...items,
       { id: "", name: "", description: "", price: "", currency: "", url: "", photo_url: "" },
+      ...items,
     ]);
   };
   

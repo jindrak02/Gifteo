@@ -516,16 +516,18 @@ const Profile = () => {
               <LanguageSwitcher />
             </div>
 
-            <button type="submit" className="btn btn-service btn-primary">
-              {t("app.buttons.save")}
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary mx-2"
-              onClick={() => setIsEditing(false)}
-            >
-              {t("app.buttons.cancel")}
-            </button>
+            <div className="flex">
+              <button type="submit" className="btn btn-service btn-primary">
+                {t("app.buttons.save")}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary mx-2"
+                onClick={() => setIsEditing(false)}
+              >
+                {t("app.buttons.cancel")}
+              </button>
+            </div>
           </form>
         </div>
         <LoadingSpinner className={showSpinner ? "" : "hidden"} />
@@ -560,16 +562,20 @@ const Profile = () => {
               maxLength={35}
             />
           </div>
-          <button type="submit" className="btn btn-service btn-primary">
-            {t("app.buttons.save")}
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary mx-2"
-            onClick={() => setIsAddingWishlist(false)}
-          >
-            {t("app.buttons.cancel")}
-          </button>
+
+          <div className="flex">
+            <button type="submit" className="btn btn-service btn-primary">
+              {t("app.buttons.save")}
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary mx-2"
+              onClick={() => setIsAddingWishlist(false)}
+            >
+              {t("app.buttons.cancel")}
+            </button>
+          </div>
+
         </form>
       </div>
     );
