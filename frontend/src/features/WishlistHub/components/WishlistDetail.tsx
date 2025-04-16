@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import WishlistComments from "./WishlistComments";
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../../../components/user/UserAvatar";
 
 interface WishlistItem {
   id: string;
@@ -251,14 +252,19 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                       </button>
 
                       {item.checkedOffBy != null ? (
-                          <img
+                          // <img
+                          //   className="check-off-img rounded"
+                          //   src={item.checkedOffByPhoto || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2281862025.jpg"}
+                          //   onError={(e) => {
+                          //     e.currentTarget.src =
+                          //       "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
+                          //   }}
+                          //   alt="img"
+                          // />
+                          <UserAvatar
+                            imgSrc={item.checkedOffByPhoto}
+                            altText={item.checkedOffByName || ""}
                             className="check-off-img rounded"
-                            src={item.checkedOffByPhoto || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2281862025.jpg"}
-                            onError={(e) => {
-                              e.currentTarget.src =
-                                "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg";
-                            }}
-                            alt="img"
                           />
                         ) : null
                       }

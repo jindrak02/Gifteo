@@ -5,6 +5,7 @@ import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import WishlistThumbnail from "./WishlistThumbnail.tsx";
 import WishlistDetail from "./WishlistDetail.tsx";
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../../../components/user/UserAvatar.tsx";
 
 interface PersonDetailProps {
     user_id: string;
@@ -115,10 +116,15 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
 
           <div className="my-4 my-wishlists-wrapper">
             <div className="profile-wishlists my-4">
-              <img
+              {/* <img
                 className="profile-picture-thumbnail rounded-circle shadow"
                 src={photo_url}
                 alt={name + "profile"}
+              /> */}
+              <UserAvatar
+                imgSrc={photo_url}
+                altText={name + "profile"}
+                className="profile-picture-thumbnail rounded-circle shadow"
               />
               <h4 className="mx-2">{t('wishlistHub.wishlists', {name: name.split(" ")[0]})}</h4>
             </div>

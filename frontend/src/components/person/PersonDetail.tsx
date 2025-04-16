@@ -6,6 +6,7 @@ import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import WishlistDetail from "../wishlist/WishlistDetail";
 import formatDate from "../../utils/formatDateToCountryCode";
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../user/UserAvatar";
 
 type PersonDetailProps = {
     personId: string;
@@ -230,9 +231,14 @@ const PersonDetail = function (props: PersonDetailProps) {
             <div className="desktop-split-view-left">
               <div className="profile-header my-4">
                 <div className="profile-header-first d-flex">
-                  <img
+                  {/* <img
                     src={personData?.photo_url}
                     alt="Profile"
+                    className="profile-picture rounded-circle me-3 shadow "
+                  /> */}
+                  <UserAvatar
+                    imgSrc={personData?.photo_url}
+                    altText="Profile"
                     className="profile-picture rounded-circle me-3 shadow "
                   />
                 </div>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslation } from "react-i18next";
+import UserAvatar from '../user/UserAvatar';
 
 interface PersonThumbnailProps {
     personId?: string;
@@ -38,10 +39,15 @@ const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDeta
         </div>
 
         <div className="person-thumbnail-content" onClick={onDetail}>
-          <img
+          {/* <img
            src={imageUrl}
            alt={name}
            className="profile-picture-thumbnail-lg rounded-circle me-3 shadow"
+          /> */}
+          <UserAvatar
+            imgSrc={imageUrl}
+            altText={name}
+            className="profile-picture-thumbnail-lg rounded-circle me-3 shadow"
           />
           <ul className="person-thumbnail-wishlists">
             {wishlists.length > 0 ? (wishlists.map((wishlist, index) => (

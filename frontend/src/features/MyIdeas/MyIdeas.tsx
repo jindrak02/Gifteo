@@ -9,6 +9,7 @@ import AddWishlistForm from "./components/AddWishlistForm";
 import WishlistEditForm from "../../components/wishlist/WishlistEditForm";
 import WishlistCopyDetail from "../WishlistHub/components/WishlistDetail";
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../../components/user/UserAvatar";
 
 interface CustomWishlist {
     id: string;
@@ -327,7 +328,12 @@ const MyIdeas = () => {
                                 sharedWithMeWishlists.map((wishlist) => (
                                     <div key={wishlist.id} className="mb-4">
                                         <div className="flex">
-                                            <img className="profile-picture-thumbnail-sm rounded-circle" src={wishlist.ownerPhotoUrl} alt={wishlist.ownerName} />
+                                            {/* <img className="profile-picture-thumbnail-sm rounded-circle" src={wishlist.ownerPhotoUrl} alt={wishlist.ownerName} /> */}
+                                            <UserAvatar
+                                                imgSrc={wishlist.ownerPhotoUrl}
+                                                altText={wishlist.ownerName}
+                                                className="profile-picture-thumbnail-sm rounded-circle"
+                                            />
                                             <p className="my-0 mx-2">{t("myIdeas.sharedBy", { name: wishlist.ownerName.split(" ")[0] })}</p>
                                         </div>
 

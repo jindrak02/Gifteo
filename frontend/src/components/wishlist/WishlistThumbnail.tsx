@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../user/UserAvatar";
 
 interface WishlistThumbnailProps {
   title: string;
@@ -75,11 +76,16 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, forProfileName, forP
         <div>
           <div className="flex mt-2">
             {forProfilePhotoUrl && (
-              <img
-                src={forProfilePhotoUrl}
-                alt="Profile"
-                className="rounded-circle me-2"
-                style={{ width: '30px', height: '30px' }}
+              // <img
+              //   src={forProfilePhotoUrl}
+              //   alt="Profile"
+              //   className="rounded-circle me-2"
+              //   style={{ width: '30px', height: '30px' }}
+              // />
+              <UserAvatar
+                imgSrc={forProfilePhotoUrl}
+                altText="Profile"
+                className="rounded-circle me-2 profile-picture-thumbnail-sm"
               />
             )}
             <div className="text-muted">

@@ -4,6 +4,7 @@ import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import Swal from 'sweetalert2';
 import { fetchWithAuth } from '../../../utils/fetchWithAuth';
 import { useTranslation } from "react-i18next";
+import UserAvatar from '../../../components/user/UserAvatar';
 
 interface Invitation {
   id: string;
@@ -130,9 +131,14 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                             <div className="user-thumbnail">
                                 <div className="user-thumbnail-content">
                                     {invitation.senderProfilePicture ? (
-                                    <img 
-                                        src={invitation.senderProfilePicture} 
-                                        alt={`${invitation.senderName}'s profile`} 
+                                    // <img 
+                                    //     src={invitation.senderProfilePicture} 
+                                    //     alt={`${invitation.senderName}'s profile`} 
+                                    //     className="user-thumbnail-image"
+                                    // />
+                                    <UserAvatar
+                                        imgSrc={invitation.senderProfilePicture}
+                                        altText={`${invitation.senderName}'s profile`}
                                         className="user-thumbnail-image"
                                     />
                                     ) : (

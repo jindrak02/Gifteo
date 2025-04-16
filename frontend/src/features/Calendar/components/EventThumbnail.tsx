@@ -1,6 +1,7 @@
 import React from 'react';
 import formatDate from '../../../utils/formatDateToCountryCode';
 import { useTranslation } from 'react-i18next';
+import UserAvatar from '../../../components/user/UserAvatar';
 
 interface EventThumbnailProps {
     countryCode: string | null;
@@ -80,9 +81,14 @@ const EventThumbnail: React.FC<EventThumbnailProps> = ({
 
           <div className="d-flex">
             <div>
-              <img
+              {/* <img
                 src={imageUrl}
                 alt={eventFor || "Event"}
+                className="profile-picture-thumbnail-sm rounded-circle"
+              /> */}
+              <UserAvatar
+                imgSrc={imageUrl}
+                altText={eventFor || "Event"}
                 className="profile-picture-thumbnail-sm rounded-circle"
               />
             </div>

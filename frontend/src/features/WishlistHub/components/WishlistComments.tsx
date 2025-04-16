@@ -6,6 +6,7 @@ import UpperPanel from '../../../components/ui/UpperPanel';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import { useMediaQuery } from 'react-responsive';
 import { useTranslation } from "react-i18next";
+import UserAvatar from '../../../components/user/UserAvatar';
 
 interface Comment {
   id: string;
@@ -171,9 +172,14 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
               <div key={comment.id} className="comment-item card mb-2 position-relative">
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-2">
-                    <img
+                    {/* <img
                       src={comment.authorImg}
                       alt={comment.author}
+                      className="profile-picture-thumbnail-sm rounded-circle me-2"
+                    /> */}
+                    <UserAvatar
+                      imgSrc={comment.authorImg}
+                      altText={comment.author}
                       className="profile-picture-thumbnail-sm rounded-circle me-2"
                     />
                     <div>
@@ -244,9 +250,14 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
               <div key={comment.id} className="comment-item card mb-2 position-relative">
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-2">
-                    <img
+                    {/* <img
                       src={comment.authorImg}
                       alt={comment.author}
+                      className="profile-picture-thumbnail-sm rounded-circle me-2"
+                    /> */}
+                    <UserAvatar
+                      imgSrc={comment.authorImg}
+                      altText={comment.author}
                       className="profile-picture-thumbnail-sm rounded-circle me-2"
                     />
                     <div>

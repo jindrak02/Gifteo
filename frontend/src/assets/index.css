@@ -109,6 +109,9 @@ body {
 }
 
 .btn-service {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #8F84F2;
   color: white;
   border: 1px solid #8F84F2;

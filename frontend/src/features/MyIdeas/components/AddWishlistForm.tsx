@@ -5,6 +5,7 @@ import Select from 'react-select';
 import UpperPanel from "../../../components/ui/UpperPanel";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../../../components/user/UserAvatar";
 
 type AddWishlistFormProps = {
     onClickBack: () => void;
@@ -109,11 +110,16 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
                             }))}
                             formatOptionLabel={option => (
                                 <div className="d-flex align-items-center">
-                                    <img 
+                                    {/* <img 
                                         src={option.person.photoUrl} 
                                         alt={option.person.name} 
                                         className="profile-picture-thumbnail-sm me-2" 
                                         style={{ width: '30px', height: '30px', borderRadius: '50%' }}
+                                    /> */}
+                                    <UserAvatar
+                                        imgSrc={option.person.photoUrl} 
+                                        altText={option.person.name} 
+                                        className="profile-picture-thumbnail-sm me-2 participant-thumbnail" 
                                     />
                                     <span>{option.person.name}</span>
                                 </div>
@@ -122,6 +128,7 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
 
                     </div>
 
+                    <div className="flex">
                     <button type="submit" className="btn btn-service btn-primary">
                         {t("myIdeas.save")}
                     </button>
@@ -132,6 +139,7 @@ const AddWishlistForm = (props : AddWishlistFormProps) => {
                     >
                         {t("myIdeas.cancel")}
                     </button>
+                    </div>
 
                 </form>
                 </div>

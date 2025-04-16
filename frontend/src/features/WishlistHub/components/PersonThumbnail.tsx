@@ -1,4 +1,5 @@
 import React from "react";
+import UserAvatar from "../../../components/user/UserAvatar";
 
 interface PersonThumbnailProps {
     user_id?: string;
@@ -15,10 +16,15 @@ const PersonThumbnail = ( {user_id, name, photo_url, onClick} : PersonThumbnailP
             <div className="person-thumbnail my-4" id={user_id}>
                 <div className="person-thumbnail-buttons">
                     <div className='flex' onClick={() => onClick()} >
-                        <img
+                        {/* <img
                         src={photo_url}
                         alt={name}
                         className="profile-picture-thumbnail rounded-circle me-3 shadow"
+                        /> */}
+                        <UserAvatar
+                            imgSrc={photo_url}
+                            altText={name}
+                            className="profile-picture-thumbnail rounded-circle me-3 shadow"
                         />
                         <h3 className="person-thumbnail-name">{name}</h3>
                     </div>

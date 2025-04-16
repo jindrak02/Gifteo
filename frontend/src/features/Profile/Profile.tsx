@@ -10,6 +10,7 @@ import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import { useMediaQuery } from "react-responsive";
 import UpperPanel from "../../components/ui/UpperPanel";
 import LanguageSwitcher from "../../components/ui/LanguageSwitcher";
+import UserAvatar from "../../components/user/UserAvatar";
 
 type ProfileData = {
   id: string;
@@ -652,7 +653,7 @@ const Profile = () => {
           <div className="desktop-split-view-left">
             <div className="profile-header my-4">
               <div className="profile-header-first d-flex">
-                <img
+                {/* <img
                   src={
                     profileData?.photo_url ||
                     "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg"
@@ -663,6 +664,11 @@ const Profile = () => {
                   }}
                   alt="Profile"
                   className="profile-picture rounded-circle me-3 shadow "
+                /> */}
+                <UserAvatar
+                  imgSrc={profileData?.photo_url}
+                  altText="Profile"
+                  className="profile-picture rounded-circle me-3 shadow"
                 />
                 <button
                   className="btn btn-service btn-primary"

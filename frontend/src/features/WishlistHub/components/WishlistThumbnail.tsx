@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import UserAvatar from "../../../components/user/UserAvatar";
 
 interface WishlistThumbnailProps {
   title: string;
@@ -34,10 +35,16 @@ const WishlistCopyThumbnail = ({ title, imageUrls, deleted, participantsPhotoUrl
         <p className="my-0 mx-2">{t("wishlistHub.participants")}</p>
         <div className="flex">
           {participantsPhotoUrls.slice(0,3).map((url, index) => (
-            <img
+            // <img
+            //   key={index}
+            //   src={url}
+            //   alt={`Participant ${index + 1}`}
+            //   className="profile-picture-thumbnail-sm rounded-circle me-1"
+            // />
+            <UserAvatar
               key={index}
-              src={url}
-              alt={`Participant ${index + 1}`}
+              imgSrc={url}
+              altText={`Participant ${index + 1}`}
               className="profile-picture-thumbnail-sm rounded-circle me-1"
             />
           ))}

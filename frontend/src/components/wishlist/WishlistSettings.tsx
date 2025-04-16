@@ -4,6 +4,7 @@ import UpperPanel from "../ui/UpperPanel";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import Swal from "sweetalert2";
+import UserAvatar from "../user/UserAvatar";
 
 interface User {
     user_id: string;
@@ -199,7 +200,12 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
                                             className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${selectedUsers.includes(user.user_id) ? 'active' : ''}`}
                                             onClick={() => handleUserSelect(user.user_id)}
                                         >
-                                            <img className="profile-picture-thumbnail-sm rounded" src={user.photo_url} alt={user.name} />
+                                            {/* <img className="profile-picture-thumbnail-sm rounded" src={user.photo_url} alt={user.name} /> */}
+                                            <UserAvatar
+                                                imgSrc={user.photo_url}
+                                                altText={user.name}
+                                                className="profile-picture-thumbnail-sm rounded"
+                                            />
                                             <p className={props.wishlistForProfile && props.wishlistForProfile === user.profile_id ? "text-red" : ""}>{user.name}</p>
                                             {selectedUsers.includes(user.user_id) && (
                                                 <span className="badge bg-primary rounded-pill">✓</span>

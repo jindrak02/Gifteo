@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from "react-i18next";
+import UserAvatar from './UserAvatar';
 
 interface UserSearchThumbnailProps {
   name: string;
@@ -14,7 +15,9 @@ const UserSearchThumbnail: React.FC<UserSearchThumbnailProps> = ({ name, profile
   return (
     <div className="user-thumbnail">
       <div className="user-thumbnail-content">
-        <img src={profilePicture} alt={`${name}'s profile`} className="user-thumbnail-image" /> {/* Add profile picture */}
+        {/* <img src={profilePicture} alt={`${name}'s profile`} className="user-thumbnail-image" /> */}
+        <UserAvatar imgSrc={profilePicture} altText={`${name}'s profile`} className="user-thumbnail-image" />
+
         <span className="user-thumbnail-name">{name}</span>
       </div>
 
