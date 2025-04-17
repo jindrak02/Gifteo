@@ -7,6 +7,7 @@ import { fetchWithAuth } from "../../utils/fetchWithAuth";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { useAuth } from "../../store/AuthContext";
 
 const NavPanel = function () {
   const location = useLocation();
@@ -14,6 +15,7 @@ const NavPanel = function () {
   const hasInvitations = invitations.length > 0;
   const isDesktop = useMediaQuery({ minWidth: 1200 });
   const { t } = useTranslation();
+  const { logout } = useAuth();
 
   useEffect(() => {
     switch (location.pathname) {
@@ -50,15 +52,29 @@ const NavPanel = function () {
     });
 
     if (result.isConfirmed) {
-      const res = await fetchWithAuth("auth/logout", {
-        method: "POST",
-        credentials: "include", // Posílání cookies
-      });
+      // const res = await fetchWithAuth("auth/logout", {
+      //   method: "POST",
+      //   credentials: "include", // Posílání cookies
+      // });
 
-      const data = await res.json();
-      if (data.success) {
-        console.log("Logout Successful.");
-        window.location.reload(); // Obnovit aplikaci pro načtení session
+      // const data = await res.json();
+      // if (data.success) {
+      //   console.log("Logout Successful.");
+      //   window.location.reload(); // Obnovit aplikaci pro načtení session
+      // }
+      try {
+        await logout(); // Use the AuthContext logout function
+        Swal.fire({
+          title: t("app.swal.success.title"),
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        Swal.fire({
+          title: t("app.swal.error.title"),
+          icon: "error",
+        });
       }
     }
   };
