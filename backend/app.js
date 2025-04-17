@@ -20,7 +20,7 @@ const port = 3000;
 // Povolení CORS s credentials (pro frontend)
 app.use(
   cors({
-      origin: "http://localhost:5173", // Adresa frontendu
+      origin: "https://gifteoapp.com/", // Adresa frontendu
       credentials: true, // Povolit cookies v requestech
   })
 );
