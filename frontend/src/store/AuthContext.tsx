@@ -33,12 +33,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   async function logout() {
-    await fetchApi("auth/logout", {
+    const res = await fetchApi("auth/logout", {
       method: "POST",
       credentials: "include",
     });
 
     setUser(null);
+
+    const data = await res.json();
+    if (data.success) {
+      console.log("Logout Successful.");
+      window.location.href = "/";
+    }
   }
 
   return (

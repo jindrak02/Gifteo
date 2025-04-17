@@ -91,7 +91,11 @@ router.post('/google', async (req, res) => {
 });
 
 router.post('/logout', async (req, res) => {
-  res.clearCookie("session_token");
+  res.clearCookie("session_token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+  });
   res.send({ success: true, message: 'Odhlášení proběhlo úspěšně' });
   console.log('Logout Successful.');
 });
