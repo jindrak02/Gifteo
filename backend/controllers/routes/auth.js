@@ -63,7 +63,7 @@ router.post('/google', async (req, res) => {
       
       res.cookie("session_token", insertUserQueryResult.rows[0].id, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "None",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
@@ -76,7 +76,7 @@ router.post('/google', async (req, res) => {
       
       res.cookie("session_token", userQueryResult.rows[0].id, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "None",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
@@ -93,7 +93,7 @@ router.post('/google', async (req, res) => {
 router.post('/logout', async (req, res) => {
   res.clearCookie("session_token", {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "None",
   });
   res.send({ success: true, message: 'Odhlášení proběhlo úspěšně' });

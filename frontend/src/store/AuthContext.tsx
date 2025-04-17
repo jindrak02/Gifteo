@@ -33,18 +33,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   async function logout() {
-    const res = await fetchApi("auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const res = await fetchApi("auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+  
+      const data = await res.json();
 
-    setUser(null);
-
-    const data = await res.json();
-    if (data.success) {
-      console.log("Logout Successful.");
-      window.location.href = "/";
+      if (data.success) {
+        setUser(null);
+        console.log("Logout Successful.");
+        window.location.href = "/";
+      } else {
+        throw new Error(data.message || "Logout failed");
+      }
+      
+    } catch (error) {
+      console.error("Error during logout:", error);
+      throw error;
     }
+    
   }
 
   return (

@@ -11,6 +11,7 @@ import { useMediaQuery } from "react-responsive";
 import UpperPanel from "../../components/ui/UpperPanel";
 import LanguageSwitcher from "../../components/ui/LanguageSwitcher";
 import UserAvatar from "../../components/user/UserAvatar";
+import { useAuth } from "../../store/AuthContext";
 
 type ProfileData = {
   id: string;
@@ -47,6 +48,7 @@ const Profile = () => {
   );
   const location = useLocation();
   const isDesktop = useMediaQuery({ minWidth: 1200 });
+  const { logout } = useAuth();
 
   useEffect(() => {
     setIsEditingWishlist(null);
@@ -147,15 +149,19 @@ const Profile = () => {
     });
 
     if (result.isConfirmed) {
-      const res = await fetchWithAuth("auth/logout", {
-        method: "POST",
-        credentials: "include", // Posílání cookies
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        console.log(t("swal.success.text"));
-        window.location.reload(); // Obnovit aplikaci pro načtení session
+      try {
+        await logout(); // Use the AuthContext logout function
+        Swal.fire({
+          title: t("app.swal.success.title"),
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        Swal.fire({
+          title: t("app.swal.error.title"),
+          icon: "error",
+        });
       }
     }
   };

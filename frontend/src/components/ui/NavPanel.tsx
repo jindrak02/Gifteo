@@ -52,16 +52,6 @@ const NavPanel = function () {
     });
 
     if (result.isConfirmed) {
-      // const res = await fetchWithAuth("auth/logout", {
-      //   method: "POST",
-      //   credentials: "include", // Posílání cookies
-      // });
-
-      // const data = await res.json();
-      // if (data.success) {
-      //   console.log("Logout Successful.");
-      //   window.location.reload(); // Obnovit aplikaci pro načtení session
-      // }
       try {
         await logout(); // Use the AuthContext logout function
         Swal.fire({
