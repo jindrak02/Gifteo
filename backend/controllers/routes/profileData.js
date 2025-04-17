@@ -43,7 +43,7 @@ router.get("/profile", authenticateUser, async (req, res) => {
     
     const profileQueryResult = await pool.query(profileQuery,[userId]);
 
-    console.log('Profil uživatele:', profileQueryResult.rows[0]);
+    //console.log('Profil uživatele:', profileQueryResult.rows[0]);
     
 
     res.json(profileQueryResult.rows[0]);

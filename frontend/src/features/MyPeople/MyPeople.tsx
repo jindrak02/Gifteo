@@ -59,7 +59,7 @@ const MyPeople = () => {
                 const data = await res.json();
 
                 if (data) {
-                    console.log("Fetched persons data:", data);
+                    //console.log("Fetched persons data:", data);
                     setPersons(data);
                 } else {
                     console.error("Error fetching user persons");
@@ -107,7 +107,7 @@ const MyPeople = () => {
           const data = await res.json();
 
           if (data.success) {
-            console.log(personId + " Deleted");
+            //console.log(personId + " Deleted");
             setPersons(
               persons.filter((person) => person.person_id !== personId)
             );
@@ -121,7 +121,7 @@ const MyPeople = () => {
           }
 
         } else {
-          console.log(personId + " Delete canceled");
+          //console.log(personId + " Delete canceled");
           return;
         }
       });

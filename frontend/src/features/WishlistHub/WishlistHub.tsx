@@ -57,7 +57,7 @@ const WishlistHub = () => {
                 const data = await res.json();
 
                 if (data) {
-                    console.log("Fetched persons data:", data);
+                    //console.log("Fetched persons data:", data);
                     setPersons(data);
                 } else {
                     console.error("Error fetching user persons");

@@ -45,7 +45,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
             const data = await res.json();
 
             if (data.success) {
-                console.log('Fetched comments:', data.comments);
+                //console.log('Fetched comments:', data.comments);
                 setComments(data.comments);
             } else {
                 console.error('Failed to fetch comments:', data.message);
@@ -70,7 +70,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
         e.preventDefault();
         if (newComment.trim() === '') return;
 
-        console.log('New comment submitted:', newComment);
+        //console.log('New comment submitted:', newComment);
         
         const addNewComment = async () => {
             setShowSpinner(true);
@@ -87,7 +87,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log('Comment added:', data.comment);
+                    //console.log('Comment added:', data.comment);
                     setComments(prevComments => [data.comment, ...prevComments]);
                 }
                 else {
@@ -128,7 +128,7 @@ const WishlistComments = ( {wishlistId, wishlistName, onClickBack}: CommentProps
                     const data = await res.json();
 
                     if (data.success) {
-                        console.log('Comment deleted:', commentId);
+                        //console.log('Comment deleted:', commentId);
                         setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
                     } else {
                         console.error('Failed to delete comment:', data.message);

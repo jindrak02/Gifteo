@@ -32,7 +32,7 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
                 const data = await res.json();
                 const wishlistVisibility = data.wishlistVisibility;
                 if (wishlistVisibility) {
-                    console.log('Fetched wishlist visibility:', wishlistVisibility);
+                    //console.log('Fetched wishlist visibility:', wishlistVisibility);
                     setIsPublic(wishlistVisibility.sharedWithAllMyPeople);
                     setSelectedUsers(wishlistVisibility.sharedUsers.map((user: User) => user.user_id));
                 } else {
@@ -60,7 +60,7 @@ const WishlistSettings = function (props: { onClickBack: () => void; wishlistId:
                 const data = await res.json();
 
                 if (data) {
-                    console.log('Fetched users:', data);
+                    //console.log('Fetched users:', data);
                     setUsers(data);
                 }
                 

@@ -42,7 +42,7 @@ const WishlistDetail = (props: WishlistDetailProps) => {
                 const data = await res.json();
 
                 if (data) {
-                    console.log("Fetched wishlist data:", data);
+                    //console.log("Fetched wishlist data:", data);
                     setWishlistItems(data);
                 } else {
                     console.error("Error fetching wishlist data");

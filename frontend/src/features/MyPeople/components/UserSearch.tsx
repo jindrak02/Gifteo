@@ -41,7 +41,7 @@ const UserSearch = () => {
                     const data = await res.json();
 
                     if (data && Array.isArray(data)) {
-                        console.log("Fetched user data:", data);
+                        //console.log("Fetched user data:", data);
                         setUsers(data);
                     } else {
                         console.error("Error fetching user data");
@@ -62,7 +62,7 @@ const UserSearch = () => {
     }, [query]);
 
     const handleInvite = async function (personId: string) {
-        console.log('Inviting user with person id: ' + personId);
+        //console.log('Inviting user with person id: ' + personId);
         setShowSpinner(true);
 
         try {

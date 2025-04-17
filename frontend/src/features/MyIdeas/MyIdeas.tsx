@@ -79,7 +79,7 @@ const MyIdeas = () => {
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log("Fetched custom wishlists:", data.customWishlists);
+                    //console.log("Fetched custom wishlists:", data.customWishlists);
                     setCustomWishlists(data.customWishlists);
                 } else {
                     console.error("Failed to fetch custom wishlists:", data.message);
@@ -124,8 +124,8 @@ const MyIdeas = () => {
     }, [isAddingWishlist, isEditingWishlist, isViewingWishlist]);
 
     const handleSaveWishlist = async (wishlistId: string, items: any[]) => {
-        console.log('Wishlist with id edited:', wishlistId);
-        console.log('Items:', items);
+        // console.log('Wishlist with id edited:', wishlistId);
+        // console.log('Items:', items);
 
         setShowSpinner(true);
         try {
@@ -146,7 +146,7 @@ const MyIdeas = () => {
               const data = await res.json();
           
               if (data.success) {
-                console.log("Wishlist updated successfully.");
+                //console.log("Wishlist updated successfully.");
                 setIsEditingWishlist(null);
               } else {
                 console.error("Error updating wishlist:", data.message);
@@ -183,7 +183,7 @@ const MyIdeas = () => {
             const data = await res.json();
 
             if (data.success) {
-                console.log("Wishlist deleted successfully.");
+                //console.log("Wishlist deleted successfully.");
                 setCustomWishlists((prevWishlists) =>
                     prevWishlists.filter((wishlist) => wishlist.id !== wishlistId)
                 );

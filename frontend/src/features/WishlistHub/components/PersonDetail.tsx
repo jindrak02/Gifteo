@@ -61,7 +61,7 @@ const PersonDetail = ( {person_id, name, photo_url, onReturn } : PersonDetailPro
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log("Fetched wishlists:", data.wishlists);
+                    //console.log("Fetched wishlists:", data.wishlists);
                     setWishlists(data.wishlists);
                     
                 } else {

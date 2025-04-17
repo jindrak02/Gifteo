@@ -67,7 +67,7 @@ const PersonDetail = function (props: PersonDetailProps) {
                 const data = await res.json();
 
                 if (data) {
-                    console.log("Fetched person data:", data);
+                    //console.log("Fetched person data:", data);
                     setPersonData(data);
                 } else {
                     console.error("Error fetching person data");
@@ -93,7 +93,7 @@ const PersonDetail = function (props: PersonDetailProps) {
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log("Fetched person events:", data);
+                    //console.log("Fetched person events:", data);
                     setEvents(data.events);
                 } else {
                     console.error("Error fetching person events");
@@ -139,7 +139,7 @@ const PersonDetail = function (props: PersonDetailProps) {
               const data = await res.json();
     
               if (data.success) {
-                console.log(personId + " Deleted");
+                //console.log(personId + " Deleted");
                 props.onClickBack();
               } else {
                 console.error("Error deleting person");
@@ -156,7 +156,7 @@ const PersonDetail = function (props: PersonDetailProps) {
                 icon: "success"
               });
             } else {
-              console.log(personId + " Delete canceled");
+              //console.log(personId + " Delete canceled");
               return;
             }
           });

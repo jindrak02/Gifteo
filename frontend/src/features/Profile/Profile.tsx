@@ -172,8 +172,8 @@ const Profile = () => {
     file: File | null
   ) {
     setShowSpinner(true);
-    console.log("Typ souboru: " + file?.type);
-    console.log("File size: " + file?.size);
+    // console.log("Typ souboru: " + file?.type);
+    // console.log("File size: " + file?.size);
 
     // Checknu jestli byl opravdu zvolen soubor s reálnou velikostí a jménem
     if (file && file.size > 0 && file.name) {
@@ -223,8 +223,8 @@ const Profile = () => {
     }
 
     try {
-      console.log("Sending data to server...");
-      console.log(JSON.stringify(updatedProfileData));
+      // console.log("Sending data to server...");
+      // console.log(JSON.stringify(updatedProfileData));
 
       const res = await fetchWithAuth("profileData/updateProfile", {
         method: "PUT",
@@ -235,7 +235,7 @@ const Profile = () => {
       const data = await res.json();
 
       if (data.success) {
-        console.log("Profile updated successfully.");
+        //console.log("Profile updated successfully.");
       } else {
         console.error("Error updating profile:", data);
       }
@@ -262,17 +262,17 @@ const Profile = () => {
         }),
       });
 
-      console.log("Sending data to server...");
-      console.log(
-        JSON.stringify({
-          name: wishlistName,
-          profileId: profileData?.id,
-        })
-      );
+      // console.log("Sending data to server...");
+      // console.log(
+      //   JSON.stringify({
+      //     name: wishlistName,
+      //     profileId: profileData?.id,
+      //   })
+      // );
 
       const data = await res.json();
       if (data.success) {
-        console.log("Wishlist added successfully.");
+        //console.log("Wishlist added successfully.");
         setIsAddingWishlist(false);
 
         // TODO: reload or update the wishlists
@@ -308,7 +308,7 @@ const Profile = () => {
       const data = await res.json();
 
       if (data.success) {
-        console.log("Wishlist deleted successfully.");
+        //console.log("Wishlist deleted successfully.");
         setWishlists(
           wishlists.filter((wishlist) => wishlist.id !== wishlistId)
         );
@@ -320,8 +320,8 @@ const Profile = () => {
 
   // Uložení změny itemů v wishlistu
   const handleSaveWishlist = async (wishlistId: string, items: any) => {
-    console.log("wishlist id:", wishlistId);
-    console.log("Saving wishlist with items:", items);
+    // console.log("wishlist id:", wishlistId);
+    // console.log("Saving wishlist with items:", items);
 
     setShowSpinner(true);
     try {
@@ -339,17 +339,17 @@ const Profile = () => {
         }
       );
 
-      console.log("Sending data to server...");
-      console.log(
-        JSON.stringify({
-          items: items,
-        })
-      );
+      // console.log("Sending data to server...");
+      // console.log(
+      //   JSON.stringify({
+      //     items: items,
+      //   })
+      // );
 
       const data = await res.json();
 
       if (data.success) {
-        console.log("Wishlist updated successfully.");
+        //console.log("Wishlist updated successfully.");
         setIsEditingWishlist(null);
       } else {
         // Vypíšeme chybu

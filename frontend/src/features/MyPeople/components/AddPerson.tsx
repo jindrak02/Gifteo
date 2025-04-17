@@ -8,13 +8,13 @@ const AddPerson = () => {
     const [addingNewUser, setAddingNewUser] = useState<boolean>(false);
 
     const handleAddExistingUser = () => {
-        console.log('Adding existing user');
+        console.log('TODO: Adding existing user');
         setAddingExistingUser(true);
         setAddingNewUser(false);
     };
 
     const handleAddNewUser = () => {
-        console.log('Adding new user');
+        //console.log('Adding new user');
         setAddingNewUser(true);
         setAddingExistingUser(false);
         // TODO: Add logic for adding a new user

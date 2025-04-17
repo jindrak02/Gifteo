@@ -45,7 +45,7 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                     const data = await res.json();
                     
                     if (data.success) {
-                        console.log('Invitation accepted');
+                        //console.log('Invitation accepted');
                         setInvitations(invitations.filter(invitation => invitation.id !== invitationId));
                         await fetchInvitations();
                         Swal.fire({
@@ -91,7 +91,7 @@ const Invitations: React.FC<InvitationProps> = ({invitationProps}) => {
                     const data = await res.json();
                     
                     if (data.success) {
-                        console.log('Invitation rejected');
+                        //console.log('Invitation rejected');
                         setInvitations(invitations.filter(invitation => invitation.id !== invitationId));
                         await fetchInvitations();
                         

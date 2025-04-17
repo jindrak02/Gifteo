@@ -21,7 +21,7 @@ const Login = () => {
 
   const onSuccess = async function(response: any) {
     const googleToken = response.credential;
-    console.log(response);
+    //console.log(response);
 
     const res = await fetchApi("auth/google", {
       method: "POST",
@@ -33,11 +33,11 @@ const Login = () => {
     const data = await res.json();
 
     if (data.success) {
-      console.log('Login Successful.');
-      console.log(user);
+      // console.log('Login Successful.');
+      // console.log(user);
     }
 
-    console.log(data);
+    //console.log(data);
     window.location.reload(); // Obnovit aplikaci pro načtení session
   }
 

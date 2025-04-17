@@ -59,7 +59,7 @@ CREATE TABLE "userPerson" (
 
 CREATE TABLE "wishlist" (
   "id" UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  "profile_id" UUID NOT NULL REFERENCES "profile"("id") ON DELETE CASCADE,
+  "profile_id" UUID REFERENCES "profile"("id") ON DELETE CASCADE,
   "name" varchar NOT NULL,
   "visibility" visibility_type NOT NULL DEFAULT 'public',
   "created_by_user_id" UUID NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,

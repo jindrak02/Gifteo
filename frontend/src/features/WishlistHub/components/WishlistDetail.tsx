@@ -59,7 +59,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log('Item unchecked:', data);
+                    //console.log('Item unchecked:', data);
 
                     setWishlistItems((prevItems) => {
                         if (!prevItems) return null;
@@ -107,7 +107,7 @@ const WishlistCopyDetail = ( {wishlist, personName, onClickBack } : WishlistCopy
             const data = await res.json();
             
             if (data.success) {
-                console.log('Item checked off:', data);
+                //console.log('Item checked off:', data);
 
                 setWishlistItems((prevItems) => {
                     if (!prevItems) return null;
