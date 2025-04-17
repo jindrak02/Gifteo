@@ -14,6 +14,11 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.use(cookieParser());
 
+router.use(cors({
+  origin: "https://gifteoapp.com",
+  credentials: true,
+}));
+
 // Route pro přihlášení či registraci pomocí Google a případné založení usera v db
 router.post('/google', async (req, res) => {
   const { token } = req.body;
