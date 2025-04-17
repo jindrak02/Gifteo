@@ -9,6 +9,8 @@ node_modules/
 .env.production
 .env.test.local
 .env.production.local
+/frontend/.env*
+/backend/.env*
 
 # Logy
 logs/

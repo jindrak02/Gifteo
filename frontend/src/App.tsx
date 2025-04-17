@@ -10,7 +10,7 @@ import WishlistHub from './features/WishlistHub/WishlistHub.tsx';
 import MyIdeas from './features/MyIdeas/MyIdeas.tsx';
 import Calendar from './features/Calendar/Calendar.tsx';
 
-const CLIENT_ID = '1015554226649-g1s15ss5ovk1p583m24mp6upqb7f1q9b.apps.googleusercontent.com';
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const App = () => {
   const { user } = useAuth();
