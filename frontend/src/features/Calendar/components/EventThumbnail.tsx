@@ -18,7 +18,6 @@ interface EventThumbnailProps {
 
 const EventThumbnail: React.FC<EventThumbnailProps> = ({
     countryCode,
-    eventId,
     eventName,
     eventDate,
     eventFor,

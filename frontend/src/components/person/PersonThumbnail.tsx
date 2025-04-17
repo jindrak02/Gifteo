@@ -11,7 +11,7 @@ interface PersonThumbnailProps {
     onDetail?: () => void;
 }
 
-const PersonThumbnail = ({ personId, name, imageUrl, wishlists, onDelete, onDetail }: PersonThumbnailProps) => {
+const PersonThumbnail = ({ name, imageUrl, wishlists, onDelete, onDetail }: PersonThumbnailProps) => {
     const { t } = useTranslation();
 
     return (
