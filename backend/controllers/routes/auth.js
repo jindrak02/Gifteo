@@ -63,7 +63,7 @@ router.post('/google', async (req, res) => {
       
       res.cookie("session_token", insertUserQueryResult.rows[0].id, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "Lax",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
@@ -76,7 +76,7 @@ router.post('/google', async (req, res) => {
       
       res.cookie("session_token", userQueryResult.rows[0].id, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "Lax",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
