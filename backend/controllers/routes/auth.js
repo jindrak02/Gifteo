@@ -64,7 +64,7 @@ router.post('/google', async (req, res) => {
       res.cookie("session_token", insertUserQueryResult.rows[0].id, {
         httpOnly: true,
         secure: true,
-        sameSite: "Lax",
+        sameSite: "None",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
       console.log('Autentizační cookie nastavena');
@@ -77,7 +77,7 @@ router.post('/google', async (req, res) => {
       res.cookie("session_token", userQueryResult.rows[0].id, {
         httpOnly: true,
         secure: true,
-        sameSite: "Lax",
+        sameSite: "None",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
       console.log('Autentizační cookie nastavena');
