@@ -70,7 +70,6 @@ router.post('/google', async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
-        domain: "gifteoapp.com",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
       console.log('Autentizační cookie nastavena');
@@ -84,7 +83,6 @@ router.post('/google', async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
-        domain: "gifteoapp.com",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
       console.log('Autentizační cookie nastavena');
@@ -101,7 +99,6 @@ router.post('/logout', async (req, res) => {
   res.clearCookie("session_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    domain: "gifteoapp.com",
     sameSite: "None",
   });
   res.send({ success: true, message: 'Odhlášení proběhlo úspěšně' });
