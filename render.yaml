@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: Gifteo
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: dist
+    rootDir: frontend
+    routes:
+      - type: rewrite
+        source: /api/(.*)
+        destination: https://gifteo-backend.onrender.com/api/$1
