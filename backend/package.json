@@ -11,7 +11,7 @@
     "send-test-email": "node scripts/test/testEmail.js",
     "test-cron-notifier": "node scripts/test/testCronCalendarNotifier.js",
     "test-auto-bday-update": "node scripts/test/testAutoBirthdayUpdate.js",
-    "postinstall": "puppeteer install"
+    "postinstall": "npx puppeteer install && npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
