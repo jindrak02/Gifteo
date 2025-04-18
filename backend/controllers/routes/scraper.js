@@ -6,6 +6,9 @@ import { authenticateUser } from "../../middlewares/authMiddleware.js";
 const router = express.Router();
 router.use(express.json());
 
+// DEBUG - CESTA K BROWSERU
+console.log("Using Chromium executable from:", puppeteer.executablePath());
+
 // Funkce na extrakci OpenGraph metadat
 function extractOpenGraph($) {
     const ogData = {};
@@ -112,7 +115,10 @@ router.post("/wishlistItemData", authenticateUser, async (req, res) => {
     if (!url) return res.status(400).json({ error: "Missing URL" });
   
     try {
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
         const page = await browser.newPage();
 
         await page.setUserAgent(

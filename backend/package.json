@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "send-test-email": "node scripts/test/testEmail.js",
     "test-cron-notifier": "node scripts/test/testCronCalendarNotifier.js",
-    "test-auto-bday-update": "node scripts/test/testAutoBirthdayUpdate.js"
+    "test-auto-bday-update": "node scripts/test/testAutoBirthdayUpdate.js",
+    "postinstall": "puppeteer install"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
