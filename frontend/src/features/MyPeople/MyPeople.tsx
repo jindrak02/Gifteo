@@ -181,7 +181,7 @@ const MyPeople = () => {
                 
                 <hr className="my-4" />
 
-                <Invitations invitationProps = {invitations} />
+                <Invitations invitationProps = {invitations} onAccept={() => setIsViewingInvitations(false)} />
             </div>
         );
     }
