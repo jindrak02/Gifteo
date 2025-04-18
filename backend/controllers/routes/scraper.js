@@ -112,7 +112,10 @@ router.post("/wishlistItemData", authenticateUser, async (req, res) => {
     if (!url) return res.status(400).json({ error: "Missing URL" });
   
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
         const page = await browser.newPage();
 
         await page.setUserAgent(
@@ -151,6 +154,6 @@ router.post("/wishlistItemData", authenticateUser, async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch and parse data." });
     }
-  });
+});
 
 export default router;
