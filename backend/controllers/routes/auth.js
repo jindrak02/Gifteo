@@ -14,10 +14,19 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.use(cookieParser());
 
-router.use(cors({
-  origin: "https://gifteoapp.com",
-  credentials: true,
-}));
+if (process.env.NODE_ENV === "production") {
+  router.use(
+    cors({
+      origin: "https://gifteoapp.com", // Adresa frontendu
+      credentials: true, // Povolit cookies v requestech
+    })
+  );
+} else {
+  router.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }));
+}
 
 // Route pro přihlášení či registraci pomocí Google a případné založení usera v db
 router.post('/google', async (req, res) => {
@@ -69,7 +78,7 @@ router.post('/google', async (req, res) => {
       res.cookie("session_token", insertUserQueryResult.rows[0].id, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
       console.log('Autentizační cookie nastavena');
@@ -82,7 +91,7 @@ router.post('/google', async (req, res) => {
       res.cookie("session_token", userQueryResult.rows[0].id, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
         maxAge: 60 * 60 * 1000, // 1 hodina
       });
       console.log('Autentizační cookie nastavena');
@@ -99,7 +108,7 @@ router.post('/logout', async (req, res) => {
   res.clearCookie("session_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "None",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
   });
   res.send({ success: true, message: 'Odhlášení proběhlo úspěšně' });
   console.log('Logout Successful.');

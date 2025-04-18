@@ -17,13 +17,27 @@ dotenv.config();
 const app = express();
 const port = 3000;
 
-// Povolení CORS s credentials (pro frontend)
-app.use(
-  cors({
+if (process.env.NODE_ENV === "production") {
+  app.use(
+    cors({
       origin: "https://gifteoapp.com", // Adresa frontendu
       credentials: true, // Povolit cookies v requestech
-  })
-);
+    })
+  );
+} else {
+  app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }));
+}
+
+// // Povolení CORS s credentials (pro frontend)
+// app.use(
+//   cors({
+//       origin: "https://gifteoapp.com", // Adresa frontendu
+//       credentials: true, // Povolit cookies v requestech
+//   })
+// );
 
 app.use(express.json());
 app.use(cookieParser());
