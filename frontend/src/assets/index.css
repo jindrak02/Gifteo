@@ -789,3 +789,11 @@ button.text-red-500 {
 .btn-black{
   color: black;
 }
+
+.icon-button {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  font-size: 24px;
+  line-height: 1;
+}
