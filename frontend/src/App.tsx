@@ -9,6 +9,7 @@ import MyPeople from './features/MyPeople/MyPeople.tsx';
 import WishlistHub from './features/WishlistHub/WishlistHub.tsx';
 import MyIdeas from './features/MyIdeas/MyIdeas.tsx';
 import Calendar from './features/Calendar/Calendar.tsx';
+import LandingPage from './features/Landing/LandingPage.tsx';
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -20,7 +21,8 @@ const App = () => {
       <>
         <GoogleOAuthProvider clientId={CLIENT_ID}>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </GoogleOAuthProvider>

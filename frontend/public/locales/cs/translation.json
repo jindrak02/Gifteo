@@ -304,5 +304,52 @@
       "notifications": "Upozornění",
       "globalEvent": "Globální událost",
       "personalEvent": "Osobní událost"
+    },
+    "landingPage": {
+      "nav": {
+        "home": "Domů",
+        "features": "Funkce",
+        "about": "O nás"
+      },
+      "hero": {
+        "title": "STAŇTE SE DÁRKOVÝM SUPERHRDINOU",
+        "description": "S naším bezplatným nástrojem pro plánování dárků",
+        "getStarted": "Začněte nyní"
+      },
+      "features": {
+        "title": "Funkce",
+        "yourPersonalWishlists": {
+          "title": "Vaše osobní seznamy přání",
+          "description": "Vytvořte si profil a ukažte, co byste rádi dostali, a sdílejte to s ostatními."
+        },
+        "giftIdeas": {
+          "title": "Nápady na dárky pro vaše blízké",
+          "description": "Ukládejte a organizujte nápady na dárky pro vaše blízké — i když nepoužívají Gifteo."
+        },
+        "wishlistSharing": {
+          "title": "Sdílení seznamů přání a spolupráce",
+          "description": "Spolupracujte s ostatními na seznamech přání vaše blízké. Spravujte, kdo co koupí, a diskutujte o tom."
+        },
+        "flexibleSharing": {
+          "title": "Flexibilní možnosti sdílení",
+          "description": "Sdílejte seznamy přání s konkrétními lidmi nebo celým vaším okruhem („Moji blízcí“)."
+        },
+        "smartReminders": {
+          "title": "Chytré připomínky",
+          "description": "Gifteo vás upozorní na nadcházející narozeniny, svátky a zvláštní příležitosti — už nikdy nezapomenete na důležité datum."
+        },
+        "giftTracking": {
+          "title": "Sledování dárků",
+          "description": "Sledujte, co jste dostali a co jste darovali ostatním."
+        }
+      },
+      "about": {
+        "title": "O Gifteo",
+        "description1": "Gifteo vzniklo z jednoduchého, ale známého problému — zapomínání na důležité příležitosti a hledání smysluplných nápadů na dárky. Vytvořeno vysokoškolským studentem jako součást bakalářské práce, Gifteo není jen aplikace — je to osobní řešení přeměněné na platformu, která může pomoci i ostatním.",
+        "description2": "Projekt kombinuje potřeby reálného světa s moderními webovými technologiemi, zaměřuje se na použitelnost, spolupráci a design zaměřený na mobilní zařízení. Od uživatelského výzkumu a návrhu prototypů až po kódování a testování, každá část Gifteo byla vyvinuta s péčí, zvědavostí a cílem usnadnit darování dárků pro každého. A ano — je zcela zdarma k použití. Protože skvělé nápady si zaslouží být sdíleny."
+      },
+      "footer": {
+        "copyright": "© Gifteo. Všechna práva vyhrazena."
+      }
     }
 }

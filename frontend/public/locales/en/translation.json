@@ -304,5 +304,52 @@
       "notifications": "Notifications",
       "globalEvent": "Global event",
       "personalEvent": "Personal event"
+    },
+    "landingPage": {
+        "nav": {
+            "home": "Home",
+            "features": "Features",
+            "about": "About"
+        },
+        "hero": {
+            "title": "BECOME A GIFTING SUPERHERO",
+            "description": "With our free-to-use gifting tool",
+            "getStarted": "Get started now"
+        },
+        "features": {
+            "title": "Features",
+            "yourPersonalWishlists": {
+                "title": "Your personal wishlists",
+                "description": "Create profile and keep track of what you’d love to receive and share it with others."
+            },
+            "giftIdeas": {
+                "title": "Gift ideas for your loved ones",
+                "description": "Save and organize gift ideas for people in your life — even if they don’t use Gifteo."
+            },
+            "wishlistSharing": {
+                "title": "Wishlist sharing and cooperation",
+                "description": "Cooperate with others on your close ones wishlists. Manage who buys what and discuss about it."
+            },
+            "flexibleSharing": {
+                "title": "Flexible sharing options",
+                "description": "Share wishlists with specific people or your entire trusted circle (“My People”)."
+            },
+            "smartReminders": {
+                "title": "Smart reminders",
+                "description": "Gifteo notifies you about upcoming birthdays, holidays, and special occasions — never forget an important date again."
+            },
+            "giftTracking": {
+                "title": "Gift tracking",
+                "description": "Keep track of what you’ve received and what you’ve given to others."
+            }
+        },
+        "about": {
+            "title": "About Gifteo",
+            "description1": "Gifteo was born out of a simple but familiar problem — forgetting important occasions and struggling to come up with meaningful gift ideas. Created by a university student as part of a bachelor’s final project, Gifteo is more than just an app — it’s a personal solution turned into a platform that can help others, too.",
+            "description2": "The project combines real-world needs with modern web technologies, focusing on usability, collaboration, and mobile-first design. From user research and design prototyping to coding and testing, every part of Gifteo has been developed with care, curiosity, and the goal of making gift-giving a little easier for everyone. And yes — it’s completely free to use. Because great ideas deserve to be shared."
+        },
+        "footer": {
+            "copyright": "© Gifteo. All rights reserved."
+        }
     }
 }
