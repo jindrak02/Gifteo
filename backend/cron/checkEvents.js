@@ -45,7 +45,7 @@ export const checkEvents = async () => {
                     html: `
                       <p>Nezapomeň – <strong>${event.event_name}</strong>${event.person_name ? ` pro osobu <strong>${event.person_name}</strong>` : ''} se koná <strong>${format(new Date(event.event_date), 'd.M.yyyy')}</strong>.</p>
                       <p>Možná je čas připravit dárek! 🎁</p>
-                      <a href="http://localhost:5173/">Otevřít Gifteo</a>
+                      <a href="https://gifteoapp.com/">Otevřít Gifteo</a>
                     `
                   });
         

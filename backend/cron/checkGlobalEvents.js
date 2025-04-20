@@ -58,7 +58,7 @@ export const checkGlobalEvents = async () => {
             html: `
               <p>Don't forget – <strong>${event.name}</strong> is on <strong>${format(eventDate, 'd.M.yyyy')}</strong>.</p>
               <p>You might want to prepare something nice 🎁</p>
-              <a href="https://app.gifteo.cz/">Open Gifteo</a>
+              <a href="https://gifteoapp.com/">Open Gifteo</a>
             `
           });
         }
