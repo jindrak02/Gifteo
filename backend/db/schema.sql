@@ -24,6 +24,13 @@ CREATE TABLE "user" (
   "created_at" timestamp DEFAULT (now())
 );
 
+CREATE TABLE "session" (
+  "token" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  "user_id" UUID NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+  "created_at" TIMESTAMP DEFAULT now(),
+  "expires_at" TIMESTAMP NOT NULL
+);
+
 CREATE TABLE "profile" (
   "id" UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   "user_id" UUID NOT NULL UNIQUE REFERENCES "user"("id") ON DELETE CASCADE,

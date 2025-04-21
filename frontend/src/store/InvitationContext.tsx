@@ -31,7 +31,7 @@ export const InvitationProvider: React.FC<{children: React.ReactNode}> = ({ chil
             const data = await res.json();
 
             if (data) {
-                console.log("Fetched invitations data:", data);
+                //console.log("Fetched invitations data:", data);
                 setInvitations(data);
             } else {
                 console.error("Error fetching user invitations");

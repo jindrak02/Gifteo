@@ -20,7 +20,7 @@ router.use(express.json());
 
 // GET /api/customWishlists, vrátí všechny custom wishlists vytvořené uživatelem nebo sdílené s ním
 router.get("/", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     
     if (!userId) {
         return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -141,7 +141,7 @@ router.get("/", authenticateUser, async (req, res) => {
 
 // POST /api/customWishlists, vytvoří nový custom wishlist
 router.post("/", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const name = sanitize(req.body.name);
     const forProfile = sanitize(req.body.forProfile);
     

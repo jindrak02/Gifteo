@@ -3,7 +3,7 @@ import pool from "../config/db.js";
 // Middleware: ověří, že uživatel má danou osobu v "My People"
 export function hasUserPerson() {
   return async (req, res, next) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const personId = req.params.personId || req.body.personId;
 
     //console.log(personId);

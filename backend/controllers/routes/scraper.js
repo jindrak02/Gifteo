@@ -104,7 +104,7 @@
 
 // // POST /api/scraper/wishlistItemData - vrátí údaje o položce wishlistu
 // router.post("/wishlistItemData", authenticateUser, async (req, res) => {
-//     const userId = req.cookies.session_token;
+//     const userId = req.user.id;
   
 //     if (!userId) {
 //       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -266,7 +266,7 @@ function detectCurrency(price) {
 
 // Endpoint
 router.post("/wishlistItemData", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });

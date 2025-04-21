@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';
 import { getCountry } from '../../utils/getCountry.js';
+import { addHours } from 'date-fns';
+import { randomUUID } from 'crypto';
 
 dotenv.config();
 
@@ -31,6 +33,8 @@ if (process.env.NODE_ENV === "production") {
 // Route pro přihlášení či registraci pomocí Google a případné založení usera v db
 router.post('/google', async (req, res) => {
   const { token } = req.body;
+  const sessionToken = randomUUID();
+  const expiresAt = addHours(new Date(), 1);
 
   // Tu probíhá ověření tokenu od Googlu
   try {
@@ -74,8 +78,16 @@ router.post('/google', async (req, res) => {
 
       console.log("User created");
 
+      try {
+        await pool.query(
+          `INSERT INTO session (token, user_id, expires_at) VALUES ($1, $2, $3)`,
+          [sessionToken, insertUserQueryResult.rows[0].id, expiresAt]
+        );
+      } catch (error) {
+        console.log('Error setting session: ' + error)
+      }
       
-      res.cookie("session_token", insertUserQueryResult.rows[0].id, {
+      res.cookie("session_token", sessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
@@ -87,8 +99,16 @@ router.post('/google', async (req, res) => {
     } else {
       console.log("User already exists");
 
+      try {
+        await pool.query(
+          `INSERT INTO session (token, user_id, expires_at) VALUES ($1, $2, $3)`,
+          [sessionToken, userQueryResult.rows[0].id, expiresAt]
+        );
+      } catch (error) {
+        console.log('Error setting session: ' + error)
+      }
       
-      res.cookie("session_token", userQueryResult.rows[0].id, {
+      res.cookie("session_token", sessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
@@ -104,7 +124,11 @@ router.post('/google', async (req, res) => {
   }
 });
 
-router.post('/logout', async (req, res) => {
+router.post('/logout', authenticateUser, async (req, res) => {
+
+  const token = req.cookies.session_token;
+  await pool.query(`DELETE FROM session WHERE token = $1`, [token]);
+
   res.clearCookie("session_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -118,8 +142,6 @@ router.get('/checkCookie', authenticateUser, (req, res) => {
   res.send({ success: true, message: "Uživatel je přihlášen", user: req.user });
   console.log('Cookie je platná a uživatel je přihlášen: ');
   console.log(req.user)
-  
-  
 });
 
 export default router;

@@ -19,7 +19,7 @@ router.use(cookieParser());
 
 // GET /api/personsData/UserPersons, vrátí všechny osoby uživatele
 router.get("/UserPersons", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
   
     if (!userId) {
       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -72,7 +72,7 @@ router.get("/UserPersons", authenticateUser, async (req, res) => {
 
 // DELETE /api/personsData/DeletePerson, smaže osobu uživatele a poté obráceně (zruší propojení)
 router.delete("/DeletePerson/:personId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const personId = sanitize(req.params.personId);
     const { secondUserId } = req.body;
 
@@ -147,7 +147,7 @@ router.delete("/DeletePerson/:personId", authenticateUser, async (req, res) => {
 
 // GET /api/personsData/PersonDetails, vrátí detaily osoby a jejích wishlistů
 router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const personId = sanitize(req.params.personId);
 
     if (!userId) {
@@ -241,7 +241,7 @@ router.get("/PersonDetails/:personId", authenticateUser, hasUserPerson(), async 
 
 // GET /api/personsData/WishlistItems, vrátí všechny položky wishlistu dle id wishlistu
 router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const wishlistId = sanitize(req.params.wishlistId);
 
     if (!userId) {
@@ -277,7 +277,7 @@ router.get("/WishlistItems/:wishlistId", authenticateUser, async (req, res) => {
 
 // GET /api/personsData/UserProfile, vrátí profily uživatelů s emailem pro přidání, dle jména uživatele při vyhledávání
 router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const userName = sanitize(req.params.userName);
 
     if (!userId) {
@@ -313,7 +313,7 @@ router.get("/UserProfile/:userName", authenticateUser, async (req, res) => {
 
 // POST /api/personsData/AddPerson, přidá osobu uživatele
 router.post("/AddPerson", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const { personId } = req.body;
 
     if (!userId) {
@@ -357,7 +357,7 @@ router.post("/AddPerson", authenticateUser, async (req, res) => {
 
 // GET /api/personsData/invitations, vrátí všechny pozvánky uživatele
 router.get("/invitations", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
   
     if (!userId) {
       return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -395,7 +395,7 @@ router.get("/invitations", authenticateUser, async (req, res) => {
 
 // PATCH /api/personsData/acceptInvitation, přijme pozvánku a propojí uživatele
 router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const invitationId = sanitize(req.params.invitationId);
 
     console.log(invitationId);
@@ -519,7 +519,7 @@ router.patch("/acceptInvitation/:invitationId", authenticateUser, async (req, re
 
 // DELETE /api/personsData/rejectInvitation, odmítne pozvánku
 router.delete("/rejectInvitation/:invitationId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const invitationId = sanitize(req.params.invitationId);
 
     if (!userId) {

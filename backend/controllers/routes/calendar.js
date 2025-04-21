@@ -19,7 +19,7 @@ router.use(express.json());
 
 // GET /api/calendar/events/upcoming, vrátí všechny nadcházející události pro uživatele
 router.get("/events/upcoming", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     
     if (!userId) {
         return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -115,7 +115,7 @@ router.get("/events/upcoming", authenticateUser, async (req, res) => {
 
 // POST /api/calendar/events, vytvoří novou událost pro uživatele
 router.post("/events", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const { name, date, profileId, notifications } = req.body;
 
     if (!userId) {
@@ -172,7 +172,7 @@ router.post("/events", authenticateUser, async (req, res) => {
 
 // PATCH /api/calendar/events/:eventId, upraví událost pro uživatele
 router.patch("/events/:eventId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const { eventId } = req.params;
     const { name, date, profileId, notifications } = req.body;
 
@@ -226,7 +226,7 @@ router.patch("/events/:eventId", authenticateUser, async (req, res) => {
 
 // DELETE /api/calendar/events/:eventId, smaže událost pro uživatele
 router.delete("/events/:eventId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const { eventId } = req.params;
 
     if (!userId) {
@@ -259,7 +259,7 @@ router.delete("/events/:eventId", authenticateUser, async (req, res) => {
 
 // GET /api/calendar/events/:profileId, vrátí událost pro osobu
 router.get("/events/:profileId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const { profileId } = req.params;
 
     if (!userId) {

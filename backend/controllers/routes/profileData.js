@@ -24,7 +24,7 @@ const upload = multer({ storage });
 
 // GET /api/profileData/profile, vrátí profil uživatele
 router.get("/profile", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -55,7 +55,7 @@ router.get("/profile", authenticateUser, async (req, res) => {
 
 // GET /api/profileData/profileInterest, vrátí zájmy profilu uživatele
 router.get("/profileInterest", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -91,7 +91,7 @@ router.get("/interests", authenticateUser, async (req, res) => {
 
 // PUT /api/profileData/updateProfile, aktualizuje profil uživatele
 router.put("/updateProfile", authenticateUser, upload.single("file"), async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -216,7 +216,7 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
 
 // POST /api/profileData/addWishlist, vytvoří nový wishlist
 router.post("/addWishlist", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -246,7 +246,7 @@ router.post("/addWishlist", authenticateUser, async (req, res) => {
 
 // GET /api/profileData/wishlistsData, vrátí všechny wishlits uživatele včetně položek
 router.get("/wishlistsData", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -320,7 +320,7 @@ router.get("/wishlistsData", authenticateUser, async (req, res) => {
 
 // DELETE /api/profileData/deleteWishlist, smaže wishlist
 router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });
@@ -353,7 +353,7 @@ router.delete("/deleteWishlist/:wishlistId", authenticateUser, async (req, res) 
 
 // PUT /api/profileData/updateWishlist, aktualizuje wishlist
 router.put("/updateWishlist/:wishlistId", authenticateUser, async (req, res) => {
-  const userId = req.cookies.session_token;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).send({ success: false, message: "User ID not found in cookies" });

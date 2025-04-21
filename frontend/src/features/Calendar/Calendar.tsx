@@ -58,7 +58,7 @@ const Calendar = () => {
                 const data = await res.json();
 
                 if (data.success) {
-                    console.log('Fetched upcoming events:', data.events);
+                    //console.log('Fetched upcoming events:', data.events);
                     
                     setEvents(data.events);
                     setCountryCode(data.countryCode);

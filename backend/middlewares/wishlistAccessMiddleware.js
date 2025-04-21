@@ -14,7 +14,7 @@ import pool from "../config/db.js";
 // Ověří, zda může uživatel editovat daný wishlist
 export function hasWishlistAccess() {
     return async (req, res, next) => {
-        const userId = req.cookies.session_token;
+        const userId = req.user.id;
         const wishlistId = req.params.wishlistId || req.body.wishlistId;
         
         if (!userId || !wishlistId) {

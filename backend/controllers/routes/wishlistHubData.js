@@ -20,7 +20,7 @@ router.use(express.json());
 
 // GET /api/wishlistHub/wishlistsFor/:personId, vrátí všechny wishlisty pro danou osobu na které má uživatel přístup
 router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const personId = sanitize(req.params.personId);
 
     if (!userId) {
@@ -149,7 +149,7 @@ router.get("/wishlistsFor/:personId", authenticateUser, hasUserPerson(), async (
 
 // PATCH /api/wishlistHub/checkOffItem/${item.id}, zaškrtne položku jako splněnou
 router.patch("/checkOffItem/:itemId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const itemId = sanitize(req.params.itemId);
 
     if (!userId) {
@@ -196,7 +196,7 @@ router.patch("/checkOffItem/:itemId", authenticateUser, async (req, res) => {
 
 // PATCH /api/wishlistHub/uncheckItem/${item.id} , odškrtně položku jako nesplněnou
 router.patch("/uncheckItem/:itemId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const itemId = sanitize(req.params.itemId);
 
     if (!userId) {
@@ -244,7 +244,7 @@ router.patch("/uncheckItem/:itemId", authenticateUser, async (req, res) => {
 
 // GET /api/wishlistHub/wishlistVisibility/:wishlistId, vrátí viditelnost wishlistu
 router.get("/wishlistVisibility/:wishlistId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const wishlistId = sanitize(req.params.wishlistId);
 
     if (!userId) {
@@ -303,7 +303,7 @@ router.get("/wishlistVisibility/:wishlistId", authenticateUser, async (req, res)
 
 // PATCH /api/wishlistHub/updateWishlistVisibility/${wishlistId}, aktualizuje viditelnost wishlistu
 router.patch("/updateWishlistVisibility/:wishlistId", authenticateUser, async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const wishlistId = sanitize(req.params.wishlistId);
     const { sharedWithAllMyPeople, sharedUsers } = req.body;
 
@@ -364,7 +364,7 @@ router.patch("/updateWishlistVisibility/:wishlistId", authenticateUser, async (r
 
 // GET /api/wishlistHub/wishlistComments/${wishlistId}, vrátí komentáře k wishlistu
 router.get("/wishlistComments/:wishlistId", authenticateUser, hasWishlistAccess(), async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const wishlistId = sanitize(req.params.wishlistId);
 
     if (!userId) {
@@ -401,7 +401,7 @@ router.get("/wishlistComments/:wishlistId", authenticateUser, hasWishlistAccess(
 
 // POST /api/wishlistHub/addComment/${wishlistId}, přidá komentář k wishlistu
 router.post("/addComment/:wishlistId", authenticateUser, hasWishlistAccess(), async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const wishlistId = sanitize(req.params.wishlistId);
     const text= sanitize(req.body.text);
 
@@ -449,7 +449,7 @@ router.post("/addComment/:wishlistId", authenticateUser, hasWishlistAccess(), as
 
 // DELETE /api/wishlistHub/deleteComment/${commentId}/${wishlistId}, smaže komentář k wishlistu
 router.delete("/deleteComment/:commentId/:wishlistId", authenticateUser, hasWishlistAccess(), async (req, res) => {
-    const userId = req.cookies.session_token;
+    const userId = req.user.id;
     const commentId = sanitize(req.params.commentId);
 
     if (!userId) {
