@@ -340,7 +340,7 @@
             },
             "giftTracking": {
                 "title": "Gift tracking",
-                "description": "Keep track of what you’ve received and what you’ve given to others."
+                "description": "Keep track of what you’ve given to others."
             }
         },
         "about": {
