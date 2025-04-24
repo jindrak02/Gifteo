@@ -3,6 +3,7 @@ import PersonDetail from "../../components/person/PersonDetail";
 import AddPerson from "./components/AddPerson";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Invitations from "./components/Invitations";
+import UserSearch from "./components/UserSearch";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -160,7 +161,7 @@ const MyPeople = () => {
                 
                 <hr className="my-4" />
 
-                <AddPerson />
+                <UserSearch />
             </div>
         );
     }
