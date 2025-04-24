@@ -1,6 +1,5 @@
 import PersonThumbnail from "../../components/person/PersonThumbnail";
 import PersonDetail from "../../components/person/PersonDetail";
-import AddPerson from "./components/AddPerson";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Invitations from "./components/Invitations";
 import UserSearch from "./components/UserSearch";
