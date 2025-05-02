@@ -291,7 +291,7 @@ const MyIdeas = () => {
                                             title={wishlist.name}
                                             imageUrls={wishlist.items.map((item) => item.photo_url)}
                                             showButtons={true}
-                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : t("myIdeas.wishlistFor")}
+                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : ''}
                                             forProfilePhotoUrl={wishlist.forProfilePhotoUrl}
                                             onDelete={() => handleDeleteWishlist(wishlist.id)}
                                             onEdit={() => setIsEditingWishlist(wishlist.id)}
@@ -300,7 +300,7 @@ const MyIdeas = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <p className="">{t("myIdeas.noMyWishlists")}</p>
+                                <p className="text-disabled">{t("myIdeas.noMyWishlists")}</p>
                             )}
                         </div>
                     </div>
@@ -327,13 +327,13 @@ const MyIdeas = () => {
                         {sharedWithMeWishlists.length > 0 ? (
                                 sharedWithMeWishlists.map((wishlist) => (
                                     <div key={wishlist.id} className="mb-4">
-                                        <div className="flex">
+                                        <div className="flex mb-2">
                                             {/* <img className="profile-picture-thumbnail-sm rounded-circle" src={wishlist.ownerPhotoUrl} alt={wishlist.ownerName} /> */}
-                                            <UserAvatar
+                                            {/* <UserAvatar
                                                 imgSrc={wishlist.ownerPhotoUrl}
                                                 altText={wishlist.ownerName}
                                                 className="profile-picture-thumbnail-sm rounded-circle"
-                                            />
+                                            /> */}
                                             <p className="my-0 mx-2">{t("myIdeas.sharedBy", { name: wishlist.ownerName.split(" ")[0] })}</p>
                                         </div>
 
@@ -342,7 +342,7 @@ const MyIdeas = () => {
                                             title={wishlist.name}
                                             imageUrls={wishlist.items.map((item) => item.photo_url)}
                                             showButtons={false}
-                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : t("myIdeas.wishlistFor")}
+                                            forProfileName= {wishlist.forProfileName != null ? wishlist.forProfileName : ''}
                                             forProfilePhotoUrl={wishlist.forProfilePhotoUrl}
                                             onClick={() => setIsViewingWishlist(wishlist.id)}
                                         />
@@ -350,7 +350,7 @@ const MyIdeas = () => {
                                 
                                 ))
                         ) : (
-                            <p className="">{t("myIdeas.noSharedWishlists")}</p>
+                            <p className="text-disabled">{t("myIdeas.noSharedWishlists")}</p>
                         )}
                         </div>
 

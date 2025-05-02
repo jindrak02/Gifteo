@@ -75,22 +75,16 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, forProfileName, forP
       {forProfileName && (
         <div>
           <div className="flex mt-2">
+            <div className="text-muted me-2">
+              {t('myIdeas.for')}: {forProfileName}
+            </div>
             {forProfilePhotoUrl && (
-              // <img
-              //   src={forProfilePhotoUrl}
-              //   alt="Profile"
-              //   className="rounded-circle me-2"
-              //   style={{ width: '30px', height: '30px' }}
-              // />
               <UserAvatar
                 imgSrc={forProfilePhotoUrl}
                 altText="Profile"
-                className="rounded-circle me-2 profile-picture-thumbnail-sm"
+                className="rounded-circle me-2 profile-picture-thumbnail-xs"
               />
             )}
-            <div className="text-muted">
-              {t('myIdeas.for')}: {forProfileName}
-            </div>
           </div>
         </div>
       )}
