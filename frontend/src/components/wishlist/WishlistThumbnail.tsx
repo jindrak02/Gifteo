@@ -20,7 +20,7 @@ const WishlistThumbnail = ({ title, imageUrls, showButtons, forProfileName, forP
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="mb-0" onClick={onClick}>{title}</h5>
         {showButtons && ( // Conditionally render buttons
-          <div>
+          <div className="flex">
             <button className="btn btn-light btn-sm me-2" onClick={onEdit}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
