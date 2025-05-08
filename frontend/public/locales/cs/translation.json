@@ -19,7 +19,7 @@
         "swal": {
           "sessionExpired": {
               "title": "Vypršela platnost relace",
-              "text": "Prosím, přihlaste se znovu.",
+              "text": "Prosíme, přihlaste se znovu.",
               "confirmButtonText": "Přihlásit se"
             },
             "delete": {

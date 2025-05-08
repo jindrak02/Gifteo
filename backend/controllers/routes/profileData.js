@@ -77,7 +77,6 @@ router.get("/profileInterest", authenticateUser, async (req, res) => {
 
 // GET /api/profileData/interests, vrátí předdefinované zájmy k výběru
 router.get("/interests", authenticateUser, async (req, res) => {
-
   try {
     const interestsQuery = 'SELECT * FROM "interest";';
     const interestsQueryResult = await pool.query(interestsQuery);
@@ -146,8 +145,12 @@ router.put("/updateProfile", authenticateUser, upload.single("file"), async (req
     await pool.query(deleteProfileInterestQuery,[id]);
 
     for (const interest of parsedInterests) {
-      const insertProfileInterestQuery = 'INSERT INTO "profileInterest" (profile_id, interest_id) VALUES ($1, $2);';
-      await pool.query(insertProfileInterestQuery,[id, interest]);
+      const insertProfileInterestQuery =
+        'INSERT INTO "profileInterest" (profile_id, interest_id) VALUES ($1, $2);';
+      await pool.query(insertProfileInterestQuery, [
+        sanitize(id),
+        sanitize(interest),
+      ]);
     }
 
     // Pokud si uživatel změní datum narození, aktualizují se příslušné události všem blízkým osobám

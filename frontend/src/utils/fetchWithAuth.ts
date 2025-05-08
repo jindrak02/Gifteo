@@ -7,8 +7,9 @@
  * 
  */
 import Swal from "sweetalert2";
+import i18n from "i18next";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.REACT_APP_API_URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.REACT_APP_API_URL;
 
 export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   
@@ -31,8 +32,8 @@ export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit
     }, 6000);
   
     const result = await Swal.fire({
-      title: "Session expired",
-      text: "Please log in again",
+      title: i18n.t("app.swal.sessionExpired.title"),
+      text: i18n.t("app.swal.sessionExpired.text"),
       icon: "warning",
       confirmButtonText: "OK",
       confirmButtonColor: "#8F84F2",
