@@ -793,7 +793,7 @@ const Profile = () => {
               </div>
             )}
 
-            <div className="bio my-4 alert alert-secondary">
+            <div className="bio my-4 alert alert-secondary" onClick={() => setIsEditing(true)}>
               <p>
                 {" "}
                 <strong>{t("profile.aboutMe")}: </strong>
