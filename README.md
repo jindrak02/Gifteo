@@ -1,5 +1,35 @@
-# Gifteo
-This project was created as a part of Jindrich Krupka's bachelors thesis. The final app is running at https://gifteoapp.com/ 
+🎁 Gifteo
 
-Gifteo is a web application primarily focused on mobile devices that serves as a tool for gifting your loved ones.
-The idea comes from a need/problem that I and people in my area are solving - to create a place that will serve from registering gift ideas, collaborating on gifting to notifying people of upcoming birthdays, holidays, etc.
+Gifteo is an all-in-one web application designed to make gifting easier, more organized, and collaborative.
+The project was developed as part of Jindřich Krupka’s Bachelor's thesis at the Prague University of Economics and Business.
+
+Despite it's spaghetti code structure was awarded the highest grade (A / výborně).
+
+🔗 Live at: https://gifteoapp.com
+
+✨ Key Features:
+
+    Save and organize gift ideas
+    
+    Share wishlists with friends and family
+    
+    Collaborate on group gifts
+    
+    Receive reminders for upcoming birthdays, holidays, and other events
+
+
+🛠️ Tech stack:
+
+    React (Vite) on the frontend
+    
+    Express.js backend (Node.js)
+    
+    PostgreSQL database
+    
+    JWT-based authentication, Google OAuth
+    
+    Cron jobs for email notifications via SendGrid
+    
+    Deployment via Render.com
+
+Designed with a mobile-first approach and clean UX, Gifteo aims to simplify the gifting process while making it more personal and thoughtful.
