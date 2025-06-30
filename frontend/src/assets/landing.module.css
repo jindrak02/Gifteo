@@ -134,7 +134,7 @@
     margin-bottom: 15px;
     padding: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    opacity: 0; /* Initially hidden */
+    animation: flyInFromLeft 1s ease-out;
     transition: opacity 0.5s ease-out;
 }
 

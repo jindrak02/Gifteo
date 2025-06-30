@@ -42,22 +42,6 @@ const LandingPage = () => {
         }
     ];
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const featureCards = document.querySelectorAll(`.${styles.featureCard}`);
-            featureCards.forEach((card, index) => {
-                const rect = card.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    card.classList.add(styles.slideIn);
-                    card.classList.add(index % 2 === 0 ? styles.slideInLeft : styles.slideInRight);
-                }
-            });
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
     return (
         <>
             <nav className={styles.navPanel}>
