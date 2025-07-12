@@ -120,7 +120,7 @@ router.post('/google', async (req, res) => {
     }
 
   } catch (error) {
-    res.status(401).send({success: false, message: 'Token je neplatný' });
+    res.status(401).send({success: false, message: 'Token je neplatný', error: error.message });
   }
 });
 
@@ -134,6 +134,7 @@ router.post('/logout', authenticateUser, async (req, res) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
   });
+  
   res.send({ success: true, message: 'Odhlášení proběhlo úspěšně' });
   console.log('Logout Successful.');
 });
