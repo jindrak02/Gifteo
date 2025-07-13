@@ -49,78 +49,82 @@ router.post('/google', async (req, res) => {
     const name = payload["name"];
     const picture = payload["picture"];
 
-    const userQuery = 'SELECT * FROM "user" WHERE email = $1';
-    const userQueryResult = await pool.query(userQuery, [email]);
+    try {
+      const userQuery = 'SELECT * FROM "user" WHERE email = $1';
+      const userQueryResult = await pool.query(userQuery, [email]);
 
-    if (userQueryResult.rows.length === 0) {
-      // Založení nového uživatelose v db
-      const countryCode = getCountry(req);
+      if (userQueryResult.rows.length === 0) {
+        // Založení nového uživatelose v db
+        const countryCode = getCountry(req);
 
-      const insertUserQuery = 'INSERT INTO "user" (email, google_id, country_code) VALUES ($1, $2, $3) RETURNING *';
+        const insertUserQuery = 'INSERT INTO "user" (email, google_id, country_code) VALUES ($1, $2, $3) RETURNING *';
 
-      const insertUserQueryResult = await pool.query(insertUserQuery, [
-        email,
-        googleId,
-        countryCode,
-      ]);
+        const insertUserQueryResult = await pool.query(insertUserQuery, [
+          email,
+          googleId,
+          countryCode,
+        ]);
 
-      const insertProfileQuery = 'INSERT INTO "profile" ("user_id", "name", "photo_url", "bio") VALUES ($1, $2, $3, $4) RETURNING *;';
+        const insertProfileQuery = 'INSERT INTO "profile" ("user_id", "name", "photo_url", "bio") VALUES ($1, $2, $3, $4) RETURNING *;';
 
-      const insertProfileQueryResult = await pool.query(insertProfileQuery, [
-        insertUserQueryResult.rows[0].id,
-        name,
-        picture,
-        'Happy to gift and to be gifted!',
-      ]);
+        const insertProfileQueryResult = await pool.query(insertProfileQuery, [
+          insertUserQueryResult.rows[0].id,
+          name,
+          picture,
+          'Happy to gift and to be gifted!',
+        ]);
 
-      const insertPersonQuery = 'INSERT INTO "person" ("profile_id", "is_gifteo_user") VALUES ($1, $2) RETURNING *;';
-      const insertPersonQueryResult = await pool.query(insertPersonQuery, [insertProfileQueryResult.rows[0].id, true]);
+        const insertPersonQuery = 'INSERT INTO "person" ("profile_id", "is_gifteo_user") VALUES ($1, $2) RETURNING *;';
+        const insertPersonQueryResult = await pool.query(insertPersonQuery, [insertProfileQueryResult.rows[0].id, true]);
 
-      console.log("User created");
+        console.log("User created");
 
-      try {
-        await pool.query(
-          `INSERT INTO session (token, user_id, expires_at) VALUES ($1, $2, $3)`,
-          [sessionToken, insertUserQueryResult.rows[0].id, expiresAt]
-        );
-      } catch (error) {
-        console.log('Error setting session: ' + error)
+        try {
+          await pool.query(
+            `INSERT INTO session (token, user_id, expires_at) VALUES ($1, $2, $3)`,
+            [sessionToken, insertUserQueryResult.rows[0].id, expiresAt]
+          );
+        } catch (error) {
+          console.log('Error setting session: ' + error)
+        }
+        
+        res.cookie("session_token", sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
+          maxAge: 60 * 60 * 1000, // 1 hodina
+        });
+        console.log('Autentizační cookie nastavena');
+
+        res.json({ success: true, user: insertUserQueryResult.rows[0] });
+      } else {
+        console.log("User already exists");
+
+        try {
+          await pool.query(
+            `INSERT INTO session (token, user_id, expires_at) VALUES ($1, $2, $3)`,
+            [sessionToken, userQueryResult.rows[0].id, expiresAt]
+          );
+        } catch (error) {
+          console.log('Error setting session: ' + error)
+        }
+        
+        res.cookie("session_token", sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
+          maxAge: 60 * 60 * 1000, // 1 hodina
+        });
+        console.log('Autentizační cookie nastavena');
+
+        res.json({ success: true, user: userQueryResult.rows[0] });
       }
-      
-      res.cookie("session_token", sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
-        maxAge: 60 * 60 * 1000, // 1 hodina
-      });
-      console.log('Autentizační cookie nastavena');
-
-      res.json({ success: true, user: insertUserQueryResult.rows[0] });
-    } else {
-      console.log("User already exists");
-
-      try {
-        await pool.query(
-          `INSERT INTO session (token, user_id, expires_at) VALUES ($1, $2, $3)`,
-          [sessionToken, userQueryResult.rows[0].id, expiresAt]
-        );
-      } catch (error) {
-        console.log('Error setting session: ' + error)
-      }
-      
-      res.cookie("session_token", sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
-        maxAge: 60 * 60 * 1000, // 1 hodina
-      });
-      console.log('Autentizační cookie nastavena');
-
-      res.json({ success: true, user: userQueryResult.rows[0] });
+    } catch (dbError) {
+      res.status(500).json({ success: false, message: 'Chyba při práci s databází', error: dbError.message });
     }
 
   } catch (error) {
-    res.status(401).send({success: false, message: 'Token je neplatný', error: error.message });
+    res.status(401).send({success: false, message: 'Chyba při ověřování tokenu', error: error.message });
   }
 });
 
